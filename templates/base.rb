@@ -378,16 +378,11 @@ inject_into_file 'config/routes.rb', after: "draw do\n" do <<-CODE
   concern :pageable do
     get 'page/:page', action: :index, on: :collection
   end
-
-  # root 'welcome#index'
 CODE
 end
 
-gsub_file 'config/routes.rb',
-          "\n\n  # You can have the root of your site routed with \"root\"\n  # root 'welcome#index'\n\n", ''
-
 git add:    '.'
-git commit: "-m 'Add a route concern for pagination and move the root route to the top of the file'"
+git commit: "-m 'Add a route concern for pagination'"
 
 # ----- Creating application tasks --------------------------------------------------------------------
 

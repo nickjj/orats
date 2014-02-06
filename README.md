@@ -167,10 +167,6 @@ The authentication template was designed just to give you enough to get the ball
 You can disable users from registering by taking a look at `config/routes.rb` and inspecting the comments near the top.
 I feel like this is the cleanest way to disable registrations while still allowing users to edit and/or delete their account.
 
-Keep in mind that it depends on a root route being present. If you have not yet setup a root route then you will need to
-create one or it will crash since `root_path` will be undefined. If you are just messing around to test out the templates
-then you can replace root_path with `'/'`. You can always change it to something else if you desire to do so.
-
 ### 1. Create the project
 
 ```

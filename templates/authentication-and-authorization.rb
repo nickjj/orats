@@ -808,11 +808,11 @@ puts        '-'*80, ''; sleep 0.25
 inject_into_file 'config/routes.rb', after: "collection\n  end\n" do <<-CODE
 
   # disable users from being able to register by uncommenting the lines below
-  # get 'accounts/sign_up(.:format)', to: redirect(root_path)
-  # post 'accounts(.:format)', to: redirect(root_path)
+  # get 'accounts/sign_up(.:format)', to: redirect('/')
+  # post 'accounts(.:format)', to: redirect('/')
 
   # disable users from deleting their own account by uncommenting the line below
-  # delete 'accounts(.:format)', to: redirect(root_path)
+  # delete 'accounts(.:format)', to: redirect('/')
 
   devise_for :accounts
 
