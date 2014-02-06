@@ -167,7 +167,7 @@ The authentication template was designed just to give you enough to get the ball
 You can disable users from registering by taking a look at `config/routes.rb` and inspecting the comments near the top.
 I feel like this is the cleanest way to disable registrations while still allowing users to edit and/or delete their account.
 
-Keep in mind that it depends on a root route being present. If you have not set setup a root route then you will need to
+Keep in mind that it depends on a root route being present. If you have not yet setup a root route then you will need to
 create one or it will crash since `root_path` will be undefined. If you are just messing around to test out the templates
 then you can replace root_path with `'/'`. You can always change it to something else if you desire to do so.
 
@@ -210,10 +210,10 @@ change the user names and setup an encrypted data bag for passwords.
 I am not a chef wizard yet but I would love to move away from capistrano and use chef to manage the server and the app. If
 someone wants to write this template then please do so and send me a pull request.
 
-## What is the easiest way to uninstall orats projects?
+## What is the easiest way to nuke orats projects?
 
 You will want to not only delete the rails project directory but you will also want to delete the postgres database
-and delete the keys on your redis server. Simply execute the following commands in order and do not forget to replace the
+and delete the keys on your redis server. Simply execute the following commands and do not forget to replace the
 word `myapp` with your real app name.
 
 All data will be lost as this really deletes the database associated with this project, proceed with caution.
