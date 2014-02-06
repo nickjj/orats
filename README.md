@@ -65,7 +65,10 @@ All of the bits and pieces have been added with proper git commits so you have a
 
 ### 1. Create the project
 
-`rails new myapp --skip-bundle --template https://raw.github.com/nickjj/orats/master/templates/base.rb`
+```
+rails new myapp --skip-bundle --template \
+https://raw.github.com/nickjj/orats/master/templates/base.rb
+```
 
 ### 2. Run bundle install
 
@@ -170,7 +173,10 @@ then you can replace root_path with `'/'`. You can always change it to something
 
 ### 1. Create the project
 
-`rails new myapp --skip --skip-bundle --template https://raw.github.com/nickjj/orats/master/templates/authentication-and-authorization.rb`
+```
+rails new myapp --skip --skip-bundle --template \
+https://raw.github.com/nickjj/orats/master/templates/authentication-and-authorization.rb
+```
 
 Notice this time instead of running `--skip-bundle` we are running both `--skip` and `--skip-bundle`. It is an important
 difference as `--skip` will append the changes to the `myapp` folder rather than try to create a brand new project from scratch.
