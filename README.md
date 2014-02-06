@@ -30,7 +30,12 @@ are locked using the pessimistic operator `~>` so you can be sure that everythin
 - Redis
     - Used as a sidekiq background worker and as the rails cache back end.
 
-## Features that are included in the base template
+## Base template
+
+This is the starter template that every other template will append to. I feel like when I make a new project, 95% of the time
+it includes these features and when I do not want a specific thing it is much quicker to remove it than add it.
+
+### Features that are included in the base template
 
 - Add a few popular OS and editor files to the .gitignore file.
 - Create development, staging and production environments.
@@ -59,35 +64,35 @@ are locked using the pessimistic operator `~>` so you can be sure that everythin
 - Use bootstrap ~3 and font awesome using the standard community gems.
 - Rack mini profiler, bullet and meta_request support for development mode profiling and analysis.
 
-All of the bits and pieces have been added with proper git commits so you have a trail of everything that was added.
+Everything has been added with proper git commits so you have a trail of changes.
 
-## Base template installation instructions
+### Base template installation instructions
 
-### 1. Create the project
+#### 1. Create the project
 
 ```
 rails new myapp --skip-bundle --template \
 https://raw.github.com/nickjj/orats/master/templates/base.rb
 ```
 
-### 2. Run bundle install
+#### 2. Run bundle install
 
 `cd myapp && bundle install`
 
 This could have been done automatically for the base template however I feel like it's more general to allow users to add
 or remove gems from the `Gemfile` before running `bundle install`. You might not even want a database too for whatever reasons.
 
-### 3. Configure the environment variables
+#### 3. Configure the environment variables
 
 Open the `.env` file and set the correct environment variables for your development box. It is expected
 that during your server provisioning phase you will have the ENV variables on the production machine already. The `dotenv`
 gem is only loaded in development and test environments.
 
-### 4. Prepare your database and get rails ready to go
+#### 4. Prepare your database and get rails ready to go
 
 `bundle exec rake db:create:all db:migrate db:test:prepare`
 
-### 5. Run the server in development mode
+#### 5. Run the server in development mode
 
 `bundle exec foreman start`
 
@@ -167,7 +172,9 @@ The authentication template was designed just to give you enough to get the ball
 You can disable users from registering by taking a look at `config/routes.rb` and inspecting the comments near the top.
 I feel like this is the cleanest way to disable registrations while still allowing users to edit and/or delete their account.
 
-### 1. Create the project
+### Authentication and authorization template installation instructions
+
+#### 1. Create the project
 
 ```
 rails new myapp --skip --skip-bundle --template \
@@ -180,11 +187,11 @@ difference as `--skip` will append the changes to the `myapp` folder rather than
 This template will run `bundle install` automatically at a specific point in the script and it will install 3 new gems. They
 are devise, devise-async and pundit.
 
-### 2. Migrate the changes and add the seed account
+#### 2. Migrate the changes and add the seed account
 
 `cd myapp && bundle exec rake db:migrate db:seed`
 
-### 3. Run the server in development mode
+#### 3. Run the server in development mode
 
 `bundle exec foreman start`
 
