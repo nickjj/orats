@@ -1,0 +1,46 @@
+source 'https://rubygems.org'
+
+gem 'rails', '4.0.2'
+gem 'turbolinks', '~> 1.3.1'
+gem 'jquery-rails', '~> 3.0.4'
+gem 'jquery-turbolinks', '~> 2.0.1'
+gem 'bootstrap-sass', '~> 3.0.1'
+gem 'font-awesome-rails', '~> 4.0.3.1'
+
+gem 'custom_configuration'
+
+gem 'pg'
+gem 'redis-rails', '~> 4.0.0'
+
+gem 'puma', '~> 2.7.1'
+gem 'sidekiq', '~> 2.17.4'
+gem 'sinatra', '>= 1.3.0', require: false
+gem 'whenever', require: false
+#gem 'jbuilder'
+
+gem 'kaminari', '~> 0.15.1'
+
+gem 'sitemap_generator', '~> 4.3.1'
+gem 'favicon_maker', '~> 1.1.0'
+
+group :development do
+  gem 'foreman', '>= 0.63.0', require: false
+  gem 'rack-mini-profiler'
+  gem 'bullet', '~> 4.7.1'
+  gem 'meta_request'
+  gem 'railroady', '~> 1.1.1', require: false
+end
+
+group :development, :test do
+  gem 'dotenv-rails', '~> 0.9.0'
+end
+
+group :assets do
+  gem 'sass-rails', '~> 4.0.1'
+  gem 'coffee-rails', '~> 4.0.1'
+  gem 'uglifier', '~> 2.4.0'
+end
+
+group :doc do
+  gem 'sdoc', '~> 0.4.0', require: false
+end
