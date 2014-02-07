@@ -10,7 +10,7 @@ It is clearly a problem that can be automated so I sat down and started to creat
 
 ## What version of Rails and Ruby are you targeting?
 
-#### Rails 4.0.x and Ruby 2.1.0
+#### Rails 4.0.x and Ruby 2.1.x
 
 I will be updating them as new versions come out and when the gems used are proven to work. All important gems in the Gemfile
 are locked using the pessimistic operator `~>` so you can be sure that everything plays nice as long as rubygems.org is up!
@@ -29,6 +29,18 @@ are locked using the pessimistic operator `~>` so you can be sure that everythin
     - All of the templates use postgres as a primary persistent database.
 - Redis
     - Used as a sidekiq background worker and as the rails cache back end.
+
+## Contents
+
+- Templates
+    - [Base](#base-template)
+    - [Authentication and authorization](#authentication-and-authorization)
+    - [Application deployment](#application-deployment)
+    - [Server provisioning](#server-provisioning)
+- Sections
+    - [Expanding beyond the base template](#expanding-beyond-the-base-template)
+    - [Production tweaks](#production-tweaks)
+    - [Uninstalling orats projects](#what-is-the-easiest-way-to-nuke-orats-projects)
 
 ## Base template
 
@@ -66,7 +78,7 @@ it includes these features and when I do not want a specific thing it is much qu
 
 Everything has been added with proper git commits so you have a trail of changes.
 
-### Base template installation instructions
+### Installation instructions
 
 #### 1. Create the project
 
@@ -172,7 +184,7 @@ The authentication template was designed just to give you enough to get the ball
 You can disable users from registering by taking a look at `config/routes.rb` and inspecting the comments near the top.
 I feel like this is the cleanest way to disable registrations while still allowing users to edit and/or delete their account.
 
-### Authentication and authorization template installation instructions
+### Installation instructions
 
 #### 1. Create the project
 
