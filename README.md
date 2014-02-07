@@ -17,7 +17,7 @@ are locked using the pessimistic operator `~>` so you can be sure that everythin
 
 ## System dependencies that apply to every template
 
-- Ruby 2.1.0
+- Ruby 2.1.x
     - Yep, you really need Ruby to run Ruby modules.
 - Rails 4.0.x
     - You also need Rails installed so that you can run the project generator.
@@ -41,6 +41,9 @@ are locked using the pessimistic operator `~>` so you can be sure that everythin
     - [Expanding beyond the base template](#expanding-beyond-the-base-template)
     - [Production tweaks](#production-tweaks)
     - [Uninstalling orats projects](#what-is-the-easiest-way-to-nuke-orats-projects)
+- Screencasts
+    - [An introduction to orats](#an-introduction-to-orats)
+    - [Adding authentication](#adding-authentication)
 
 ## Base template
 
@@ -227,14 +230,24 @@ someone wants to write this template then please do so and send me a pull reques
 
 ## What is the easiest way to nuke orats projects?
 
-You will want to not only delete the rails project directory but you will also want to delete the postgres database
+You will want to not only delete the rails project directory but you will also want to delete the postgres databases
 and delete the keys on your redis server. Simply execute the following commands and do not forget to replace the
 word `myapp` with your real app name.
 
-All data will be lost as this really deletes the database associated with this project, proceed with caution.
+**All data** will be lost as this really deletes every database associated with this project, proceed with caution.
 
-    cd myapp && bundle exec rake db:drop && cd .. && rm -rf myapp
+    cd myapp && bundle exec rake db:drop:all && cd .. && rm -rf myapp
     redis-cli KEYS "myapp:*" | xargs --delim='\n' redis-cli DEL
 
 That second command will clear out any keys in the redis server that are associated to your application since they are
 all namespaced by your app name as long as you did not change that manually.
+
+## Screencasts
+
+#### [An introduction to orats](https://www.youtube.com/watch?v=6iveCNxwVp4)
+
+A short introduction explaining what orats is about and how to setup a basic project using the base template.
+
+#### [Adding authentication](https://www.youtube.com/watch?v=QAq9FqqvFTc)
+
+A brief video explaining how to add authentication to your project using the authentication and authorization template.
