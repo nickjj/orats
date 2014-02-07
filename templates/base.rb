@@ -288,7 +288,7 @@ end
 CODE
 
 git add:    '.'
-git commit: "-m 'add a sitemap rake task that occurs at 4am'"
+git commit: "-m 'Add a sitemap rake task that occurs at 4am'"
 
 # ----- Modify the environment files ------------------------------------------------------------------
 
@@ -495,11 +495,11 @@ file 'app/views/layouts/application.html.erb', <<-HTML
 <!doctype html>
 <html lang="en">
   <head>
-  <title><%= yield(:title) %></title>
+  <title><%= yield :title %></title>
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="<%= yield(:meta_description) %>" />
+  <meta name="description" content="<%= yield :meta_description %>" />
   <%= stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track' => true %>
   <%= javascript_include_tag '//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js', 'application', 'data-turbolinks-track' => true %>
   <%= csrf_meta_tags %>
@@ -517,7 +517,7 @@ file 'app/views/layouts/application.html.erb', <<-HTML
 
   <main role="main" class="container">
     <div class="page-header">
-      <h1><%= yield(:heading) %></h1>
+      <h1><%= yield :heading %></h1>
     </div>
     <%= render 'layouts/flash' %>
     <%= yield %>
@@ -564,7 +564,7 @@ file 'app/views/layouts/_navigation.html.erb', <<-HTML
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <%= link_to '#{app_name}', '#root_path_would_go_here', class: "navbar-brand" %>
+      <%= link_to '#{app_name}', '#root_path_would_go_here', class: 'navbar-brand' %>
     </div>
     <div class="collapse navbar-collapse">
       <ul class="nav navbar-nav">
