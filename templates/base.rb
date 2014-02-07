@@ -438,8 +438,8 @@ inject_into_file 'app/helpers/application_helper.rb', after: "ApplicationHelper\
     content_for(:meta_description) { page_meta_description }
   end
 
-  def heading(heading)
-    content_for(:heading) { heading }
+  def heading(page_heading)
+    content_for(:heading) { page_heading }
   end
 
   def link_to_all_favicons
