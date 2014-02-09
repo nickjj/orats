@@ -286,7 +286,7 @@ Then just follow the on-screen instructions supplied by thor.
 
 ### Uninstalling the thor script
 
-`thor uninstall orats`
+`thor uninstall orats.thor`
 
 ---
 
@@ -297,7 +297,7 @@ run the `thor` command with sudo privileges. You should not need to do this unde
 
 ### API
 
-Type `thor orats:rails help` in a terminal to get a list of available rails commands or check out the `orats.thor` file
+Run `thor orats:rails help` in a terminal to get a list of available rails commands or check out the `orats.thor` file
 in this repo. Don't worry, it won't bite you.
 
 Additional namespaces will appear in the future when the templates become available and they will be listed here.
