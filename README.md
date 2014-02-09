@@ -41,6 +41,7 @@ are locked using the pessimistic operator `~>` so you can be sure that everythin
     - [Expanding beyond the base template](#expanding-beyond-the-base-template)
     - [Production tweaks](#production-tweaks)
     - [Uninstalling orats projects](#what-is-the-easiest-way-to-nuke-orats-projects)
+    - [An easier way to use the templates](#orats-thor-script)
 - Screencasts
     - [An introduction to orats](#an-introduction-to-orats)
     - [Adding authentication](#adding-authentication)
@@ -85,10 +86,19 @@ Everything has been added with proper git commits so you have a trail of changes
 
 #### 1. Create the project
 
+The manual way:  
 ```
 rails new myapp --skip-bundle --template \
 https://raw.github.com/nickjj/orats/master/templates/base.rb
 ```
+
+---
+
+If you installed the [orats thor script](#orats-thor-script) you can run this instead:
+
+`thor orats:rails:base myapp`
+
+---
 
 #### 2. Run bundle install
 
@@ -202,6 +212,14 @@ difference as `--skip` will append the changes to the `myapp` folder rather than
 This template will run `bundle install` automatically at a specific point in the script and it will install 3 new gems. They
 are devise, devise-async and pundit.
 
+---
+
+If you installed the [orats thor script](#orats-thor-script) you can run this instead:
+
+`thor orats:rails:auth myapp`
+
+---
+
 #### 2. Migrate the changes and add the seed account
 
 `cd myapp && bundle exec rake db:migrate db:seed`
@@ -210,23 +228,19 @@ are devise, devise-async and pundit.
 
 `bundle exec foreman start`
 
-## Application deployment
-
-This still has yet to be done but it will include a capistrano config setup to use puma so that you can do phased restarts
-with no downtime deploys. It will likely just be a config setup so that everything is hosted on 1 server and you can
-quickly put in your real information at the top of the config to get started.
-
 ## Server provisioning
 
 I really like chef and I think at some point there might be a template which creates an application cookbook which provisions
-every dependency required to setup this stack.
+every dependency required to setup this stack using **ubuntu server 12.04 LTS**.
 
 I don't think it will ever get too advanced because deployment is very specific to each application but it can at least
-dump out a ~100 line cookbook that configures everything to get a server up and running and all you would have to do is
-change the user names and setup an encrypted data bag for passwords.
+dump out a ~200 line cookbook that configures everything to get a server up and running and all you would have to do is
+change a few settings in the chef attributes file and setup an encrypted data bag like usual.
 
-I am not a chef wizard yet but I would love to move away from capistrano and use chef to manage the server and the app. If
-someone wants to write this template then please do so and send me a pull request.
+Right now I have a template in the works that will get you from an empty ubuntu server to a fully working server that
+can do everything but handle deploying your rails application. Normally I use capistrano to deploy my app but I want to
+move away from that and let chef handle it but I do not have the chef chops to do this yet. I will gladly accept any pull
+requests to add this functionality in.
 
 ## What is the easiest way to nuke orats projects?
 
@@ -241,6 +255,52 @@ word `myapp` with your real app name.
 
 That second command will clear out any keys in the redis server that are associated to your application since they are
 all namespaced by your app name as long as you did not change that manually.
+
+## orats thor script
+
+Under the hood `rails new` is using thor to generate everything. To pass a custom template into rails requires an
+annoyingly long command to be typed out or copied from this readme.
+
+This is where we can leverage thor. You already have thor available on your command line if you have rails. However to
+use custom thor scripts you have to install them. It's an extremely painless process and you only have to do it once, or
+whenever there is a new version of the script available.
+
+Here are some benefits of using the orats thor script:
+
+- Your commands will end up looking something like `thor orats:rails:base myapp`.
+- You still get the latest version of each template automatically because it still copies it from this repo.
+- It makes it easy to compose multiple templates when possible because chaining thor tasks is no problem.
+- It is very simple to install, update and uninstall the script.
+
+### Installation instructions
+
+`wget https://raw.github.com/nickjj/orats/master/orats.thor && thor install orats.thor && rm -rf orats.thor`
+
+Then just follow the on-screen instructions supplied by thor.
+
+### Updating to a new version
+
+`wget https://raw.github.com/nickjj/orats/master/orats.thor && thor update orats.thor && rm -rf orats.thor`
+
+Then just follow the on-screen instructions supplied by thor.
+
+### Uninstalling the thor script
+
+`thor uninstall orats`
+
+---
+
+If for some reason you get a permission error when trying to install, update or uninstall the orats thor script then just
+run the `thor` command with sudo privileges. You should not need to do this under normal circumstances.
+
+---
+
+### API
+
+Type `thor orats:rails help` in a terminal to get a list of available rails commands or check out the `orats.thor` file
+in this repo. Don't worry, it won't bite you.
+
+Additional namespaces will appear in the future when the templates become available and they will be listed here.
 
 ## Screencasts
 
