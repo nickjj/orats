@@ -31,7 +31,6 @@ end
 end
 
 app_name_upper = app_name.upcase
-app_name_class = app_name.humanize
 
 # ----- Delete application.css ------------------------------------------------------------------------
 
