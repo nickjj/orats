@@ -859,14 +859,3 @@ end
 
 git add: '.'
 git commit: "-m 'Add pundit logic to the application controller'"
-
-# ----- Installation complete message -----------------------------------------------------------------
-
-puts
-say_status  'action', "\e[1mFinish the installation by running the command below:\e[0m", :cyan
-say_status  'command', "cd #{app_name} && bundle exec rake db:migrate db:seed", :magenta
-
-puts  '', '='*80
-say_status  'action', "\e[1mStart the server by running the command below:\e[0m", :cyan
-say_status  'command', 'bundle exec foreman start', :magenta
-puts  '='*80, ''

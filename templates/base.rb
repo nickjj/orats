@@ -817,18 +817,3 @@ from_repo 'source_files/Gemfile', 'Gemfile'
 
 git add:    '.'
 git commit: "-m 'Add basic gems to the Gemfile'"
-
-# ----- Installation complete message -----------------------------------------------------------------
-
-puts
-say_status  'action', "\e[1mFinish the installation by running the command below:\e[0m", :cyan
-say_status  'command', "cd #{app_name} && bundle install", :magenta
-puts
-say_status  'action', "\e[1mEdit the .env file located in the rails root directory
-                with your details and then run:\e[0m", :cyan
-say_status  'command', 'bundle exec rake db:create:all db:migrate db:test:prepare', :magenta
-
-puts  '', '='*80
-say_status  'action', "\e[1mStart the server by running the command below:\e[0m", :cyan
-say_status  'command', 'bundle exec foreman start', :magenta
-puts  '='*80, ''
