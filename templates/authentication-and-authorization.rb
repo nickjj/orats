@@ -1,13 +1,6 @@
 # =====================================================================================================
 # Template for generating authentication and authorization on top of the base template
 # =====================================================================================================
-#
-# Usage:
-# ------
-#
-#     $ rails new myapp --skip --skip-bundle --template https://raw.github.com/nickjj/orats/master/templates/authentication-and-authorization.rb
-#
-# =====================================================================================================
 
 # ----- Helper functions and variables ----------------------------------------------------------------
 
