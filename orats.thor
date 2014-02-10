@@ -15,22 +15,18 @@ module Orats
     def base(app_name)
       @app_name = app_name
 
-      puts invoked?
-
       run "rails new #{@app_name} --skip-bundle --template https://raw.github.com/nickjj/orats/master/templates/base.rb"
 
-      command_line_tasks do
-        gsub_postgres_info options
-        git_commit 'Change the postgres information'
+      gsub_postgres_info options
+      git_commit 'Change the postgres information'
 
-        bundle_install
-        git_commit 'Add gem lock file'
+      bundle_install
+      git_commit 'Add gem lock file'
 
-        run_rake 'db:create:all db:migrate db:test:prepare'
-        git_commit 'Add the schema.rb file'
+      run_rake 'db:create:all db:migrate db:test:prepare'
+      git_commit 'Add the database schema file'
 
-        start_server unless invoked?
-      end
+      start_server
     end
 
     desc 'auth APP_NAME', 'Create a new rails application with authentication/authorization.'
@@ -41,15 +37,13 @@ module Orats
 
       run "rails new #{@app_name} --skip --skip-bundle --template https://raw.github.com/nickjj/orats/master/templates/authentication-and-authorization.rb"
 
-      command_line_tasks do
-        run_rake 'db:migrate db:seed'
+      run_rake 'db:migrate db:seed'
 
-        start_server
-      end
+      start_server
     end
 
     desc 'nuke APP_NAME', 'Delete an application and optionally its postgres databases and redis namespace.'
-    option :postgres_password, default: ''
+    option :postgres_password, required: false
     option :delete_data, type: :boolean, default: true
     def nuke(app_name)
       @app_name = app_name
@@ -71,17 +65,10 @@ module Orats
       confirmed_to_delete = yes?('Are you sure? (y/N)', :cyan)
 
       if confirmed_to_delete
-        command_line_tasks do
-          if options[:delete_data]
-            run_rake 'db:drop:all'
-            nuke_redis
-          end
-
-          puts
-          say_status  'shell', 'Deleting directory...', :yellow
-          puts        '-'*80, ''; sleep 0.25
-
-          run "rm -rf #{@app_name}"
+        if options[:delete_data]
+          run_rake 'db:drop:all'
+          nuke_redis
+          nuke_directory
         end
       end
     end
@@ -104,30 +91,26 @@ module Orats
         run "cd #{@app_name} && #{command} && cd -"
       end
 
-      def command_line_tasks(&block)
-        yield
+      def log_message(type, message)
+        puts
+        say_status  type, "#{message}...", :yellow
+        puts        '-'*80, ''; sleep 0.25
       end
 
       def run_rake(command)
-        puts
-        say_status  'shell', 'Running rake commands...', :yellow
-        puts        '-'*80, ''; sleep 0.25
+        log_message 'shell', 'Running rake commands'
 
         run_with_cd "bundle exec rake #{command}"
       end
 
       def bundle_install
-        puts
-        say_status  'shell', 'Running bundle install, this may take a while...', :yellow
-        puts        '-'*80, ''; sleep 0.25
+        log_message 'shell', 'Running bundle install, this may take a while'
 
         run "cd #{@app_name} && bundle install && cd -"
       end
 
       def gsub_postgres_info(options)
-        puts
-        say_status  'root', 'Changing the postgres information...', :yellow
-        puts        '-'*80, ''; sleep 0.25
+        log_message 'root', 'Changing the postgres information'
 
         gsub_file "#{@app_name}/.env", ': localhost', ": #{options[:postgres_location]}"
         gsub_file "#{@app_name}/.env", ': postgres', ": #{options[:postgres_username]}"
@@ -135,21 +118,27 @@ module Orats
       end
 
       def nuke_redis
-        puts
-        say_status  'shell', 'Removing redis keys...', :yellow
-        puts        '-'*80, ''; sleep 0.25
+        log_message 'root', 'Removing redis keys'
 
         run "redis-cli KEYS '#{app_name_only}:*' | xargs --delim='\n' redis-cli DEL"
       end
 
-      def start_server
-        puts  '', '='*80
-        say_status  'action', "\e[1mStarting server with the following commands:\e[0m", :cyan
-        say_status  'command', "cd #{app_name}", :magenta
-        say_status  'command', 'bundle exec foreman start', :magenta
-        puts  '='*80, ''
+      def nuke_directory
+        log_message 'root', 'Deleting directory'
 
-        attempt_to_start_server
+        run "rm -rf #{@app_name}"
+      end
+
+      def start_server
+        unless invoked?
+          puts  '', '='*80
+          say_status  'action', "\e[1mStarting server with the following commands:\e[0m", :cyan
+          say_status  'command', "cd #{app_name}", :magenta
+          say_status  'command', 'bundle exec foreman start', :magenta
+          puts  '='*80, ''
+
+          attempt_to_start_server
+        end
       end
 
       def attempt_to_start_server
