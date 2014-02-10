@@ -1,7 +1,7 @@
 ## What is orats and what problem does it solve?
 
 It stands for opinionated rails application templates. This repository has a collection of opinionated templates
-to get you up and going with a modern rails application stack.
+to get you up and going with a modern rails application stack. They are accessed through the [orats gem](#installation).
 
 I noticed I kept making the same changes to every single rails app I made and it actually takes quite a bit of time to
 setup all of this manually each time you make an app.
@@ -17,25 +17,24 @@ are locked using the pessimistic operator `~>` so you can be sure that everythin
 
 ## System dependencies that apply to every template
 
+- [The orats gem](#installation)
+    - To download each rails template and automate running certain tasks.
 - Ruby 2.1.x
     - Yep, you really need Ruby to run Ruby modules.
 - Rails 4.0.x
     - You also need Rails installed so that you can run the project generator.
 - Git
     - The weapon of choice for version control.
-- wget
-    - To download certain files from github when you create a new project.
 - Postgres
     - All of the templates use postgres as a primary persistent database.
 - Redis
     - Used as a sidekiq background worker and as the rails cache back end.
-- [orats thor script](#installing-the-orats-thor-script)
-    - To download each rails template and automate running certain tasks.
 
 ## Contents
 
-- orats thor script
-    - [Installing the orats thor script](#installing-the-orats-thor-script)
+- orats
+    - [Installation](#installation)
+    - [Commands](#commands)
 - Templates
     - [Base](#base-template)
     - [Authentication and authorization](#authentication-and-authorization)
@@ -44,66 +43,30 @@ are locked using the pessimistic operator `~>` so you can be sure that everythin
 - Sections
     - [Expanding beyond the base template](#expanding-beyond-the-base-template)
     - [Production tweaks](#production-tweaks)
-- Screencasts
-    - [An introduction to orats](#an-introduction-to-orats)
-    - [Adding authentication](#adding-authentication)
 
-### Installing the orats thor script
+## orats
 
-Under the hood `rails new` is using thor to generate everything. To pass a custom template into rails requires an
-annoyingly long command to be typed out and certain things cannot be automated.
+### Installation
 
-This is where we can leverage thor. You already have thor available on your command line if you have rails. However to
-use custom thor scripts you have to install them. It's an extremely painless process and you only have to do it once, or
-whenever there is a new version of the script available.
+`gem install orats`
 
-Here are some benefits of using the orats thor script:
 
-- Your commands will end up being very short.
-- You still get the latest version of each template automatically because it still copies it from this repo.
-- It makes it easy to compose multiple templates when possible because chaining thor tasks is no problem.
-- Every step of the way can be automated without any user interactions unless it is absolutely necessary.
-- It is very simple to install, update and uninstall the script.
-
-#### Installation instructions
-
-`wget https://raw.github.com/nickjj/orats/master/orats.thor && thor install orats.thor && rm -rf orats.thor`
-
-Then just follow the on-screen instructions supplied by thor.
-
-#### Updating to a new version
-
-`wget https://raw.github.com/nickjj/orats/master/orats.thor && thor update orats.thor && rm -rf orats.thor`
-
-Then just follow the on-screen instructions supplied by thor.
-
-#### Uninstalling the thor script
-
-`thor uninstall orats.thor`
-
----
-
-If for some reason you get a permission error when trying to install, update or uninstall the orats thor script then just
-run the `thor` command with sudo privileges. You should not need to do this under normal circumstances.
-
----
-
-### API
+### Commands
 
 #### Application tasks
 
 - Create a new rails application using the base template.
-    - `thor orats:app:base <app name> --postgres-password <insert your development postgres db password>`
+    - `orats base <app name> --postgres-password <insert your development postgres db password>`
     - Optionally takes `--postgres-location [localhost]`
     - Optionally takes `--postgres-username [postgres]`
 
 - Create a new rails application with authentication/authorization.
-    - `thor orats:app:auth <app name> --postgres-password <insert your development postgres db password>`
+    - `orats auth <app name> --postgres-password <insert your development postgres db password>`
     - Optionally takes `--postgres-location [localhost]`
     - Optionally takes `--postgres-username [postgres]`
 
 - Delete an application and optionally its postgres databases and redis namespace.
-    - `thor orats:app:nuke <app name>`
+    - `orats nuke <app name>`
     - Optionally takes `--delete-data [true]`
 
 #### Why is it asking me for my development postgres password?
@@ -152,9 +115,9 @@ it includes these features and when I do not want a specific thing it is much qu
 
 Everything has been added with proper git commits so you have a trail of changes.
 
-### Installation instructions
+### Try it
 
-`thor orats:app:base myapp --postgres-password <insert your development postgres db password>`
+`orats base myapp --postgres-password <development postgres db password>`
 
 ### All I see is the default rails page
 
@@ -188,18 +151,6 @@ default magic value that works for everyone.
 You should set the pool size to be the maximum between your puma max threads and sidekiq concurrency value but it does not
 have to be exact. Feel free to experiment.
 
-## Expanding beyond the base template
-
-**Every other template will require you to have an unmodified base template already generated.** Thor was used to create the
-template files and you can go only so far with injecting text at specific regex patterns.
-
-All of the non-base templates will also run `bundle install` automatically because they will be using generators which
-require certain gems to be installed. This comes at a pretty high cost though because some people use gemsets while others
-do not. Some people use rbenv while others use rvm or something else.
-
-The templates all assume you are using bundler to handle gem separation without gemsets. If you want to send pull requests
-which create an rvm/gemset version of each template I will gladly accept it as long as it's a separate template file.
-
 ## Authentication and authorization
 
 Authentication is extremely common but the use cases of authentication vary by a lot. You might want 3 user profile
@@ -229,9 +180,9 @@ The authentication template was designed just to give you enough to get the ball
 You can disable users from registering by taking a look at `config/routes.rb` and inspecting the comments near the top.
 I feel like this is the cleanest way to disable registrations while still allowing users to edit and/or delete their account.
 
-### Installation instructions
+### Try it
 
-`thor orats:app:auth myapp --postgres-password <insert your development postgres db password>`
+`orats auth myapp --postgres-password <development postgres db password>`
 
 ## Server provisioning
 
@@ -246,17 +197,3 @@ Right now I have a template in the works that will get you from an empty ubuntu 
 can do everything but handle deploying your rails application. Normally I use capistrano to deploy my app but I want to
 move away from that and let chef handle it but I do not have the chef chops to do this yet. I will gladly accept any pull
 requests to add this functionality in.
-
-## Screencasts
-
-#### [An introduction to orats](https://www.youtube.com/watch?v=6iveCNxwVp4)
-
-*Installation instructions are deprecated, make sure to check out [installing the orats thor script](#installing-the-orats-thor-script).*
-
-A short introduction explaining what orats is about and how to setup a basic project using the base template.
-
-#### [Adding authentication](https://www.youtube.com/watch?v=QAq9FqqvFTc)
-
-*Installation instructions are deprecated, make sure to check out [installing the orats thor script](#installing-the-orats-thor-script).*
-
-A brief video explaining how to add authentication to your project using the authentication and authorization template.

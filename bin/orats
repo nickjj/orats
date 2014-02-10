@@ -1,0 +1,17 @@
+#!/usr/bin/env ruby
+
+# inject ../../lib into the $LOAD_PATH, this is useful because
+# when developing locally on a gem the require paths will be
+# different because the lib directory is not on the $LOAD_PATH
+
+# since git directories are not included in gem releases we can
+# determine if the gem is being actively developed by searching
+# for a git repo
+git_path = File.expand_path('../../.git', __FILE__)
+
+if File.exist?(git_path)
+  $:.unshift(File.expand_path('../../lib', __FILE__))
+end
+
+require 'orats/cli'
+Orats::Orats.start(ARGV)
