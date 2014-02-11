@@ -54,7 +54,7 @@ module Orats
 
       puts
       say_status  'nuke', "\e[1mYou are about to permanently delete this directory:\e[0m", :red
-      say_status  'path', "#{File.expand_path(app_name)}", :yellow
+      say_status  'path', "#{File.expand_path(@app_name)}", :yellow
 
       if options[:delete_data]
         puts
@@ -72,8 +72,9 @@ module Orats
         if options[:delete_data]
           run_rake 'db:drop:all'
           nuke_redis
-          nuke_directory
         end
+
+        nuke_directory
       end
     end
 
