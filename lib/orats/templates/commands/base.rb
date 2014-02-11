@@ -10,20 +10,17 @@ def generate_token
   SecureRandom.hex(64)
 end
 
-def from_repo(source, destination = nil)
-  repo_url = 'https://raw.github.com/nickjj/orats/master'
-
+def from_gem(source, destination = nil)
+  base_path = "#{File.expand_path File.dirname(__FILE__)}/../includes"
   file_name = source.split('/').last
-
-  run "wget #{repo_url}/#{source}"
 
   if destination.present? && file_name != destination
     if destination.include? '/'
       run "mkdir -p #{destination}"
     end
-
-    run "mv #{file_name} #{destination}"
   end
+
+  run "cp #{base_path}/#{file_name} #{destination}"
 end
 
 app_name_upper = app_name.upcase
@@ -806,7 +803,7 @@ say_status  'root', 'Copying Gemfile...', :yellow
 puts        '-'*80, ''; sleep 0.25
 
 run 'rm -f Gemfile'
-from_repo 'source_files/Gemfile', 'Gemfile'
+from_gem 'Gemfile', 'Gemfile'
 
 git add:    '.'
 git commit: "-m 'Add basic gems to the Gemfile'"
