@@ -77,8 +77,6 @@ In order to automate certain tasks such as running database migrations the scrip
 It cannot talk to your database without knowing the location, username and password for postgres. In most cases the
 location will be `localhost` and the username will be `postgres` so these values are provided by default.
 
-If you are curious about the implementation details feel free to [take a look](https://github.com/nickjj/orats/blob/master/orats.thor#L127).
-
 ## Base template
 
 This is the starter template that every other template will append to. I feel like when I make a new project, 95% of the time
