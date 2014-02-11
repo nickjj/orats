@@ -18,7 +18,7 @@ module Orats
     def base(app_name)
       @app_name = app_name
 
-      run "rails new #{@app_name} --skip-bundle --template https://raw.github.com/nickjj/orats/master/templates/base.rb"
+      run "rails new #{@app_name} --skip-bundle --template #{File.expand_path File.dirname(__FILE__)}/templates/commands/base.rb"
 
       gsub_postgres_info options
       git_commit 'Change the postgres information'
@@ -39,7 +39,7 @@ module Orats
 
       invoke :base
 
-      run "rails new #{@app_name} --skip --skip-bundle --template https://raw.github.com/nickjj/orats/master/templates/authentication-and-authorization.rb"
+      run "rails new #{@app_name} --skip --skip-bundle --template #{File.expand_path File.dirname(__FILE__)}/templates/commands/auth.rb"
 
       run_rake 'db:migrate db:seed'
 
