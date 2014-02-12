@@ -92,7 +92,7 @@ module Orats
                        'Are you sure you have rails setup correctly?',
                        'You can install it by running `gem install rails`' if has_rails.empty?
 
-      exit 1
+      exit 1 if has_rails.empty?
     end
 
     def dependency_error(message, question, answer)
