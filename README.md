@@ -71,7 +71,7 @@ are locked using the pessimistic operator `~>` so you can be sure that everythin
 
 #### Why is it asking me for my development postgres password?
 
-The password is it asking for is only for your development database. It will **never** ask for your production passwords.
+The password it is asking for is only for your development database. It will **never** ask for your production passwords.
 
 In order to automate certain tasks such as running database migrations the script must be able to talk to your database.
 It cannot talk to your database without knowing the location, username and password for postgres. In most cases the
