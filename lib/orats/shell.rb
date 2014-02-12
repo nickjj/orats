@@ -69,7 +69,7 @@ module Orats
     def can_cook?
       log_message 'shell', 'Checking for the cookbook system dependencies'
 
-      has_knife = run('which knife2', capture: true)
+      has_knife = run('which knife', capture: true)
       has_berks = run('which berks', capture: true)
 
       dependency_error 'Cannot access knife',
@@ -86,7 +86,7 @@ module Orats
     def exit_if_cannot_rails
       log_message 'shell', 'Checking for rails'
 
-      has_rails = run('which rails2', capture: true)
+      has_rails = run('which rails', capture: true)
 
       dependency_error 'Cannot access rails',
                        'Are you sure you have rails setup correctly?',
