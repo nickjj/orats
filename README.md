@@ -84,7 +84,7 @@ running `orats <command name> help` from your terminal. You can also type `orats
 
 - Delete the directory and optionally all data associated to it
     - `orats nuke <APP_PATH>`
-    - Optionally takes `--skip-data [false]`
+    - Optionally takes: `--skip-data [false]`
 
 #### Why is it asking me for my development postgres password?
 
