@@ -6,7 +6,7 @@ module Orats
     def foreman_start
       puts  '', '='*80
       say_status  'action', "\e[1mStarting server with the following commands:\e[0m", :cyan
-      say_status  'command', "cd #{@app_name}", :magenta
+      say_status  'command', "cd #{@active_path}", :magenta
       say_status  'command', 'bundle exec foreman start', :magenta
       puts  '='*80, ''
 
@@ -25,7 +25,8 @@ module Orats
         end
 
         puts
-        run_with_cd 'bundle exec foreman start'
+
+        run_from @active_path, 'bundle exec foreman start'
       end
 
       def port_taken?

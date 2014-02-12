@@ -11,7 +11,7 @@ def generate_token
 end
 
 def from_gem(source, destination = nil)
-  base_path = "#{File.expand_path File.dirname(__FILE__)}/../includes"
+  base_path = "#{File.expand_path File.dirname(__FILE__)}/includes"
   file_name = source.split('/').last
 
   if destination.present? && file_name != destination

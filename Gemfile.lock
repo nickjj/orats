@@ -1,13 +1,13 @@
 PATH
   remote: .
   specs:
-    orats (0.2.0)
+    orats (0.3.0)
       thor (~> 0)
 
 GEM
   remote: https://rubygems.org/
   specs:
-    rake (10.1.1)
+    rake (0.9.6)
     thor (0.18.1)
 
 PLATFORMS
@@ -16,4 +16,4 @@ PLATFORMS
 DEPENDENCIES
   bundler (~> 1.5)
   orats!
-  rake
+  rake (~> 0)

@@ -1,12 +1,10 @@
 ## What is orats and what problem does it solve?
 
-It stands for opinionated rails application templates. This repository has a collection of opinionated templates
-to get you up and going with a modern rails application stack. They are accessed through the [orats gem](#installation).
+It stands for opinionated rails application templates. The templates include solving tedious tasks that you would do for most
+projects. It handles creating a rails application with a bunch of opinions and optionally a chef cookbook so you can deploy
+your app quickly.
 
-I noticed I kept making the same changes to every single rails app I made and it actually takes quite a bit of time to
-setup all of this manually each time you make an app.
-
-It is clearly a problem that can be automated so I sat down and started to create a few templates to do just that.
+Everything is accessed through the [orats gem](#installation).
 
 ## What version of Rails and Ruby are you targeting?
 
@@ -15,14 +13,14 @@ It is clearly a problem that can be automated so I sat down and started to creat
 I will be updating them as new versions come out and when the gems used are proven to work. All important gems in the Gemfile
 are locked using the pessimistic operator `~>` so you can be sure that everything plays nice as long as rubygems.org is up!
 
-## System dependencies that apply to every template
+## System dependencies that you must have on your dev box
 
 - [The orats gem](#installation)
     - To download each rails template and automate running certain tasks.
 - Ruby 2.1.x
     - Yep, you really need Ruby to run Ruby modules.
 - Rails 4.0.x
-    - You also need Rails installed so that you can run the project generator.
+    - You need Rails installed so that you can run the project generator.
 - Git
     - The weapon of choice for version control.
 - Postgres
@@ -30,19 +28,34 @@ are locked using the pessimistic operator `~>` so you can be sure that everythin
 - Redis
     - Used as a sidekiq background worker and as the rails cache back end.
 
+### Additional system dependencies for creating cookbooks
+
+`orats` is smart enough to skip trying to create a cookbook if it cannot find the necessary dependencies to successfully
+create the cookbook, but to successfully create a cookbook you must fulfil the requirements below:
+
+- Chef is installed and setup in such a way that `knife` is on your system path.
+- Berkshelf has been gem installed and you can run `berks` from anywhere.
+
+Not sure what chef or berkshelf is? No problem, learn about chef from these resources:
+
+- [Learn chef course](https://learnchef.opscode.com/)
+- [Berkshelf readme](http://www.berkshelf.com/)
+- [Berkshelf tutorial series](http://misheska.com/blog/2013/06/16/getting-started-writing-chef-cookbooks-the-berkshelf-way/)
+
 ## Contents
 
 - orats
     - [Installation](#installation)
     - [Commands](#commands)
 - Templates
-    - [Base](#base-template)
+    - [Base](#base)
     - [Authentication and authorization](#authentication-and-authorization)
-    - [Application deployment](#application-deployment)
-    - [Server provisioning](#server-provisioning)
+    - [Cookbook](#cookbook)
+        - [Overview](#the-cookbook-comes-with-the-following-features)
 - Sections
-    - [Expanding beyond the base template](#expanding-beyond-the-base-template)
     - [Production tweaks](#production-tweaks)
+- Wikis
+    - [Chef walk through](https://github.com/nickjj/orats/wiki/Chef-walk-through)
 
 ## orats
 
@@ -50,34 +63,38 @@ are locked using the pessimistic operator `~>` so you can be sure that everythin
 
 `gem install orats`
 
-
 ### Commands
 
-#### Application tasks
+Here is an overview of the available commands. You can find out more information about each command and flag by simply
+running `orats <command name> help` from your terminal. You can also type `orats` on its own to see a list of all commands.
 
-- Create a new rails application using the base template.
-    - `orats base <app name> --postgres-password <insert your development postgres db password>`
-    - Optionally takes `--postgres-location [localhost]`
-    - Optionally takes `--postgres-username [postgres]`
+- Create a new orats project
+    - `orats new <APP_PATH> --pg-password <development postgres db password>`
+    - Configuration:
+        - Optionally takes: `--pg-location [localhost]`
+        - Optionally takes: `--pg-username [postgres]`
+    - Template features:
+        - Optionally takes: `--auth [false]`
+    - Project features:
+        - Optionally takes: `--skip-cook [false]`
+        - Optionally takes: `--skip-extras [false]`
 
-- Create a new rails application with authentication/authorization.
-    - `orats auth <app name> --postgres-password <insert your development postgres db password>`
-    - Optionally takes `--postgres-location [localhost]`
-    - Optionally takes `--postgres-username [postgres]`
+- Create a stand alone chef cookbook
+    - `orats cook <APP_PATH>`
 
-- Delete an application and optionally its postgres databases and redis namespace.
-    - `orats nuke <app name>`
-    - Optionally takes `--delete-data [true]`
+- Delete the directory and optionally all data associated to it
+    - `orats nuke <APP_PATH>`
+    - Optionally takes `--skip-data [false]`
 
 #### Why is it asking me for my development postgres password?
-
-The password is it asking for is only for your development database. It will **never** ask for your production passwords.
 
 In order to automate certain tasks such as running database migrations the script must be able to talk to your database.
 It cannot talk to your database without knowing the location, username and password for postgres. In most cases the
 location will be `localhost` and the username will be `postgres` so these values are provided by default.
 
-## Base template
+Remember, this is only your development postgres password. It will **never** ask for your production passwords.
+
+## Base
 
 This is the starter template that every other template will append to. I feel like when I make a new project, 95% of the time
 it includes these features and when I do not want a specific thing it is much quicker to remove it than add it.
@@ -115,7 +132,20 @@ Everything has been added with proper git commits so you have a trail of changes
 
 ### Try it
 
-`orats base myapp --postgres-password <development postgres db password>`
+`orats new myapp --pg-password <development postgres db password> -C`
+
+*We are running the command with `-C` to ignore creating a cookbook so the installation is faster.*
+
+#### What's with the services directory?
+
+It is just a naming convention that I like to apply, you can name it whatever you want later or remove it with a flag. My thought
+process was you might have multiple services which when put together create your web application. In many cases your web
+application might just be a single rails app, but maybe not.
+
+What if you introduced a Go service to do something which your rails application talks to for a certain area of your site?
+Perhaps you have 2 rails applications too. One of them for your admin app and the other for the public facing app.
+
+Long story short the extra directory is probably worth it in the long run and it's simple to remove if you don't like it.
 
 ### All I see is the default rails page
 
@@ -180,18 +210,125 @@ I feel like this is the cleanest way to disable registrations while still allowi
 
 ### Try it
 
-`orats auth myapp --postgres-password <development postgres db password>`
+`orats new myauthapp --pg-password <development postgres db password> --auth -C`
 
-## Server provisioning
+*We are running the command with `-C` to ignore creating a cookbook so the installation is faster.*
 
-I really like chef and I think at some point there might be a template which creates an application cookbook which provisions
-every dependency required to setup this stack using **ubuntu server 12.04 LTS**.
+## Cookbook
 
-I don't think it will ever get too advanced because deployment is very specific to each application but it can at least
-dump out a ~200 line cookbook that configures everything to get a server up and running and all you would have to do is
-change a few settings in the chef attributes file and setup an encrypted data bag like usual.
+Building your application is only one piece of the puzzle. If you want to ship your application you have to host it somewhere.
+You have a few options when it comes to managed hosts like Heroku but they tend to be very expensive if you fall out of
+their free tier.
 
-Right now I have a template in the works that will get you from an empty ubuntu server to a fully working server that
-can do everything but handle deploying your rails application. Normally I use capistrano to deploy my app but I want to
-move away from that and let chef handle it but I do not have the chef chops to do this yet. I will gladly accept any pull
-requests to add this functionality in.
+The cookbook template creates a chef cookbook that will provision a **ubuntu 12.04 LTS server**. It can be hosted anywhere
+as there are no hard requirements on any specific host. Chef is a server management framework. This template uses the
+application cookbook pattern and depends on Berkshelf. Berkshelf is very similar to bundler but for chef cookbooks.
+
+### The cookbook comes with the following features
+
+- Security
+    - A random username is generated each time you generate a new cookbook.
+    - A random ssh port is generated each time you generate a new cookbook.
+    - Logging into the server is only possible with an SSH key.
+    - fail2ban is setup.
+    - ufw (firewall) is setup to block any ports not exposed.
+    - All stack specific processes are running with less privileges than root.
+- Stack specific processes that are installed and configured
+    - Nginx
+    - Postgres
+    - Redis
+- Runtimes
+    - Ruby 2.1.0 managed via rvm
+    - Nodejs 0.10.x
+- Utils and features
+    - htop for emergency live monitoring
+    - logrotate with log rotation setup for anything that needs it.
+    - git
+    - A git repo in the deploy user's home directory which you can push to.
+
+### Cookbook structure
+
+It is broken up into 5 recipes:
+
+- Base
+- Database
+- Cache
+- Web
+- Default
+
+With the application style cookbook pattern it is a good idea to only run one recipe on your node. The default recipe
+just composes the other 4 together. This makes it trivial to break out past one node in the future. If you wanted to
+put your web server on server A and the database/cache servers on server B all you would have to do is create a new recipe
+called something like `database_cache` (the name is arbitrary) and pull in both the database and cache recipes.
+
+Then when you bootstrap the node you can tell it to use the new `database_cache` recipe. Awesome right? Yeah I know, chef rocks.
+
+### Try it
+
+`orats new mychefapp --pg-password <development postgres db password>`
+
+#### Why is the cookbooks directory plural?
+
+It is not uncommon for some projects to have multiple cookbooks. Of course that is completely out of scope for orats but
+at least it generates a directory structure capable of sustaining multiple cookbooks.
+
+### Tweakable attributes and meta data
+
+You can quickly tweak a bunch of values by investigating the `attributes/default.rb` file. The values here are used in each
+recipe. They are also namespaced to match the recipe file that uses them.
+
+It is important that you change all of these values to match your setup. The only non-obvious one might be the SSH key. You
+should use the key inside of your `.ssh/id_rsa.pub` file. It is the key that ends with your work station's username@hostname. Make
+sure you do not include the trailing line break too.
+
+You should also edit the details in the `metadata.rb` file.
+
+### Encrypted values
+
+Chef has this notion of encrypted data bags. They are used to protect sensitive information like passwords or secret tokens.
+You can check out the `data_bags/<app_name>_secrets/production.json` file to know which fields you need to fill out later.
+
+Please keep in mind that you should never input your real passwords/etc. in this file, it is only here to remind you which
+settings are in your bag. This file is checked into version control. We will cover setting up the data bag with your real
+information in [chef walk through on the wiki](https://github.com/nickjj/orats/wiki/Chef-walk-through).
+
+### Workflow for customizing the cookbook
+
+This cookbook is designed to be a generic base to get you started. It is highly encouraged to change the cookbook to suite your
+exact needs. A typical workflow for making changes to the cookbook is this:
+
+- Edit any files that you want to change.
+- Bump the version in the `metadata.rb` file. *Never forget to do this step!*
+- Run `berks upload` which sends the cookbooks up to your hosted chef server.
+
+If you need to add new cookbooks then add them to `metadata.rb` and run `berks install`. If you need to pull in a cookbook
+from a git repo or your local file system then put them in your `Berksfile` and also place them in `metadata.rb`. Check the
+berkshelf documentation for more details.
+
+#### Applying the cookbook changes on your server
+
+This step is highly dependent but you have a few options. The first option is to ssh into your node and run `sudo chef-client`.
+Replace ssh with capistrano if you want but the idea is the same. You would be manually invoking the `chef-client` command
+which tells your node to contact the hosted chef server and pull in the changes.
+
+The second option would be to setup a cronjob to run `chef-client` automatically at whatever interval you want. By default
+I did not include this because by default chef does not do this.
+
+Chef is idempotent so it will not re-run tasks that result in nothing changing so feel free to make changes whenever you
+see fit.
+
+### The server is up but how do I deploy my application?
+
+This is another area where there are many options. You could use capistrano but you could also have chef manage the application
+deployment too. I have a few old capistrano 2.x scripts that work fine and I really do not have any intentions of porting
+them over to capistrano 3 scripts so they can be included as an orats template because I do not want to use capistrano anymore.
+
+I'm calling out to the community for help. Can a chef expert please leverage the `deploy` or `application` resources
+and provide us with a well documented solution to deploy a rails application with chef? Complete with runit scripts for
+ensuring puma and sidekiq are always running of course.
+
+### Walk through
+
+If you have very little chef experience and want to go through the steps of creating a new orats project with a cookbook,
+pushing it to a free managed chef server solution and bootstrapping a server on a local virtual machine then check out the
+[chef walk through on the wiki](https://github.com/nickjj/orats/wiki/Chef-walk-through).

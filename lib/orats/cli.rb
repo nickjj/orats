@@ -8,68 +8,109 @@ module Orats
     include Shell
     include Server
 
-    attr_accessor :app_name, :app_name_only
+    attr_accessor :active_path, :active_project
 
-    class_option :postgres_location, default: 'localhost'
-    class_option :postgres_username, default: 'postgres'
+    option :pg_location, default: 'localhost'
+    option :pg_username, default: 'postgres'
+    option :pg_password, required: true
+    option :auth, type: :boolean, default: false, aliases: '-a'
+    option :skip_cook, type: :boolean, default: false, aliases: '-C'
+    option :skip_extras, type: :boolean, default: false, aliases: '-E'
+    desc 'new APP_PATH [options]', ''
+    long_desc <<-LONGDESC
+      `orats new myapp --pg-password supersecret` will create a new orats project and it will also create a chef cookbook to go with it by default.
 
-    option :postgres_password, required: true
-    desc 'base APP_NAME', 'Create a new rails application using the base template.'
-    def base(app_name)
-      @app_name = app_name
+      You must supply at least this flag:
 
-      run "rails new #{@app_name} --skip-bundle --template #{File.expand_path File.dirname(__FILE__)}/templates/commands/base.rb"
+      `--pg-password` to supply your development postgres password so the rails application can run database migrations
 
-      gsub_postgres_info options
-      git_commit 'Change the postgres information'
+      Configuration:
 
-      bundle_install
-      git_commit 'Add gem lock file'
+      `--pg-location` to supply a custom postgres location [localhost]
 
-      run_rake 'db:create:all db:migrate db:test:prepare'
-      git_commit 'Add the database schema file'
+      `--pg-username` to supply a custom postgres username [postgres]
 
+      Template features:
+
+      `--auth` will include authentication and authorization [false]
+
+      Project features:
+
+      `--skip-cook` skip creating the cookbook [false]
+
+      `--skip-extras` skip creating the services directory and cookbook [false]
+  LONGDESC
+    def new(app_name)
+      @options = options
+      @active_path = app_name
+
+      @active_path = services_path(app_name)
+      rails_template 'base' do
+        gsub_postgres_info
+
+        bundle_install
+        git_commit 'Change the postgres information'
+        git_commit 'Add gem lock file'
+
+        run_rake 'db:create:all db:migrate db:test:prepare'
+        git_commit 'Add the database schema file'
+      end
+
+      if options[:auth]
+        rails_template 'auth', '--skip ' do
+          run_rake 'db:migrate db:seed'
+        end
+      end
+
+      unless options[:skip_cook] || options[:skip_extras]
+        cook_app cookbooks_path(app_name)
+      end
+
+      @active_path = services_path(app_name)
       foreman_start unless invoked?
     end
 
-    option :postgres_password, required: true
-    desc 'auth APP_NAME', 'Create a new rails application with authentication/authorization.'
-    def auth(app_name)
-      @app_name = app_name
+    desc 'cook APP_PATH', ''
+    long_desc <<-LONGDESC
+      `orats cook myapp` will create a stand alone cookbook.
+    LONGDESC
+    def cook(app_name)
+      @options = options
+      @active_path = app_name
 
-      invoke :base
-
-      run "rails new #{@app_name} --skip --skip-bundle --template #{File.expand_path File.dirname(__FILE__)}/templates/commands/auth.rb"
-
-      run_rake 'db:migrate db:seed'
-
-      foreman_start unless invoked?
+      cook_app app_name
     end
 
-    desc 'nuke APP_NAME', 'Delete an application and optionally its postgres databases and redis namespace.'
-    option :postgres_password, required: false
-    option :delete_data, type: :boolean, default: true
+    option :skip_data, type: :boolean, default: false, aliases: '-S'
+    desc 'nuke APP_PATH [options]', ''
+    long_desc <<-LONGDESC
+      `orats nuke myapp` will delete the directory and optionally all data associated to it.
+
+      Options:
+
+      `--skip-data` will skip deleting app specific postgres databases and redis namespaces [false]
+    LONGDESC
     def nuke(app_name)
-      @app_name = app_name
+      @active_path = app_name
 
       puts
       say_status  'nuke', "\e[1mYou are about to permanently delete this directory:\e[0m", :red
-      say_status  'path', "#{File.expand_path(@app_name)}", :yellow
+      say_status  'path', "#{File.expand_path(@active_path)}", :yellow
 
-      if options[:delete_data]
+      unless options[:skip_data]
         puts
         say_status  'nuke', "\e[1mYou are about to permanently delete these postgres databases:\e[0m", :red
-        say_status  'databases', "#{app_name_only} and #{app_name_only}_test", :yellow
+        say_status  'databases', "#{active_project} and #{active_project}_test", :yellow
         puts
         say_status  'nuke', "\e[1mYou are about to permanently delete this redis namespace:\e[0m", :red
-        say_status  'namespace', app_name_only, :yellow
+        say_status  'namespace', active_project, :yellow
       end
       puts
 
       confirmed_to_delete = yes?('Are you sure? (y/N)', :cyan)
 
       if confirmed_to_delete
-        if options[:delete_data]
+        unless options[:skip_data]
           run_rake 'db:drop:all'
           nuke_redis
         end
@@ -79,8 +120,16 @@ module Orats
     end
 
     private
-      def app_name_only
-        @app_name.split('/').last
+      def active_project
+        @active_path.split('/').last
+      end
+
+      def services_path(app_name)
+        options[:skip_extras] ?  app_name : "#{app_name}/services/#{active_project}"
+      end
+
+      def cookbooks_path(app_name)
+        "#{app_name}/cookbooks/#{active_project}"
       end
 
       def invoked?
