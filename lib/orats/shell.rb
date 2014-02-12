@@ -66,30 +66,33 @@ module Orats
       end
     end
 
-    def exit_if_cannot_cook
+    def can_cook?
       log_message 'shell', 'Checking for the cookbook system dependencies'
 
-      has_knife = run('which knife', capture: true)
+      has_knife = run('which knife2', capture: true)
       has_berks = run('which berks', capture: true)
 
       dependency_error 'Cannot access knife',
                        'Are you sure you have chef setup correctly?',
                        'http://www.getchef.com/chef/install/`' if has_knife.empty?
 
-
       dependency_error 'Cannot access berkshelf',
                        'Are you sure you have berkshelf installed correctly?',
                        'You can install it by running `gem install berkshelf`' if has_berks.empty?
+
+      !has_knife.empty? && !has_berks.empty?
     end
 
     def exit_if_cannot_rails
       log_message 'shell', 'Checking for rails'
 
-      has_rails = run('which rails', capture: true)
+      has_rails = run('which rails2', capture: true)
 
       dependency_error 'Cannot access rails',
                        'Are you sure you have rails setup correctly?',
                        'You can install it by running `gem install rails`' if has_rails.empty?
+
+      exit 1
     end
 
     def dependency_error(message, question, answer)
@@ -99,8 +102,6 @@ module Orats
       say_status  'answer', answer, :cyan
       puts        '-'*80
       puts
-
-      exit 1
     end
 
     def rails_template(command, flags = '', &block)
@@ -112,7 +113,7 @@ module Orats
     end
 
     def cook_app(app_path)
-      exit_if_cannot_cook
+      return unless can_cook?
 
       @active_path = app_path
       rails_template 'cook'
