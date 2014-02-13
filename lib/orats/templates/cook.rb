@@ -424,11 +424,13 @@ node.override[:firewall][:rules] = [
 include_recipe 'ufw'
 
 # swapfile
+
 swap_file '/mnt/swap' do
   size node[:app_name][:base][:swap_size]
 end
 
 # htop
+
 package 'htop'
 CODE
 end
