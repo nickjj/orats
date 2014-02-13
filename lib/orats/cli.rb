@@ -1,6 +1,7 @@
 require 'thor'
 require 'orats/shell'
 require 'orats/server'
+require 'orats/version'
 
 module Orats
   class CLI < Thor
@@ -119,7 +120,17 @@ module Orats
       end
     end
 
+    desc 'version', ''
+    long_desc <<-LONGDESC
+      `orats version` will print the current version.
+    LONGDESC
+    def version
+      puts "Orats version #{VERSION}"
+    end
+    map %w(-v --version) => :version
+
     private
+
       def active_project
         @active_path.split('/').last
       end
