@@ -82,7 +82,7 @@ module Orats
       cook_app app_name
     end
 
-    option :skip_data, type: :boolean, default: false, aliases: '-S'
+    option :skip_data, type: :boolean, default: false, aliases: '-D'
     desc 'nuke APP_PATH [options]', ''
     long_desc <<-LONGDESC
       `orats nuke myapp` will delete the directory and optionally all data associated to it.
