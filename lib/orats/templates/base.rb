@@ -328,12 +328,17 @@ say_status  'config', 'Modifying the initializer files...', :yellow
 puts        '-'*80, ''; sleep 0.25
 
 file 'config/initializers/sidekiq.rb', <<-'CODE'
+sidekiq_config = {
+  url: "redis://#{ENV['app_name_CACHE_HOST']}:#{ENV['app_name_CACHE_PORT']}/#{ENV['app_name_CACHE_DATABASE']}",
+  namespace: "ns_app::sidekiq_#{Rails.env}"
+}
+
 Sidekiq.configure_server do |config|
-  config.redis = { url: "redis://#{ENV['app_name_CACHE_HOST']}:#{ENV['app_name_CACHE_PORT']}/#{ENV['app_name_CACHE_DATABASE']}", namespace: "ns_app::sidekiq_#{Rails.env}" }
+  config.redis = sidekiq_config
 end
 
 Sidekiq.configure_client do |config|
-  config.redis = { url: "redis://#{ENV['app_name_CACHE_HOST']}:#{ENV['app_name_CACHE_PORT']}/#{ENV['app_name_CACHE_DATABASE']}", namespace: "ns_app::sidekiq_#{Rails.env}" }
+  config.redis = sidekiq_config
 end
 CODE
 
