@@ -277,45 +277,15 @@ at least it generates a directory structure capable of sustaining multiple cookb
 You can quickly tweak a bunch of values by investigating the `attributes/default.rb` file. The values here are used in each
 recipe. They are also namespaced to match the recipe file that uses them.
 
-It is important that you change all of these values to match your setup. The only non-obvious one might be the SSH key. You
-should use the key inside of your `.ssh/id_rsa.pub` file. It is the key that ends with your work station's username@hostname. Make
-sure you do not include the trailing line break too.
+#### Are you experienced with chef?
 
-You should also edit the details in the `metadata.rb` file.
+Nice, then you should know what to do from this point. Setup your encrypted data bag and bootstrap the node.
 
-### Encrypted values
+#### Do you need a full blown walk through?
 
-Chef has this notion of encrypted data bags. They are used to protect sensitive information like passwords or secret tokens.
-You can check out the `data_bags/<app_name>_secrets/production.json` file to know which fields you need to fill out later.
-
-Please keep in mind that you should never input your real passwords/etc. in this file, it is only here to remind you which
-settings are in your bag. This file is checked into version control. We will cover setting up the data bag with your real
-information in [chef walk through on the wiki](https://github.com/nickjj/orats/wiki/Chef-walk-through).
-
-### Workflow for customizing the cookbook
-
-This cookbook is designed to be a generic base to get you started. It is highly encouraged to change the cookbook to suite your
-exact needs. A typical workflow for making changes to the cookbook is this:
-
-- Edit any files that you want to change.
-- Bump the version in the `metadata.rb` file. *Never forget to do this step!*
-- Run `berks upload` which sends the cookbooks up to your hosted chef server.
-
-If you need to add new cookbooks then add them to `metadata.rb` and run `berks install`. If you need to pull in a cookbook
-from a git repo or your local file system then put them in your `Berksfile` and also place them in `metadata.rb`. Check the
-berkshelf documentation for more details.
-
-#### Applying the cookbook changes on your server
-
-This step is highly dependent but you have a few options. The first option is to ssh into your node and run `sudo chef-client`.
-Replace ssh with capistrano if you want but the idea is the same. You would be manually invoking the `chef-client` command
-which tells your node to contact the hosted chef server and pull in the changes.
-
-The second option would be to setup a cronjob to run `chef-client` automatically at whatever interval you want. By default
-I did not include this because by default chef does not do this.
-
-Chef is idempotent so it will not re-run tasks that result in nothing changing so feel free to make changes whenever you
-see fit.
+If you have very little chef experience and want to go through the steps of creating a new orats project with a cookbook,
+pushing it to a free managed chef server solution and bootstrapping a node then check out the
+[chef walk through on the wiki](https://github.com/nickjj/orats/wiki/Chef-walk-through).
 
 ### The server is up but how do I deploy my application?
 
@@ -326,9 +296,3 @@ them over to capistrano 3 scripts so they can be included as an orats template b
 I'm calling out to the community for help. Can a chef expert please leverage the `deploy` or `application` resources
 and provide us with a well documented solution to deploy a rails application with chef? Complete with runit scripts for
 ensuring puma and sidekiq are always running of course.
-
-### Walk through
-
-If you have very little chef experience and want to go through the steps of creating a new orats project with a cookbook,
-pushing it to a free managed chef server solution and bootstrapping a server on a local virtual machine then check out the
-[chef walk through on the wiki](https://github.com/nickjj/orats/wiki/Chef-walk-through).
