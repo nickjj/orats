@@ -14,4 +14,4 @@ if File.exist?(git_path)
 end
 
 require 'orats/cli'
-Orats::Orats.start(ARGV)
+Orats::CLI.start(ARGV)

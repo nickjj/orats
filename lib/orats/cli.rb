@@ -3,7 +3,7 @@ require 'orats/shell'
 require 'orats/server'
 
 module Orats
-  class Orats < Thor
+  class CLI < Thor
     include Thor::Actions
     include Shell
     include Server
