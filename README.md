@@ -78,6 +78,7 @@ running `orats <command name> help` from your terminal. You can also type `orats
     - Project features:
         - Optionally takes: `--skip-cook [false]`
         - Optionally takes: `--skip-extras [false]`
+        - Optionally takes: `--skip-foreman-start [false]`
 
 - Create a stand alone chef cookbook
     - `orats cook <APP_PATH>`
