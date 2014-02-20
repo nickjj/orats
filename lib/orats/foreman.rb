@@ -2,15 +2,18 @@ require 'socket'
 require 'timeout'
 
 module Orats
-  module Server
-    def foreman_start
+  module Foreman
+    def foreman_init
+
+      @options[:skip_foreman_start] ? message = 'Start your' : message = 'Starting'
+
       puts  '', '='*80
-      say_status  'action', "\e[1mStarting server with the following commands:\e[0m", :cyan
+      say_status  'action', "\e[1m#{message} server with the following commands:\e[0m", :cyan
       say_status  'command', "cd #{@active_path}", :magenta
       say_status  'command', 'bundle exec foreman start', :magenta
       puts  '='*80, ''
 
-      attempt_to_start
+      attempt_to_start unless @options[:skip_foreman_start]
     end
 
     private
