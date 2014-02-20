@@ -125,9 +125,6 @@ class TestCLI < Minitest::Unit::TestCase
       puma = pid_lines[0].split(' ').last
       sidekiq = pid_lines[1].split(' ').last
 
-      puts "puma pid #{puma}"
-      puts "sidekiq pid #{sidekiq}"
-
       system "kill -9 #{puma} && kill -9 #{sidekiq}"
     end
 end
