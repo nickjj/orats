@@ -566,6 +566,8 @@ file 'recipes/default.rb' do <<-CODE
 include_recipe '#{app_name}::database'
 include_recipe '#{app_name}::cache'
 include_recipe '#{app_name}::web'
+include_recipe '#{app_name}::service'
+include_recipe '#{app_name}::worker'
 CODE
 end
 
