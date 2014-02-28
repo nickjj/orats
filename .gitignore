@@ -4,5 +4,5 @@
 .*.sw*
 *~
 .idea/
-.gem
+*.gem
 Gemfile.lock
