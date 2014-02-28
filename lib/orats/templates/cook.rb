@@ -345,21 +345,7 @@ if [ -d /etc/profile.d ]; then
   unset i
 fi
 
-export <%= @cookbook_name.upcase %>_TOKEN_RAILS_SECRET='<%= @token_rails_secret %>'
-export <%= @cookbook_name.upcase %>_TOKEN_DEVISE_SECRET='<%= @token_devise_secret %>'
-export <%= @cookbook_name.upcase %>_TOKEN_DEVISE_PEPPER='<%= @token_devise_pepper %>'
-
-export <%= @cookbook_name.upcase %>_SMTP_ADDRESS='<%= node[:#{app_name}][:web][:mail_address] %>'
-export <%= @cookbook_name.upcase %>_SMTP_PORT='<%= node[:#{app_name}][:web][:mail_port] %>'
-export <%= @cookbook_name.upcase %>_SMTP_DOMAIN='<%= node[:#{app_name}][:web][:mail_domain] %>'
-export <%= @cookbook_name.upcase %>_SMTP_USERNAME='<%= node[:#{app_name}][:web][:mail_username] %>'
-export <%= @cookbook_name.upcase %>_SMTP_PASSWORD='<%= @mail_password %>'
-export <%= @cookbook_name.upcase %>_SMTP_AUTH='<%= node[:#{app_name}][:web][:mail_auth] %>'
-export <%= @cookbook_name.upcase %>_SMTP_STARTTTLS_AUTO='<%= node[:#{app_name}][:web][:mail_startttls_auto] %>'
-
-export <%= @cookbook_name.upcase %>_ACTION_MAILER_HOST='<%= node[:#{app_name}][:web][:action_mailer_host] %>'
-export <%= @cookbook_name.upcase %>_ACTION_MAILER_DEFAULT_EMAIL='<%= node[:#{app_name}][:web][:action_mailer_default_email] %>'
-export <%= @cookbook_name.upcase %>_ACTION_MAILER_DEVISE_DEFAULT_EMAIL='<%= node[:#{app_name}][:web][:action_mailer_devise_default_email] %>'
+export RAILS_ENV='<%= node[:#{app_name}][:service][:environment] %>'
 
 export <%= @cookbook_name.upcase %>_DATABASE_HOST='<%= node[:#{app_name}][:database][:host] %>'
 export <%= @cookbook_name.upcase %>_DATABASE_NAME='<%= @cookbook_name.downcase %>'
@@ -373,11 +359,27 @@ export <%= @cookbook_name.upcase %>_CACHE_DATABASE='<%= node[:#{app_name}][:cach
 export <%= @cookbook_name.upcase %>_CACHE_USERNAME='redis'
 export <%= @cookbook_name.upcase %>_CACHE_PASSWORD='<%= @cache_password %>'
 
-export <%= @cookbook_name.upcase %>_SIDEKIQ_CONCURRENCY='<%= node[:#{app_name}][:cache][:sidekiq_concurrency] %>'
+export <%= @cookbook_name.upcase %>_TOKEN_RAILS_SECRET='<%= @token_rails_secret %>'
+export <%= @cookbook_name.upcase %>_TOKEN_DEVISE_SECRET='<%= @token_devise_secret %>'
+export <%= @cookbook_name.upcase %>_TOKEN_DEVISE_PEPPER='<%= @token_devise_pepper %>'
 
-export <%= @cookbook_name.upcase %>_PUMA_THREADS_MIN='<%= node[:#{app_name}][:web][:puma_threads_min] %>'
-export <%= @cookbook_name.upcase %>_PUMA_THREADS_MAX='<%= node[:#{app_name}][:web][:puma_threads_max] %>'
-export <%= @cookbook_name.upcase %>_PUMA_WORKERS='<%= node[:#{app_name}][:web][:puma_workers] %>'
+export <%= @cookbook_name.upcase %>_SMTP_ADDRESS='<%= node[:#{app_name}][:service][:mail_address] %>'
+export <%= @cookbook_name.upcase %>_SMTP_PORT='<%= node[:#{app_name}][:service][:mail_port] %>'
+export <%= @cookbook_name.upcase %>_SMTP_DOMAIN='<%= node[:#{app_name}][:service][:mail_domain] %>'
+export <%= @cookbook_name.upcase %>_SMTP_USERNAME='<%= node[:#{app_name}][:service][:mail_username] %>'
+export <%= @cookbook_name.upcase %>_SMTP_PASSWORD='<%= @mail_password %>'
+export <%= @cookbook_name.upcase %>_SMTP_AUTH='<%= node[:#{app_name}][:service][:mail_auth] %>'
+export <%= @cookbook_name.upcase %>_SMTP_STARTTTLS_AUTO='<%= node[:#{app_name}][:service][:mail_startttls_auto] %>'
+
+export <%= @cookbook_name.upcase %>_ACTION_MAILER_HOST='<%= node[:#{app_name}][:service][:action_mailer_host] %>'
+export <%= @cookbook_name.upcase %>_ACTION_MAILER_DEFAULT_EMAIL='<%= node[:#{app_name}][:service][:action_mailer_default_email] %>'
+export <%= @cookbook_name.upcase %>_ACTION_MAILER_DEVISE_DEFAULT_EMAIL='<%= node[:#{app_name}][:service][:action_mailer_devise_default_email] %>'
+
+export <%= @cookbook_name.upcase %>_PUMA_THREADS_MIN='<%= node[:#{app_name}][:service][:puma_threads_min] %>'
+export <%= @cookbook_name.upcase %>_PUMA_THREADS_MAX='<%= node[:#{app_name}][:service][:puma_threads_max] %>'
+export <%= @cookbook_name.upcase %>_PUMA_WORKERS='<%= node[:#{app_name}][:service][:puma_workers] %>'
+
+export <%= @cookbook_name.upcase %>_SIDEKIQ_CONCURRENCY='<%= node[:#{app_name}][:worker][:sidekiq_concurrency] %>'
 CONF
 end
 
