@@ -398,6 +398,7 @@ file 'recipes/base.rb' do <<-'CODE'
 node.override[:openssh][:server][:port] = node[:app_name][:base][:ssh_port]
 node.override[:openssh][:server][:password_authentication] = 'no'
 node.override[:openssh][:server][:permit_root_login] = 'no'
+
 include_recipe 'openssh'
 
 # user
