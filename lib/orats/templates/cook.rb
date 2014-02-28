@@ -140,6 +140,7 @@ append_file 'metadata.rb' do <<-CODE
 depends 'openssh', '~> 1.3.2'
 depends 'user', '~> 0.3.0'
 depends 'sudo', '~> 2.3.0'
+depends 'runit', '~> 1.5.8'
 depends 'fail2ban', '~> 2.1.2'
 depends 'ufw', '~> 0.7.4'
 depends 'swap', '~> 0.3.6'
@@ -151,11 +152,13 @@ depends 'postgresql', '~> 0.13.0'
 depends 'redisio', '~> 1.7.0'
 
 # web
+depends 'nginx', '~> 2.2.0'
+depends 'logrotate', '~> 1.4.0'
+
+# service/worker
 depends 'git', '~> 2.9.0'
 depends 'rvm', '~> 0.9.1'
 depends 'nodejs', '~> 1.3.0'
-depends 'nginx', '~> 2.2.0'
-depends 'logrotate', '~> 1.4.0'
 CODE
 end
 
