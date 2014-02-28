@@ -257,29 +257,30 @@ puts
 say_status  'files', 'Creating nginx config...', :yellow
 puts        '-'*80, ''; sleep 0.25
 
-file "files/default/nginx_virtualhost.conf" do <<-CONF
+file 'templates/default/nginx_virtualhost.conf.erb' do <<-CONF
 upstream #{app_name} {
-  server unix:///tmp/#{app_name}.sock;
+  server unix:///tmp/puma.sock;
 }
 
-# redirect non-www to www (remove this block if you do not want to do this)
+<% if node[:#{app_name}][:web][:redirect_no_www_to_www] %>
 server {
   listen 80;
-  server_name #{app_name}.com;
-  return 301 $scheme://www.#{app_name}.com$request_uri;
+  server_name <%= node[:#{app_name}][:web][:domain_name] %>;
+  return 301 $scheme://www.<%= node[:#{app_name}][:web][:domain_name] %>$request_uri;
 }
+<% end if %>
 
 server {
   listen 80;
-  server_name www.#{app_name}.com;
-  root /home/#{random_username}/www/#{app_name}/current/public;
+  server_name www.<%= node[:#{app_name}][:web][:domain_name] %>;
+  root /home/#{random_username}/#{app_name}/current/public;
 
   error_page 404 /404.html;
   error_page 500 /500.html;
   error_page 502 503 504 /502.html;
 
   location ~ ^/(system|assets)/ {
-    root /home/#{random_username}/www/#{app_name}/current/public;
+    root /home/#{random_username}/#{app_name}/current/public;
     gzip_static on;
     expires 1y;
     add_header Cache-Control public;
