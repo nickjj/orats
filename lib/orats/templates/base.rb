@@ -87,6 +87,8 @@ say_status  'root', 'Creating .env file...', :yellow
 puts        '-'*80, ''; sleep 0.25
 
 file '.env' do <<-CODE
+RAILS_ENV: development
+
 #{app_name_upper}_TOKEN_RAILS_SECRET: #{generate_token}
 
 #{app_name_upper}_SMTP_ADDRESS: smtp.gmail.com
@@ -207,6 +209,8 @@ git add:    '.'
 git commit: "-m 'Dry up the database settings'"
 
 file 'config/puma.rb', <<-CODE
+environment ENV['RAILS_ENV']
+
 threads ENV['#{app_name_upper}_PUMA_THREADS_MIN'].to_i,ENV['#{app_name_upper}_PUMA_THREADS_MAX'].to_i
 workers ENV['#{app_name_upper}_PUMA_WORKERS'].to_i
 
