@@ -508,70 +508,7 @@ say_status  'recipes', 'Creating web recipe...', :yellow
 puts        '-'*80, ''; sleep 0.25
 
 file 'recipes/web.rb' do <<-'CODE'
-secret = Chef::EncryptedDataBagItem.load_secret('/etc/chef/encrypted_data_bag_secret')
-encrypted_data_bag = Chef::EncryptedDataBagItem.load('app_name_secrets', 'production', secret)
-
 include_recipe 'app_name::base'
-
-# environment variables
-
-template '/etc/profile' do
-  source 'profile.erb'
-  variables({
-    :cookbook_name => cookbook_name,
-    :database_password => encrypted_data_bag['database_password'],
-    :cache_password => encrypted_data_bag['cache_password'],
-    :mail_password => encrypted_data_bag['mail_password'],
-    :token_rails_secret => encrypted_data_bag['token_rails_secret'],
-    :token_devise_secret => encrypted_data_bag['token_devise_secret'],
-    :token_devise_pepper => encrypted_data_bag['token_devise_pepper']
-  })
-end
-
-# git
-
-apt_repository 'git' do
-  uri          'http://ppa.launchpad.net/git-core/ppa/ubuntu'
-  distribution node[:lsb][:codename]
-  components   %w[main]
-  keyserver    'keyserver.ubuntu.com'
-  key          'E1DF1F24'
-  action       :add
-end
-
-include_recipe 'git'
-
-repo_path = "/home/#{node[:app_name][:base][:username]}/#{cookbook_name}.git"
-
-directory repo_path do
-  owner node[:app_name][:base][:username]
-  group node[:app_name][:base][:username]
-  mode 0755
-end
-
-execute 'initialize new bare git repo' do
-  user node[:app_name][:base][:username]
-  group node[:app_name][:base][:username]
-  command "cd #{repo_path} && git init --bare"
-  only_if { !File.exists? "#{repo_path}/HEAD" }
-end
-
-# node
-
-node.override[:nodejs][:install_method] = 'binary'
-node.override[:nodejs][:version] = '0.10.24'
-node.override[:nodejs][:checksum] = 'fb6487e72d953451d55e28319c446151c1812ed21919168b82ab1664088ecf46'
-node.override[:nodejs][:checksum_linux_x64] = '423018f6a60b18d0dddf3007c325e0cc8cf55099'
-node.override[:nodejs][:checksum_linux_x86] = 'fb6487e72d953451d55e28319c446151c1812ed21919168b82ab1664088ecf46'
-include_recipe 'nodejs::install_from_binary'
-
-# ruby
-
-node.override[:rvm][:default_ruby] = node[:app_name][:web][:ruby_version]
-node.override[:rvm][:global_gems] = [ { 'name' => 'bundler', 'version' => '1.5.1' } ]
-node.override[:rvm][:group_users] = [ node[:app_name][:base][:username] ]
-
-include_recipe 'rvm::system'
 
 # nginx
 
@@ -588,11 +525,14 @@ node.override[:nginx][:gzip_comp_level] = '4'
 
 include_recipe 'nginx'
 
-cookbook_file 'nginx_virtualhost.conf' do
-  path "#{node[:nginx][:dir]}/sites-available/#{cookbook_name}.conf"
+template "#{node[:nginx][:dir]}/sites-available/#{cookbook_name}.conf" do
+  source 'nginx_virtualhost.conf.erb'
   group node[:nginx][:user]
   owner node[:nginx][:user]
   mode '0644'
+  variables({
+    :cookbook_name => cookbook_name
+  })
 end
 
 nginx_site "#{cookbook_name}.conf"
