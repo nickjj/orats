@@ -125,7 +125,7 @@ end
 
 env_rails_secret_token = "<%= ENV['#{app_name_upper}_TOKEN_RAILS_SECRET'] %>"
 
-gsub_file 'config/secrets.yml', /'\w{128}'/, env_rails_secret_token
+gsub_file 'config/secrets.yml', /\w{128}/, env_rails_secret_token
 gsub_file 'config/secrets.yml', '<%= ENV["SECRET_KEY_BASE"] %>', env_rails_secret_token
 
 # ----- Modify the application file -------------------------------------------------------------------
