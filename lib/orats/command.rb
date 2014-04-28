@@ -35,7 +35,7 @@ module Orats
         bundle_install
         git_commit 'Add gem lock file'
 
-        run_rake 'db:create:all db:migrate db:test:prepare'
+        run_rake 'db:create:all db:migrate'
         git_commit 'Add the database schema file'
       end
 
@@ -79,7 +79,7 @@ module Orats
 
     private
       def active_project
-        project_from_path(@active_path)
+        File.basename @active_path
       end
 
       def services_path(app_name)
