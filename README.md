@@ -8,7 +8,7 @@ Everything is accessed through the [orats gem](#installation).
 
 ## What version of Rails and Ruby are you targeting?
 
-#### Rails 4.0.x and Ruby 2.1.x
+#### Rails 4.1.x and Ruby 2.1.x
 
 I will be updating them as new versions come out and when the gems used are proven to work. All important gems in the Gemfile
 are locked using the pessimistic operator `~>` so you can be sure that everything plays nice as long as rubygems.org is up!
@@ -19,7 +19,7 @@ are locked using the pessimistic operator `~>` so you can be sure that everythin
     - To download each rails template and automate running certain tasks.
 - Ruby 2.1.x
     - Yep, you really need Ruby to run Ruby modules.
-- Rails 4.0.x
+- Rails 4.1.x
     - You need Rails installed so that you can run the project generator.
 - Git
     - The weapon of choice for version control.
