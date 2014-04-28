@@ -52,7 +52,7 @@ module Orats
       rails_projects = []
 
       rails_directories.each do |rails_dir|
-        rails_projects << project_from_path(rails_dir)
+        rails_projects << File.basename(rails_dir)
       end
 
       project_names = rails_projects.join(', ')
@@ -70,7 +70,7 @@ module Orats
       rails_directories.each do |directory|
         log_message 'root', 'Removing postgres databases'
         run_from directory, 'bundle exec rake db:drop:all'
-        nuke_redis project_from_path(directory)
+        nuke_redis File.basename(directory)
       end
     end
 
@@ -153,10 +153,6 @@ module Orats
 
           exit 1
         end
-      end
-
-      def project_from_path(path)
-        path.split('/').last
       end
   end
 end
