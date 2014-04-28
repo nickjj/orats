@@ -1,6 +1,6 @@
 require_relative '../test_helper'
 
-class TestCLI < Minitest::Unit::TestCase
+class TestCLI < Minitest::Test
   include Orats::Test
 
   def test_new_app
