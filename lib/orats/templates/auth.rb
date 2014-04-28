@@ -38,9 +38,9 @@ puts        '-'*80, ''; sleep 0.25
 
 inject_into_file 'Gemfile', before: "\ngem 'kaminari'" do <<-CODE
 
-gem 'devise', '~> 3.2.2'
+gem 'devise', '~> 3.2.4'
 gem 'devise-async', '~> 0.9.0'
-gem 'pundit', '~> 0.2.1'
+gem 'pundit', '~> 0.2.3'
 CODE
 end
 
