@@ -9,7 +9,7 @@ gem 'font-awesome-rails', '~> 4.0.3'
 
 gem 'custom_configuration', '~> 0.0.2'
 
-gem 'pg'
+gem 'pg', '~> 0.17.1'
 gem 'redis-rails', '~> 4.0.0'
 
 gem 'puma', '~> 2.8.2'
