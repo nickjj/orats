@@ -1,5 +1,5 @@
 # =====================================================================================================
-# Template for generating an opinionated base Rails 4.0.2 project using Ruby 2.1.0
+# Template for generating an opinionated base Rails 4.1.0 project using Ruby 2.1.0
 # =====================================================================================================
 
 # ----- Helper functions and variables ----------------------------------------------------------------
@@ -121,10 +121,10 @@ RAILS_ENV: development
 CODE
 end
 
-# ----- Modify the secret token -----------------------------------------------------------------------
+# ----- Modify the secrets yaml file -----------------------------------------------------------------------
 
-gsub_file 'config/initializers/secret_token.rb', /'\w{128}'/, "ENV['#{app_name_upper}_TOKEN_RAILS_SECRET']"
-
+gsub_file 'config/secrets.yml', /'\w{128}'/, "<%= ENV['#{app_name_upper}_TOKEN_RAILS_SECRET'] %>"
+gsub_file 'config/secrets.yml', '<%= ENV["SECRET_KEY_BASE"] %>', "ENV['#{app_name_upper}_TOKEN_RAILS_SECRET'] %>"
 
 # ----- Modify the application file -------------------------------------------------------------------
 
