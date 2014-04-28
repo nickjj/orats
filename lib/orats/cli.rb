@@ -62,9 +62,9 @@ module Orats
     end
 
     desc 'version', ''
-    long_desc <<-LONGDESC
+    long_desc <<-D
       `orats version` will print the current version.
-    LONGDESC
+    D
     def version
       Command.new.version
     end
