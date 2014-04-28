@@ -35,6 +35,8 @@ module Orats
         bundle_install
         git_commit 'Add gem lock file'
 
+        spring_binstub
+
         run_rake 'db:create:all db:migrate'
         git_commit 'Add the database schema file'
       end

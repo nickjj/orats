@@ -34,6 +34,12 @@ module Orats
       run_from @active_path, 'bundle install'
     end
 
+    def spring_binstub
+      log_message 'shell', 'Running spring binstub'
+
+      run_from @active_path, 'bundle exec spring binstub --all'
+    end
+
     def nuke_warning
       puts
       say_status  'nuke', "\e[1mYou are about to permanently delete this directory:\e[0m", :red

@@ -24,6 +24,7 @@ gem 'sitemap_generator', '~> 5.0.2'
 gem 'favicon_maker', '~> 1.1.2'
 
 group :development do
+  gem 'spring', '~> 1.1.2'
   gem 'foreman', require: false
   gem 'rack-mini-profiler', '~> 0.9.1'
   gem 'bullet', '~> 4.8.0'
