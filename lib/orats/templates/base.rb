@@ -146,7 +146,7 @@ inject_into_file 'config/application.rb', after: "automatically loaded.\n" do <<
       :domain               => ENV['#{app_name_upper}_SMTP_DOMAIN'],
       :user_name            => ENV['#{app_name_upper}_SMTP_USERNAME'],
       :password             => ENV['#{app_name_upper}_SMTP_PASSWORD'],
-      :authentication       => ENV['#{app_name_upper}_SMTP_AUTH'].to_sym,
+      :authentication       => ENV['#{app_name_upper}_SMTP_AUTH'],
       :enable_starttls_auto => ENV['#{app_name_upper}_SMTP_STARTTTLS_AUTO'] == 'true'
     }
 
