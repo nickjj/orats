@@ -386,6 +386,31 @@ end
 git add: '.'
 git commit: "-m 'Add the system wide profile config'"
 
+# ----- Create environment library ------------------------------------------------------------------------
+
+puts
+say_status  'libraries', 'Creating environment library...', :yellow
+puts        '-'*80, ''; sleep 0.25
+
+file 'libraries/source_environment.rb' do <<-'CODE'
+class Chef::Recipe::SourceEnvironment
+  def self.from_etc_profile(env_prefix)
+    Hash[
+      File.read('/etc/profile')
+        .gsub('export ', '')
+        .gsub("'", '')
+        .split("\n")
+        .select { |key, _| key.match(/RAILS_ENV|#{env_prefix.upcase}/) }
+        .map { |str| str.split('=') }
+    ]
+  end
+end
+CODE
+end
+
+git add: '.'
+git commit: "-m 'Add the source_environment library'"
+
 # ----- Create base recipe ----------------------------------------------------------------------------
 
 puts
@@ -554,6 +579,177 @@ gsub_file 'recipes/web.rb', 'app_name', app_name
 
 git add: '.'
 git commit: "-m 'Add the web recipe'"
+
+# ----- Create service recipe -----------------------------------------------------------------------------
+
+puts
+say_status  'recipes', 'Creating service recipe...', :yellow
+puts        '-'*80, ''; sleep 0.25
+
+file 'recipes/service.rb' do <<-'CODE'
+secret = Chef::EncryptedDataBagItem.load_secret('/etc/chef/encrypted_data_bag_secret')
+encrypted_data_bag = Chef::EncryptedDataBagItem.load('app_name_secrets', 'production', secret)
+
+include_recipe 'app_name::base'
+
+# environment variables
+
+template '/etc/profile' do
+  source 'profile.erb'
+  variables({
+    :cookbook_name => cookbook_name,
+    :database_password => encrypted_data_bag['database_password'],
+    :cache_password => encrypted_data_bag['cache_password'],
+    :mail_password => encrypted_data_bag['mail_password'],
+    :token_rails_secret => encrypted_data_bag['token_rails_secret'],
+    :token_devise_secret => encrypted_data_bag['token_devise_secret'],
+    :token_devise_pepper => encrypted_data_bag['token_devise_pepper']
+  })
+end
+
+# git
+
+apt_repository 'git' do
+  uri          'http://ppa.launchpad.net/git-core/ppa/ubuntu'
+  distribution node[:lsb][:codename]
+  components   %w[main]
+  keyserver    'keyserver.ubuntu.com'
+  key          'E1DF1F24'
+  action       :add
+end
+
+include_recipe 'git'
+
+repo_path = "/home/#{node[:app_name][:base][:username]}/#{cookbook_name}.git"
+
+directory repo_path do
+  owner node[:app_name][:base][:username]
+  group node[:app_name][:base][:username]
+  mode 0755
+end
+
+execute 'initialize new bare git repo' do
+  user node[:app_name][:base][:username]
+  group node[:app_name][:base][:username]
+  command "cd #{repo_path} && git init --bare"
+  not_if { File.exists? "#{repo_path}/HEAD" }
+end
+
+# imagemagick
+
+package 'imagemagick'
+
+# node
+
+node.override[:nodejs][:install_method] = 'binary'
+node.override[:nodejs][:version] = '0.10.24'
+node.override[:nodejs][:checksum] = 'fb6487e72d953451d55e28319c446151c1812ed21919168b82ab1664088ecf46'
+node.override[:nodejs][:checksum_linux_x64] = '423018f6a60b18d0dddf3007c325e0cc8cf55099'
+node.override[:nodejs][:checksum_linux_x86] = 'fb6487e72d953451d55e28319c446151c1812ed21919168b82ab1664088ecf46'
+include_recipe 'nodejs::install_from_binary'
+
+# ruby
+
+node.override[:rvm][:default_ruby] = node[:app_name][:service][:ruby_version]
+node.override[:rvm][:global_gems] = [ { 'name' => 'bundler', 'version' => '1.5.1' } ]
+node.override[:rvm][:group_users] = [ node[:app_name][:base][:username] ]
+
+include_recipe 'rvm::system'
+
+# service
+
+deploy_path = "/home/#{node[:app_name][:base][:username]}/#{cookbook_name}"
+shared_path = "#{deploy_path}/shared"
+
+env_hash = SourceEnvironment.from_etc_profile(cookbook_name)
+rvm_context = "/usr/local/rvm/bin/rvm #{node[:app_name][:service][:ruby_version]} do"
+
+create_paths = %W(#{deploy_path} #{shared_path} #{shared_path}/vendor #{shared_path}/vendor/bundle #{shared_path}/log #{shared_path}/tmp #{shared_path}/public #{shared_path}/public/assets #{shared_path}/public/system)
+
+create_paths.each do |path|
+  directory path do
+    owner node[:app_name][:base][:username]
+    group node[:app_name][:base][:username]
+    mode 0755
+    action :create
+    not_if { Dir.exists? path }
+  end
+end
+
+deploy_revision deploy_path do
+  user node[:app_name][:base][:username]
+  repo repo_path
+  revision 'HEAD'
+  migrate true
+  migration_command "#{rvm_context} bundle exec rake db:migrate"
+  environment env_hash
+  keep_releases 3
+  action node[:app_name][:service][:deploy_action]
+  restart_command 'touch /tmp/todo'
+  symlink_before_migrate.clear
+  purge_before_symlink %w(log tmp public/assets public/system)
+  create_dirs_before_symlink []
+  symlinks(
+    'log'           => 'log',             # current/log           -> shared/log
+    'tmp'           => 'tmp',             # current/tmp           -> shared/tmp
+    'public/assets' => 'public/assets',   # current/public/assets -> shared/public/assets
+    'public/system' => 'public/system'    # current/public/system -> shared/public/system
+  )
+
+  before_migrate do
+    bundle_path = 'vendor/bundle'
+
+    link "#{release_path}/#{bundle_path}" do
+      to "#{shared_path}/#{bundle_path}"
+    end
+
+    bundle_without = %w(development test cucumber staging production)
+    bundle_without -= [node[:app_name][:service][:environment]]
+    bundle_command = "bundle install --path=#{bundle_path} --without #{bundle_without.join(' ')}"
+    bundle_command += ' --deployment' if File.join(release_path, 'Gemfile.lock')
+
+    
+
+    execute "#{rvm_context} #{bundle_command}" do
+      cwd release_path
+      user node[:app_name][:base][:username]
+      environment env_hash
+    end
+
+    execute "#{rvm_context} bundle exec rake db:create db:seed" do
+      cwd release_path
+      user node[:app_name][:base][:username]
+      environment env_hash
+    end
+  end
+
+  before_symlink do
+    %W(#{release_path}/public/assets #{release_path}/public/system).each do |path|
+      directory path do
+        owner node[:app_name][:base][:username]
+        group node[:app_name][:base][:username]
+        mode 0755
+        action :create
+        not_if { Dir.exists? path }
+      end
+    end
+  end
+
+  before_restart do
+    execute "#{rvm_context} bundle exec rake assets:precompile" do
+      cwd release_path
+      user node[:app_name][:base][:username]
+      environment env_hash
+    end
+  end
+end
+CODE
+end
+
+gsub_file 'recipes/service.rb', 'app_name', app_name
+
+git add: '.'
+git commit: "-m 'Add the service recipe'"
 
 # ----- Create default recipe -------------------------------------------------------------------------
 
