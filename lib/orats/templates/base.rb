@@ -93,6 +93,8 @@ puts        '-'*80, ''; sleep 0.25
 file '.env' do <<-CODE
 RAILS_ENV: development
 
+#{app_name_upper}_PROJECT_PATH: /full/path/to/your/project
+
 #{app_name_upper}_TOKEN_RAILS_SECRET: #{generate_token}
 
 #{app_name_upper}_SMTP_ADDRESS: smtp.gmail.com
@@ -216,16 +218,16 @@ end
 git add:    '.'
 git commit: "-m 'Dry up the database settings'"
 
-file 'config/puma.rb', <<-CODE
+file 'config/puma.rb', <<-'CODE'
 environment ENV['RAILS_ENV']
 
-threads ENV['#{app_name_upper}_PUMA_THREADS_MIN'].to_i,ENV['#{app_name_upper}_PUMA_THREADS_MAX'].to_i
-workers ENV['#{app_name_upper}_PUMA_WORKERS'].to_i
+threads ENV['app_name_upper_PUMA_THREADS_MIN'].to_i,ENV['app_name_upper_PUMA_THREADS_MAX'].to_i
+workers ENV['app_name_upper_PUMA_WORKERS'].to_i
 
-pidfile '/tmp/puma.pid'
+pidfile "#{ENV['app_name_upper_PROJECT_PATH']}/tmp/puma.pid"
 
 if ENV['RAILS_ENV'] == 'production'
-  bind 'unix:///tmp/puma.sock'
+  bind "unix://#{ENV['app_name_upper_PROJECT_PATH']}/tmp/puma.sock"
 else
   port '3000'
 end
@@ -241,12 +243,14 @@ on_worker_boot do
 end
 CODE
 
+gsub_file 'config/puma.rb', 'app_name_upper', app_name_upper
+
 git add:    '.'
 git commit: "-m 'Add the puma config'"
 
 file 'config/sidekiq.yml', <<-CODE
 ---
-:pidfile: /tmp/sidekiq.pid
+:pidfile: <%= ENV['#{app_name_upper}_PROJECT_PATH'] %>/tmp/sidekiq.pid
 :concurrency: <%= ENV['#{app_name_upper}_SIDEKIQ_CONCURRENCY'].to_i %>
 :queues:
   - default

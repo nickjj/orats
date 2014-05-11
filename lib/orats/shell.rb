@@ -29,6 +29,12 @@ module Orats
       gsub_file "#{@active_path}/.env", ': greatsecurity', ": #{@options[:redis_password]}"
     end
 
+    def gsub_project_path
+      log_message 'root', 'Changing the project path'
+
+      gsub_file "#{@active_path}/.env", ': /full/path/to/your/project', ": #{File.expand_path(@app_name)}"
+    end
+
     def run_rake(command)
       log_message 'shell', 'Running rake commands'
 

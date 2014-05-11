@@ -37,6 +37,9 @@ module Orats
           git_commit 'Add the redis password'
         end
 
+        gsub_project_path
+        git_commit 'Add the development project path'
+
         bundle_install
         git_commit 'Add gem lock file'
 

@@ -162,6 +162,12 @@ aware that the `.env` file is not loaded in production, in fact it is not even s
 You can use the `.env` file as a guide so you know which values you need to write out as true ENV variables on your server
 using whatever server provisioning tools you use.
 
+#### Project path
+
+Make sure you have the project path set properly on your server. It is used by both puma and sidekiq to determine where
+they should write out their pid, socket and log files. If this is not set correctly then you will not be able to start
+your application properly in non-development mode.
+
 #### Puma
 
 You should set your puma min/max threads to 0 and 16 and use at least 2 workers if you want to do phased restarts. From
