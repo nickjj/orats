@@ -43,7 +43,11 @@ module Orats
         bundle_install
         git_commit 'Add gem lock file'
 
+        bundle_binstubs
+        git_commit 'Add binstubs for the important gems'
+
         spring_binstub
+        git_commit 'Springify all of the bins'
 
         run_rake 'db:create:all db:migrate'
         git_commit 'Add the database schema file'

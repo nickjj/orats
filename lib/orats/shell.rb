@@ -47,6 +47,12 @@ module Orats
       run_from @active_path, 'bundle install'
     end
 
+    def bundle_binstubs
+      log_message 'shell', 'Running bundle binstubs for a few gems'
+
+      run_from @active_path, 'bundle binstubs whenever puma sidekiq'
+    end
+
     def spring_binstub
       log_message 'shell', 'Running spring binstub'
 
