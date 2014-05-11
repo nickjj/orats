@@ -116,6 +116,7 @@ RAILS_ENV: development
 #{app_name_upper}_CACHE_HOST: localhost
 #{app_name_upper}_CACHE_PORT: 6379
 #{app_name_upper}_CACHE_DATABASE: 0
+#{app_name_upper}_CACHE_PASSWORD: greatsecurity
 
 #{app_name_upper}_PUMA_THREADS_MIN: 0
 #{app_name_upper}_PUMA_THREADS_MAX: 1
@@ -159,6 +160,7 @@ inject_into_file 'config/application.rb', after: "automatically loaded.\n" do <<
     config.cache_store = :redis_store, { host: ENV['#{app_name_upper}_CACHE_HOST'],
                                          port: ENV['#{app_name_upper}_CACHE_PORT'].to_i,
                                          db: ENV['#{app_name_upper}_CACHE_DATABASE'].to_i,
+                                         password: ENV['#{app_name_upper}_CACHE_PASSWORD'],
                                          namespace: '#{app_name}::cache'
                                        }
 CODE
