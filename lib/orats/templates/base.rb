@@ -57,7 +57,7 @@ append_to_file '.gitignore' do <<-TEXT
 
 # Ignore app specific folders.
 /vendor/bundle
-/public/*
+/public/assets/*
 TEXT
 end
 
