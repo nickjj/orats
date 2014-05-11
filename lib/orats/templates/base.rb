@@ -232,7 +232,10 @@ else
   port '3000'
 end
 
-restart_command 'bundle exec puma'
+# https://github.com/puma/puma/blob/master/examples/config.rb#L125
+prune_bundler
+
+restart_command '/etc/init.d/puma restart'
 
 on_worker_boot do
   require 'active_record'
