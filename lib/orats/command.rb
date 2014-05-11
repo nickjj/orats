@@ -32,6 +32,11 @@ module Orats
         gsub_postgres_info
         git_commit 'Change the postgres information'
 
+        unless @options[:redis_password].empty?
+          gsub_redis_info
+          git_commit 'Add the redis password'
+        end
+
         bundle_install
         git_commit 'Add gem lock file'
 

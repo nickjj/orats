@@ -22,6 +22,13 @@ module Orats
       gsub_file "#{@active_path}/.env", ': supersecrets', ": #{@options[:pg_password]}"
     end
 
+    def gsub_redis_info
+      log_message 'root', 'Adding the redis password'
+
+      gsub_file "#{@active_path}/config/initializers/sidekiq.rb", '//', '//:#{ENV[\'TESTPROJ_CACHE_PASSWORD\']}@'
+      gsub_file "#{@active_path}/.env", ': greatsecurity', ": #{@options[:redis_password]}"
+    end
+
     def run_rake(command)
       log_message 'shell', 'Running rake commands'
 

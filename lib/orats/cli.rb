@@ -6,6 +6,7 @@ module Orats
     option :pg_location, default: 'localhost'
     option :pg_username, default: 'postgres'
     option :pg_password, required: true
+    option :redis_password, default: ''
     option :auth, type: :boolean, default: false, aliases: '-a'
     option :skip_cook, type: :boolean, default: false, aliases: '-C'
     option :skip_extras, type: :boolean, default: false, aliases: '-E'
@@ -23,6 +24,8 @@ module Orats
       `--pg-location` to supply a custom postgres location [localhost]
 
       `--pg-username` to supply a custom postgres username [postgres]
+
+      `--redis-password` to supply your development redis password [redis]
 
       Template features:
 

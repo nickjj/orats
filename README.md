@@ -73,6 +73,7 @@ running `orats <command name> help` from your terminal. You can also type `orats
     - Configuration:
         - Optionally takes: `--pg-location [localhost]`
         - Optionally takes: `--pg-username [postgres]`
+        - Optionally takes: `--redis-password []`
     - Template features:
         - Optionally takes: `--auth [false]`
     - Project features:
