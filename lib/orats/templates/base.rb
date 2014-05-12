@@ -235,7 +235,7 @@ end
 # https://github.com/puma/puma/blob/master/examples/config.rb#L125
 prune_bundler
 
-restart_command '/etc/init.d/puma restart'
+restart_command 'bundle exec bin/puma'
 
 on_worker_boot do
   require 'active_record'
