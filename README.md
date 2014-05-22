@@ -13,7 +13,7 @@ Everything is accessed through the [orats gem](#installation).
 I will be updating them as new versions come out and when the gems used are proven to work. All important gems in the Gemfile
 are locked using the pessimistic operator `~>` so you can be sure that everything plays nice as long as rubygems.org is up!
 
-## System dependencies that you must have on your dev box
+## System dependencies that must be on your dev box
 
 - [The orats gem](#installation)
     - To download each rails template and automate running certain tasks.
@@ -247,6 +247,7 @@ check out each role then here's a link to their repos:
 - https://github.com/DavidWittman/ansible-redis
 
 You will need to install the roles onto your workstation before you can use them. You can do that by running this command:
+
 `ansible-galaxy install nickjj.user nickjj.security nickjj.postgres nickjj.ruby nickjj.nodejs nickjj.nginx nickjj.rails DavidWittman.redis --force`
 
 ### Try it
