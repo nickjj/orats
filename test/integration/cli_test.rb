@@ -10,10 +10,10 @@ class TestCLI < Minitest::Test
       orats "new #{app_name}", flags: ORATS_FLAGS
     end
 
-    assert_match /success/, out
+    assert_match /Start your server/, out
 
-    assert_path_exists "#{TEST_PATH}/#{app_name}/cookbooks/#{app_name}"
-    assert_path_exists "#{TEST_PATH}/#{app_name}/services/#{app_name}"
+    assert_path_exists "#{TEST_PATH}/#{app_name}/inventory"
+    assert_path_exists "#{TEST_PATH}/#{app_name}/secrets"
 
     assert_nuked app_name
   end
@@ -26,27 +26,15 @@ class TestCLI < Minitest::Test
       orats "new #{app_name}", flags: "--auth #{ORATS_FLAGS}"
     end
 
-    assert_match /success/, out
+    assert_match /Start your server/, out
 
-    assert_path_exists "#{TEST_PATH}/#{app_name}/cookbooks/#{app_name}"
+    assert_path_exists "#{TEST_PATH}/#{app_name}/inventory"
+    assert_path_exists "#{TEST_PATH}/#{app_name}/secrets"
     assert_path_exists "#{TEST_PATH}/#{app_name}/services/#{app_name}"
 
     assert_in_file gemfile_path, /devise/
     assert_in_file gemfile_path, /devise-async/
     assert_in_file gemfile_path, /pundit/
-
-    assert_nuked app_name
-  end
-
-  def test_new_app_without_cookbook
-    app_name = generate_app_name
-
-    out, err = capture_subprocess_io do
-      orats "new #{app_name}", flags: "--skip-cook #{ORATS_FLAGS}"
-    end
-
-    refute_path_exists "#{TEST_PATH}/#{app_name}/cookbooks/#{app_name}"
-    assert_path_exists "#{TEST_PATH}/#{app_name}/services/#{app_name}"
 
     assert_nuked app_name
   end
@@ -58,22 +46,23 @@ class TestCLI < Minitest::Test
       orats "new #{app_name}", flags: "--skip-extras #{ORATS_FLAGS}"
     end
 
-    refute_path_exists "#{TEST_PATH}/#{app_name}/cookbooks/#{app_name}"
+    refute_path_exists "#{TEST_PATH}/#{app_name}/inventory"
+    refute_path_exists "#{TEST_PATH}/#{app_name}/secrets"
     refute_path_exists "#{TEST_PATH}/#{app_name}/services/#{app_name}"
     assert_path_exists "#{TEST_PATH}/#{app_name}"
 
     assert_nuked app_name
   end
 
-  def test_cook
+  def test_play
     app_name = generate_app_name
 
     out, err = capture_subprocess_io do
-     orats "cook #{app_name}"
+     orats "play #{app_name}"
     end
 
     assert_match /success/, out
-    assert_nuked app_name, flags: '-D'
+    assert_nuked app_name
   end
 
   def test_version

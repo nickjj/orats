@@ -59,16 +59,16 @@ module Orats
         end
       end
 
-      unless @options[:skip_cook] || @options[:skip_extras]
-        cook_app cookbooks_path(@app_name)
+      unless @options[:skip_extras]
+        ansible_init @app_name
       end
 
       @active_path = services_path(@app_name)
       foreman_init
     end
 
-    def cook
-      cook_app @app_name
+    def play
+      play_app @app_name
     end
 
     def nuke
@@ -98,10 +98,6 @@ module Orats
 
       def services_path(app_name)
         @options[:skip_extras] ?  app_name : "#{app_name}/services/#{active_project}"
-      end
-
-      def cookbooks_path(app_name)
-        "#{app_name}/cookbooks/#{active_project}"
       end
   end
 end

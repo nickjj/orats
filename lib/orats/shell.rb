@@ -1,3 +1,5 @@
+require 'securerandom'
+
 module Orats
   module Shell
     def run_from(path, command)
@@ -32,7 +34,7 @@ module Orats
     def gsub_project_path
       log_message 'root', 'Changing the project path'
 
-      gsub_file "#{@active_path}/.env", ': /full/path/to/your/project', ": #{File.expand_path(@app_name)}"
+      gsub_file "#{@active_path}/.env", ': /full/path/to/your/project', ": #{File.expand_path(@active_path)}"
     end
 
     def run_rake(command)
@@ -99,21 +101,16 @@ module Orats
       end
     end
 
-    def can_cook?
-      log_message 'shell', 'Checking for the cookbook system dependencies'
+    def can_play?
+      log_message 'shell', 'Checking for the ansible binary'
 
-       has_knife = run('which knife', capture: true)
-       has_berks = run('which berks', capture: true)
+       has_ansible = run('which ansible', capture: true)
 
-       dependency_error 'Cannot access knife',
-                        'Are you sure you have chef setup correctly?',
-                        'http://www.getchef.com/chef/install/`' if has_knife.empty?
+       dependency_error 'Cannot access ansible',
+                        'Are you sure you have ansible setup correctly?',
+                        'http://docs.ansible.com/intro_installation.html`' if has_ansible.empty?
 
-       dependency_error 'Cannot access berkshelf',
-                        'Are you sure you have berkshelf installed correctly?',
-                        'You can install it by running `gem install berkshelf`' if has_berks.empty?
-
-       !has_knife.empty? && !has_berks.empty?
+       !has_ansible.empty?
     end
 
     def rails_template(command, flags = '')
@@ -124,14 +121,65 @@ module Orats
       yield if block_given?
     end
 
-    def cook_app(app_path)
-      return unless can_cook?
+    def play_app(path)
+      return unless can_play?
 
-      @active_path = app_path
-      rails_template 'cook'
+      @active_path = path
+      rails_template 'play'
+    end
+
+    def ansible_init(path)
+      log_message 'shell', 'Creating ansible inventory'
+      run "mkdir #{path}/inventory"
+      run "mkdir #{path}/inventory/group_vars"
+      copy_from_includes 'inventory/hosts', path
+      copy_from_includes 'inventory/group_vars/all.yml', path
+
+      secrets_path = "#{path}/secrets"
+      log_message 'shell', 'Creating ansible secrets'
+      run "mkdir #{secrets_path}"
+
+      save_secret_string "#{secrets_path}/postgres_password"
+      save_secret_string "#{secrets_path}/redis_password"
+      save_secret_string "#{secrets_path}/mail_password"
+      save_secret_string "#{secrets_path}/rails_token"
+      save_secret_string "#{secrets_path}/devise_token"
+      save_secret_string "#{secrets_path}/devise_pepper_token"
+
+      log_message 'shell', 'Modifying secrets path in group_vars/all.yml'
+      update_secrets_path secrets_path
+
+      log_message 'shell', 'Creating ssh keypair'
+      run "echo '' | echo '' | echo #{secrets_path}/id_rsa | ssh-keygen -t rsa"
+
+      log_message 'shell', 'Creating self signed ssl certificates'
+      # these are very insecure as I'm not generating new keys for everyone, this should only be used to test
+      # SSL on your web app before switching to signed keys from a trusted vendor
+      copy_from_includes 'secrets/sslcert.crt', path
+      copy_from_includes 'secrets/sslkey.key', path
     end
 
     private
+
+      def save_secret_string(file)
+        File.open(file, 'w+') { |f| f.write(SecureRandom.hex(64)) }
+      end
+
+      def update_secrets_path(secrets_path)
+        all_yaml_path = "#{secrets_path}/../inventory/group_vars/all.yml"
+
+        IO.write(all_yaml_path, File.open(all_yaml_path) do |f|
+          f.read.gsub('~/tmp/testproj/secrets/', secrets_path)
+        end
+        )
+      end
+
+      def copy_from_includes(file, destination_root_path)
+        base_path = "#{File.expand_path File.dirname(__FILE__)}/templates/includes"
+
+        log_message 'shell', "Creating #{file}"
+        run "cp #{base_path}/#{file} #{destination_root_path}/#{file}"
+      end
 
       def nuke_redis(namespace)
         log_message 'root', 'Removing redis keys'

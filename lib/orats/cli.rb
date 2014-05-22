@@ -8,12 +8,11 @@ module Orats
     option :pg_password, required: true
     option :redis_password, default: ''
     option :auth, type: :boolean, default: false, aliases: '-a'
-    option :skip_cook, type: :boolean, default: false, aliases: '-C'
     option :skip_extras, type: :boolean, default: false, aliases: '-E'
     option :skip_foreman_start, type: :boolean, default: false, aliases: '-F'
     desc 'new APP_PATH [options]', ''
     long_desc <<-D
-      `orats new myapp --pg-password supersecret` will create a new orats project and it will also create a chef cookbook to go with it by default.
+      `orats new myapp --pg-password supersecret` will create a new rails project and it will also create an ansible inventory to go with it by default.
 
       You must supply at least this flag:
 
@@ -25,7 +24,7 @@ module Orats
 
       `--pg-username` to supply a custom postgres username [postgres]
 
-      `--redis-password` to supply your development redis password [redis]
+      `--redis-password` to supply your development redis password []
 
       Template features:
 
@@ -33,9 +32,7 @@ module Orats
 
       Project features:
 
-      `--skip-cook` skip creating the cookbook [false]
-
-      `--skip-extras` skip creating the services directory and cookbook [false]
+      `--skip-extras` skip creating the services directory and ansible inventory/secrets [false]
 
       `--skip-foreman-start` skip automatically running puma and sidekiq [false]
     D
@@ -43,12 +40,12 @@ module Orats
       Command.new(app_name, options).new
     end
 
-    desc 'cook APP_PATH', ''
+    desc 'play PATH', ''
     long_desc <<-D
-      `orats cook myapp` will create a stand alone cookbook.
+      `orats play path` will create an ansible playbook.
     D
-    def cook(app_name)
-      Command.new(app_name).cook
+    def play(app_name)
+      Command.new(app_name).play
     end
 
     option :skip_data, type: :boolean, default: false, aliases: '-D'

@@ -1,8 +1,8 @@
 ## What is orats and what problem does it solve?
 
 It stands for opinionated rails application templates. The templates include solving tedious tasks that you would do for most
-projects. It handles creating a rails application with a bunch of opinions and optionally a chef cookbook so you can deploy
-your app quickly.
+projects. It handles creating a rails application with a bunch of opinions and optionally an ansible playbook so you can
+deploy your apps quickly.
 
 Everything is accessed through the [orats gem](#installation).
 
@@ -28,19 +28,12 @@ are locked using the pessimistic operator `~>` so you can be sure that everythin
 - Redis
     - Used as a sidekiq background worker and as the rails cache back end.
 
-### Additional system dependencies for creating cookbooks
+### Additional system dependencies for ansible
 
-`orats` is smart enough to skip trying to create a cookbook if it cannot find the necessary dependencies to successfully
-create the cookbook, but to successfully create a cookbook you must fulfil the requirements below:
+`orats` is smart enough to skip trying to create ansible related files if it cannot find the necessary dependencies to successfully
+use them. To successfully create ansible content you must fulfil the requirements below:
 
-- Chef is installed and setup in such a way that `knife` is on your system path.
-- Berkshelf has been gem installed and you can run `berks` from anywhere.
-
-Not sure what chef or berkshelf is? No problem, learn about chef from these resources:
-
-- [Learn chef course](https://learnchef.opscode.com/)
-- [Berkshelf readme](http://www.berkshelf.com/)
-- [Berkshelf tutorial series](http://misheska.com/blog/2013/06/16/getting-started-writing-chef-cookbooks-the-berkshelf-way/)
+- Ansible is installed and setup in such a way that `ansible` is on your system path.
 
 ## Contents
 
@@ -50,12 +43,10 @@ Not sure what chef or berkshelf is? No problem, learn about chef from these reso
 - Templates
     - [Base](#base)
     - [Authentication and authorization](#authentication-and-authorization)
-    - [Cookbook](#cookbook)
-        - [Overview](#the-cookbook-comes-with-the-following-features)
+    - [Playbook](#playbook)
+        - [Overview](#the-playbook-comes-with-the-following-features)
 - Sections
     - [Production tweaks](#production-tweaks)
-- Wikis
-    - [Chef walk through](https://github.com/nickjj/orats/wiki/Chef-walk-through)
 
 ## orats
 
@@ -77,12 +68,11 @@ running `orats <command name> help` from your terminal. You can also type `orats
     - Template features:
         - Optionally takes: `--auth [false]`
     - Project features:
-        - Optionally takes: `--skip-cook [false]`
         - Optionally takes: `--skip-extras [false]`
         - Optionally takes: `--skip-foreman-start [false]`
 
-- Create a stand alone chef cookbook
-    - `orats cook <APP_PATH>`
+- Create an ansible playbook
+    - `orats play <PATH>`
 
 - Delete the directory and optionally all data associated to it
     - `orats nuke <APP_PATH>`
@@ -134,9 +124,7 @@ Everything has been added with proper git commits so you have a trail of changes
 
 ### Try it
 
-`orats new myapp --pg-password <development postgres db password> -C`
-
-*We are running the command with `-C` to ignore creating a cookbook so the installation is faster.*
+`orats new myapp --pg-password <development postgres db password>`
 
 #### What's with the services directory?
 
@@ -218,89 +206,69 @@ I feel like this is the cleanest way to disable registrations while still allowi
 
 ### Try it
 
-`orats new myauthapp --pg-password <development postgres db password> --auth -C`
+`orats new myauthapp --pg-password <development postgres db password> --auth`
 
-*We are running the command with `-C` to ignore creating a cookbook so the installation is faster.*
-
-## Cookbook
+## Playbook
 
 Building your application is only one piece of the puzzle. If you want to ship your application you have to host it somewhere.
 You have a few options when it comes to managed hosts like Heroku but they tend to be very expensive if you fall out of
 their free tier.
 
-The cookbook template creates a chef cookbook that will provision a **ubuntu 12.04 LTS server**. It can be hosted anywhere
-as there are no hard requirements on any specific host. Chef is a server management framework. This template uses the
-application cookbook pattern and depends on Berkshelf. Berkshelf is very similar to bundler but for chef cookbooks.
+The playbook template creates an ansible playbook that will provision a **ubuntu 12.04 LTS server**. It can be hosted anywhere
+as there are no hard requirements on any specific host.
 
-### The cookbook comes with the following features
+### The playbook comes with the following features
 
 - Security
-    - A random username is generated each time you generate a new cookbook.
-    - A random ssh port is generated each time you generate a new cookbook.
     - Logging into the server is only possible with an SSH key.
     - fail2ban is setup.
-    - ufw (firewall) is setup to block any ports not exposed.
+    - ufw (firewall) is setup to block any ports not exposed by you.
     - All stack specific processes are running with less privileges than root.
 - Stack specific processes that are installed and configured
     - Nginx
     - Postgres
     - Redis
 - Runtimes
-    - Ruby 2.1.0 managed via rvm
+    - Ruby 2.1.x managed via rvm
     - Nodejs 0.10.x
-- Utils and features
-    - htop for emergency live monitoring
-    - logrotate with log rotation setup for anything that needs it.
-    - git
-    - A git repo in the deploy user's home directory which you can push to.
+- Git
+    - Pull in app code from a remote repo of your choice.
 
-### Cookbook structure
+All of this is provided by a series of ansible roles. You may also use these roles without orats. If you want to
+check out each role then here's a link to their repos:
 
-It is broken up into 5 recipes:
+- https://github.com/nickjj/ansible-user
+- https://github.com/nickjj/ansible-security
+- https://github.com/nickjj/ansible-nginx
+- https://github.com/nickjj/ansible-nodejs
+- https://github.com/nickjj/ansible-ruby
+- https://github.com/nickjj/ansible-rails
+- https://github.com/nickjj/ansible-postgres
+- https://github.com/DavidWittman/ansible-redis
 
-- Base
-- Database
-- Cache
-- Web
-- Default
-
-With the application style cookbook pattern it is a good idea to only run one recipe on your node. The default recipe
-just composes the other 4 together. This makes it trivial to break out past one node in the future. If you wanted to
-put your web server on server A and the database/cache servers on server B all you would have to do is create a new recipe
-called something like `database_cache` (the name is arbitrary) and pull in both the database and cache recipes.
-
-Then when you bootstrap the node you can tell it to use the new `database_cache` recipe. Awesome right? Yeah I know, chef rocks.
+You will need to install the roles onto your workstation before you can use them. You can do that by running this command:
+`ansible-galaxy install nickjj.user nickjj.security nickjj.postgres nickjj.ruby nickjj.nodejs nickjj.nginx nickjj.rails DavidWittman.redis --force`
 
 ### Try it
 
-`orats new mychefapp --pg-password <development postgres db password>`
+`orats play myrailsapp`
 
-#### Why is the cookbooks directory plural?
+Ansible is very powerful and flexible when it comes to managing infrastructure. If most of your rails apps have a similar stack
+then you can use a single playbook to run all of your apps. You can customize the details for each one by adjusting the inventory
+that gets generated for each app.
 
-It is not uncommon for some projects to have multiple cookbooks. Of course that is completely out of scope for orats but
-at least it generates a directory structure capable of sustaining multiple cookbooks.
+### The `inventory` and `secrets` directories
 
-### Tweakable attributes and meta data
+When you create a new orats app you'll get both of these directories added for you automatically unless you `--skip-extras`.
 
-You can quickly tweak a bunch of values by investigating the `attributes/default.rb` file. The values here are used in each
-recipe. They are also namespaced to match the recipe file that uses them.
+**The inventory directory** contains the files to setup your host addresses as well as configure your application using
+the parameters exposed by the various ansible roles.
 
-#### Are you experienced with chef?
+**The secrets directory** holds all of the passwords and sensitive information such as ssh keypairs or ssl certificates. They
+are not added to version control and these files will be copied to your server when you run the playbook.
 
-Nice, then you should know what to do from this point. Setup your encrypted data bag and bootstrap the node.
+#### First things first
 
-#### Do you need a full blown walk through?
-
-If you have very little chef experience and want to go through the steps of creating a new orats project with a cookbook,
-pushing it to a free managed chef server solution and bootstrapping a node then check out the
-[chef walk through on the wiki](https://github.com/nickjj/orats/wiki/Chef-walk-through).
-
-### The server is up but how do I deploy my application?
-
-This is another area where there are many options. You could use capistrano but you could also have chef manage the application
-deployment too. I have a few old capistrano 2.x scripts that work fine and I really do not have any intentions of porting
-them over to capistrano 3 scripts so they can be included as an orats template because I do not want to use capistrano anymore.
-
-I'm calling out to the community for help. Can a chef expert please leverage the `deploy` or `application` resources
-and provide us with a well documented solution to deploy a rails application with chef? Complete with runit scripts for
-ensuring puma and sidekiq are always running of course.
+Once you have an app generated make sure you check out the `inventory/group_vars/all.yml` file. You will want to make all
+of your configuration changes there. After that is up to you. If you want to learn more about ansible then check out the
+[getting started with ansible guide](http://docs.ansible.com/intro_getting_started.html).
