@@ -150,13 +150,10 @@ module Orats
       update_secrets_path secrets_path
 
       log_message 'shell', 'Creating ssh keypair'
-      run "echo '' | echo '' | echo #{secrets_path}/id_rsa | ssh-keygen -t rsa"
+      run "ssh-keygen -t rsa -P '' -f #{secrets_path}/id_rsa"
 
       log_message 'shell', 'Creating self signed ssl certificates'
-      # these are very insecure as I'm not generating new keys for everyone, this should only be used to test
-      # SSL on your web app before switching to signed keys from a trusted vendor
-      copy_from_includes 'secrets/sslcert.crt', path
-      copy_from_includes 'secrets/sslkey.key', path
+      run "openssl req -new -newkey rsa:4096 -days 365 -nodes -x509 -subj '/C=US/ST=Foo/L=Bar/O=Baz/CN=qux.com' -keyout #{secrets_path}/sslkey.key -out #{secrets_path}/sslcert.crt"
     end
 
     private
