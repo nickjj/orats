@@ -1,3 +1,5 @@
+[![Gem Version](https://badge.fury.io/rb/orats.png)](http://badge.fury.io/rb/orats)
+
 ## What is orats and what problem does it solve?
 
 It stands for opinionated rails application templates. The templates include solving tedious tasks that you would do for most
