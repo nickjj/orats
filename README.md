@@ -31,7 +31,7 @@ are locked using the pessimistic operator `~>` so you can be sure that everythin
 ### Additional system dependencies for ansible
 
 `orats` is smart enough to skip trying to create ansible related files if it cannot find the necessary dependencies to successfully
-use them. To successfully create ansible content you must fulfil the requirements below:
+use them. To successfully create ansible content you must fulfill the requirements below:
 
 - Ansible is installed and setup in such a way that `ansible` is on your system path.
 
