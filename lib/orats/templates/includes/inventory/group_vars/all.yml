@@ -93,3 +93,14 @@ nginx_upstream_name: "{{ rails_deploy_app_name }}"
 nginx_upstream_server: unix://{{ rails_deploy_path }}/tmp/puma.sock
 nginx_root_path: /home/{{ rails_deploy_user }}/{{ rails_deploy_app_name }}.git/public
 nginx_ssl_local_path: "{{ secrets_load_path }}"
+
+# monit configuration
+monit_process_list:
+  "{{ rails_deploy_app_name }}":
+    - check process {{ rails_deploy_app_name }} with pidfile {{ rails_deploy_path }}/tmp/{{ pumacorn_server }}.pid
+    -   start program = "/etc/init.d/{{ rails_deploy_app_name }} start"
+    -   stop program = "/etc/init.d/{{ rails_deploy_app_name }} stop"
+  "sidekiq":
+    - check process sidekiq with pidfile {{ rails_deploy_path }}/tmp/sidekiq.pid
+    -   start program = "/etc/init.d/sidekiq start"
+    -   stop program = "/etc/init.d/sidekiq stop"

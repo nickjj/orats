@@ -235,22 +235,26 @@ as there are no hard requirements on any specific host.
     - Nodejs 0.10.x
 - Git
     - Pull in app code from a remote repo of your choice.
+- Monit and init.d
+    - Both the app and sidekiq have init.d scripts and are actively monitored by monit
 
 All of this is provided by a series of ansible roles. You may also use these roles without orats. If you want to
 check out each role then here's a link to their repos:
 
-- https://github.com/nickjj/ansible-user
-- https://github.com/nickjj/ansible-security
-- https://github.com/nickjj/ansible-nginx
-- https://github.com/nickjj/ansible-nodejs
-- https://github.com/nickjj/ansible-ruby
-- https://github.com/nickjj/ansible-rails
-- https://github.com/nickjj/ansible-postgres
-- https://github.com/DavidWittman/ansible-redis
+- `nickjj.user` https://github.com/nickjj/ansible-user
+- `nickjj.security` https://github.com/nickjj/ansible-security
+- `nickjj.postgres` https://github.com/nickjj/ansible-postgres
+- `nickjj.ruby` https://github.com/nickjj/ansible-ruby
+- `nickjj.rails` https://github.com/nickjj/ansible-rails
+- `nickjj.pumacorn` https://github.com/nickjj/ansible-pumacorn
+- `nickjj.monit` https://github.com/nickjj/ansible-monit
+- `nickjj.nodejs` https://github.com/nickjj/ansible-nodejs
+- `nickjj.nginx` https://github.com/nickjj/ansible-nginx
+- `DavidWittman.redis` https://github.com/DavidWittman/ansible-redis
 
 You will need to install the roles onto your workstation before you can use them. You can do that by running this command:
 
-`ansible-galaxy install nickjj.user nickjj.security nickjj.postgres nickjj.ruby nickjj.nodejs nickjj.nginx nickjj.rails DavidWittman.redis --force`
+`ansible-galaxy install nickjj.user nickjj.security nickjj.postgres nickjj.ruby nickjj.nodejs nickjj.nginx nickjj.rails nickjj.pumacorn nickjj.monit DavidWittman.redis --force`
 
 ### Try it
 
