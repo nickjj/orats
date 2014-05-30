@@ -162,7 +162,7 @@ inject_into_file 'config/application.rb', after: "automatically loaded.\n" do <<
     config.cache_store = :redis_store, { host: ENV['#{app_name_upper}_CACHE_HOST'],
                                          port: ENV['#{app_name_upper}_CACHE_PORT'].to_i,
                                          db: ENV['#{app_name_upper}_CACHE_DATABASE'].to_i,
-                                         password: ENV['#{app_name_upper}_CACHE_PASSWORD'],
+                                         # password: ENV['#{app_name_upper}_CACHE_PASSWORD'].to_i,
                                          namespace: '#{app_name}::cache'
                                        }
 CODE

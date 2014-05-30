@@ -27,8 +27,9 @@ module Orats
     def gsub_redis_info
       log_message 'root', 'Adding the redis password'
 
-      gsub_file "#{@active_path}/config/initializers/sidekiq.rb", '//', '//:#{ENV[\'TESTPROJ_CACHE_PASSWORD\']}@'
+      gsub_file "#{@active_path}/config/initializers/sidekiq.rb", '//', "//:#{ENV['#{@app_name.upcase}_CACHE_PASSWORD']}@"
       gsub_file "#{@active_path}/.env", ': greatsecurity', ": #{@options[:redis_password]}"
+      gsub_file "#{@active_path}/config/application.rb", "# pass", "pass"
     end
 
     def gsub_project_path
@@ -157,7 +158,6 @@ module Orats
 
       log_message 'shell', 'Creating monit pem file'
       run "openssl req -new -newkey rsa:4096 -days 365 -nodes -x509 -subj '/C=US/ST=Foo/L=Bar/O=Baz/CN=qux.com' -keyout #{secrets_path}/monit.pem -out #{secrets_path}/monit.pem && openssl gendh 512 >> #{secrets_path}/monit.pem"
-
     end
 
     private
