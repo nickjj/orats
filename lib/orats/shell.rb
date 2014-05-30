@@ -141,14 +141,24 @@ module Orats
       run "mkdir #{secrets_path}"
 
       save_secret_string "#{secrets_path}/postgres_password"
-      save_secret_string "#{secrets_path}/redis_password"
+
+      if @options[:redis_password].empty?
+        run "touch #{secrets_path}/redis_password"
+      else
+        save_secret_string "#{secrets_path}/redis_password"
+      end
+      
       save_secret_string "#{secrets_path}/mail_password"
       save_secret_string "#{secrets_path}/rails_token"
       save_secret_string "#{secrets_path}/devise_token"
       save_secret_string "#{secrets_path}/devise_pepper_token"
 
       log_message 'shell', 'Modifying secrets path in group_vars/all.yml'
-      update_secrets_path secrets_path
+      gsub_file "#{path}/inventory/group_vars/all.yml", '~/tmp/testproj/secrets/', secrets_path
+
+      log_message 'shell', 'Modifying the place holder app name in group_vars/all.yml'
+      gsub_file "#{path}/inventory/group_vars/all.yml", 'testproj', File.basename(path)
+      gsub_file "#{path}/inventory/group_vars/all.yml", 'TESTPROJ', File.basename(path).upcase
 
       log_message 'shell', 'Creating ssh keypair'
       run "ssh-keygen -t rsa -P '' -f #{secrets_path}/id_rsa"
@@ -164,15 +174,6 @@ module Orats
 
       def save_secret_string(file)
         File.open(file, 'w+') { |f| f.write(SecureRandom.hex(64)) }
-      end
-
-      def update_secrets_path(secrets_path)
-        all_yaml_path = "#{secrets_path}/../inventory/group_vars/all.yml"
-
-        IO.write(all_yaml_path, File.open(all_yaml_path) do |f|
-          f.read.gsub('~/tmp/testproj/secrets/', secrets_path)
-        end
-        )
       end
 
       def copy_from_includes(file, destination_root_path)
