@@ -164,10 +164,10 @@ module Orats
       run "ssh-keygen -t rsa -P '' -f #{secrets_path}/id_rsa"
 
       log_message 'shell', 'Creating self signed ssl certificates'
-      run "openssl req -new -newkey rsa:4096 -days 365 -nodes -x509 -subj '/C=US/ST=Foo/L=Bar/O=Baz/CN=qux.com' -keyout #{secrets_path}/sslkey.key -out #{secrets_path}/sslcert.crt"
+      run "openssl req -new -newkey rsa:2048 -days 365 -nodes -x509 -subj '/C=US/ST=Foo/L=Bar/O=Baz/CN=qux.com' -keyout #{secrets_path}/sslkey.key -out #{secrets_path}/sslcert.crt"
 
       log_message 'shell', 'Creating monit pem file'
-      run "openssl req -new -newkey rsa:4096 -days 365 -nodes -x509 -subj '/C=US/ST=Foo/L=Bar/O=Baz/CN=qux.com' -keyout #{secrets_path}/monit.pem -out #{secrets_path}/monit.pem && openssl gendh 512 >> #{secrets_path}/monit.pem"
+      run "openssl req -new -newkey rsa:2048 -days 365 -nodes -x509 -subj '/C=US/ST=Foo/L=Bar/O=Baz/CN=qux.com' -keyout #{secrets_path}/monit.pem -out #{secrets_path}/monit.pem && openssl gendh 512 >> #{secrets_path}/monit.pem"
     end
 
     private
