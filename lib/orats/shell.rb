@@ -28,7 +28,7 @@ module Orats
       log_message 'root', 'Adding the redis password'
 
       gsub_file "#{@active_path}/config/initializers/sidekiq.rb", '//', "//:#{ENV['#{@app_name.upcase}_CACHE_PASSWORD']}@"
-      gsub_file "#{@active_path}/.env", ': greatsecurity', ": #{@options[:redis_password]}"
+      gsub_file "#{@active_path}/.env", 'HE_PASSWORD: ', "HE_PASSWORD: #{@options[:redis_password]}"
       gsub_file "#{@active_path}/config/application.rb", "# pass", "pass"
     end
 
@@ -154,7 +154,7 @@ module Orats
       save_secret_string "#{secrets_path}/devise_pepper_token"
 
       log_message 'shell', 'Modifying secrets path in group_vars/all.yml'
-      gsub_file "#{path}/inventory/group_vars/all.yml", '~/tmp/testproj/secrets/', secrets_path
+      gsub_file "#{path}/inventory/group_vars/all.yml", '~/tmp/testproj/secrets/', File.expand_path(secrets_path)
 
       log_message 'shell', 'Modifying the place holder app name in group_vars/all.yml'
       gsub_file "#{path}/inventory/group_vars/all.yml", 'testproj', File.basename(path)
