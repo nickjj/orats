@@ -152,7 +152,9 @@ file 'site.yml' do <<-TEXT
     - { role: nickjj.nodejs, tags: [app, nodejs] }
     - { role: nickjj.nginx, tags: [app, nginx] }
     - { role: nickjj.rails, tags: [app, rails] }
+    - { role: nickjj.whenever, tags: [app, rails] }
     - { role: nickjj.pumacorn, tags: [app, rails] }
+    - { role: nickjj.sidekiq, tags: [app, rails] }
     - { role: nickjj.monit, tags: [app, monit] }
 TEXT
 end
