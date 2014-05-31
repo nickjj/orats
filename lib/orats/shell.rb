@@ -146,6 +146,7 @@ module Orats
         run "touch #{secrets_path}/redis_password"
       else
         save_secret_string "#{secrets_path}/redis_password"
+        gsub_file "#{path}/inventory/group_vars/all.yml", 'redis_password: false', 'redis_password: true'
       end
       
       save_secret_string "#{secrets_path}/mail_password"
