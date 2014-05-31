@@ -118,7 +118,7 @@ RAILS_ENV: development
 #{app_name_upper}_CACHE_HOST: localhost
 #{app_name_upper}_CACHE_PORT: 6379
 #{app_name_upper}_CACHE_DATABASE: 0
-#{app_name_upper}_CACHE_PASSWORD: greatsecurity
+#{app_name_upper}_CACHE_PASSWORD:
 
 #{app_name_upper}_PUMA_THREADS_MIN: 0
 #{app_name_upper}_PUMA_THREADS_MAX: 1
