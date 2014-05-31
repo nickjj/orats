@@ -293,7 +293,7 @@ git commit: "-m 'Add the sitemap config'"
 
 file 'config/schedule.rb', <<-CODE
 every 1.day, at: '4:00 am' do
-  rake '-s sitemap:refresh'
+  rake 'sitemap:refresh'
 end
 CODE
 
