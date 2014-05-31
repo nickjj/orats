@@ -246,7 +246,9 @@ check out each role then here's a link to their repos:
 - `nickjj.postgres` https://github.com/nickjj/ansible-postgres
 - `nickjj.ruby` https://github.com/nickjj/ansible-ruby
 - `nickjj.rails` https://github.com/nickjj/ansible-rails
+- `nickjj.whenever` https://github.com/nickjj/ansible-whenever
 - `nickjj.pumacorn` https://github.com/nickjj/ansible-pumacorn
+- `nickjj.sidekiq` https://github.com/nickjj/ansible-sidekiq
 - `nickjj.monit` https://github.com/nickjj/ansible-monit
 - `nickjj.nodejs` https://github.com/nickjj/ansible-nodejs
 - `nickjj.nginx` https://github.com/nickjj/ansible-nginx
@@ -254,7 +256,7 @@ check out each role then here's a link to their repos:
 
 You will need to install the roles onto your workstation before you can use them. You can do that by running this command:
 
-`ansible-galaxy install nickjj.user nickjj.security nickjj.postgres nickjj.ruby nickjj.nodejs nickjj.nginx nickjj.rails nickjj.pumacorn nickjj.monit DavidWittman.redis --force`
+`ansible-galaxy install nickjj.user nickjj.security nickjj.postgres nickjj.ruby nickjj.nodejs nickjj.nginx nickjj.rails nickjj.whenever nickjj.pumacorn nickjj.sidekiq nickjj.monit DavidWittman.redis --force`
 
 ### Try it
 
