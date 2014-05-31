@@ -15,7 +15,6 @@ secrets_rails_token: "{{ lookup('password', secrets_load_path + 'rails_token') }
 secrets_devise_token: "{{ lookup('password', secrets_load_path + 'devise_token') }}"
 secrets_devise_pepper_token: "{{ lookup('password', secrets_load_path + 'devise_pepper_token') }}"
 
-
 # postgres login credentials
 postgres_user: "{{ user_name }}"
 postgres_password: "{{ secrets_postgres_password }}"
