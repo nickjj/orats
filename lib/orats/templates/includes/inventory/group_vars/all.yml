@@ -90,7 +90,7 @@ rails_deploy_env:
 nginx_base_domain: 0.0.0.0
 nginx_upstream_name: "{{ rails_deploy_app_name }}"
 nginx_upstream_server: unix://{{ rails_deploy_path }}/tmp/puma.sock
-nginx_root_path: /home/{{ rails_deploy_user }}/{{ rails_deploy_app_name }}.git/public
+nginx_root_path: "{{ rails_deploy_path }}/public"
 nginx_ssl_local_path: "{{ secrets_load_path }}"
 
 # monit configuration
