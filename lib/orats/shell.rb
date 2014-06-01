@@ -19,7 +19,7 @@ module Orats
     def gsub_postgres_info
       log_message 'root', 'Changing the postgres information'
 
-      gsub_file "#{@active_path}/.env", ': localhost', ": #{@options[:pg_location]}"
+      gsub_file "#{@active_path}/.env", 'DATABASE_HOST: localhost', "DATABASE_HOST: #{@options[:pg_location]}"
       gsub_file "#{@active_path}/.env", ': postgres', ": #{@options[:pg_username]}"
       gsub_file "#{@active_path}/.env", ': supersecrets', ": #{@options[:pg_password]}"
     end
@@ -29,7 +29,8 @@ module Orats
 
       gsub_file "#{@active_path}/config/initializers/sidekiq.rb", '//', "//:#{ENV['#{@app_name.upcase}_CACHE_PASSWORD']}@"
       gsub_file "#{@active_path}/.env", 'HE_PASSWORD: ', "HE_PASSWORD: #{@options[:redis_password]}"
-      gsub_file "#{@active_path}/config/application.rb", "# pass", "pass"
+      gsub_file "#{@active_path}/.env", 'CACHE_HOST: localhost', "CACHE_HOST: #{@options[:redis_location]}"
+      gsub_file "#{@active_path}/config/application.rb", '# pass', 'pass'
     end
 
     def gsub_project_path
