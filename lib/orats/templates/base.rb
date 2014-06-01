@@ -254,7 +254,6 @@ git commit: "-m 'Add the puma config'"
 file 'config/sidekiq.yml', <<-CODE
 ---
 :pidfile: <%= ENV['#{app_name_upper}_PROJECT_PATH'] %>/tmp/sidekiq.pid
-:logfile: <%= ENV['#{app_name_upper}_PROJECT_PATH'] %>/log/sidekiq.log
 :concurrency: <%= ENV['#{app_name_upper}_SIDEKIQ_CONCURRENCY'].to_i %>
 :queues:
   - default
