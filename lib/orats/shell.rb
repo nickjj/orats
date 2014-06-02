@@ -213,7 +213,7 @@ module Orats
         File.mtime(path).strftime("%m/%d/%Y at %I:%M%p")
       end
 
-      def compare_gem_to_playbook playbook
+      def compare_gem_to_playbook(playbook)
         roles = galaxy_file_contents.split
         playbook_file = IO.read(playbook)
         playbook_file_only = File.basename(playbook)
