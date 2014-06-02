@@ -12,6 +12,16 @@ module Orats
       puts        '-'*80, ''; sleep 0.25
     end
 
+    def log_status(type, message, color)
+      puts
+      say_status type, set_color(message, :bold), color
+    end
+
+    def log_status_under(type, message, color)
+      say_status type, message, color
+      puts
+    end
+
     def git_commit(message)
       run_from @active_path, "git add . && git commit -m '#{message}'"
     end
@@ -195,16 +205,6 @@ module Orats
       end
 
       compare_gem_to_playbook File.join(base_path, playbook_filename)
-    end
-
-    def log_status(type, message, color)
-      puts
-      say_status type, set_color(message, :bold), color
-    end
-
-    def log_status_under(type, message, color)
-      say_status type, message, color
-      puts
     end
 
     private
