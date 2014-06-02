@@ -201,7 +201,7 @@ module Orats
         say_status  'error', "\e[1mCould not find #{playbook_filename} in:\e[0m", :red
         say_status  'path', base_path, :yellow
 
-        return
+        exit 1
       end
 
       compare_gem_to_playbook File.join(base_path, playbook_filename)
