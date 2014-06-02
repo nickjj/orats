@@ -74,7 +74,7 @@ running `orats <command name> help` from your terminal. You can also type `orats
         - Optionally takes: `--skip-extras [false]`
         - Optionally takes: `--skip-foreman-start [false]`
     - Ansible features:
-        - Optionally takes: `--sudo_password []`
+        - Optionally takes: `--sudo-password []`
         - Optionally takes: `--skip-galaxy [false]`
 
 - Create an ansible playbook
