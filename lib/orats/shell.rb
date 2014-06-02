@@ -170,9 +170,32 @@ module Orats
 
       log_message 'shell', 'Creating monit pem file'
       run "openssl req -new -newkey rsa:2048 -days 365 -nodes -x509 -subj '/C=US/ST=Foo/L=Bar/O=Baz/CN=qux.com' -keyout #{secrets_path}/monit.pem -out #{secrets_path}/monit.pem && openssl gendh 512 >> #{secrets_path}/monit.pem"
+
+      install_role_dependencies unless @options[:skip_galaxy]
     end
 
     private
+
+      def install_role_dependencies
+        log_message 'shell', 'Updating ansible roles from the galaxy'
+        roles_formatted = IO.read("#{File.expand_path File.dirname(__FILE__)}/templates/includes/Galaxyfile")
+                            .gsub(/\r?\n/, ' ')
+
+        puts roles_formatted
+
+        galaxy_install = "ansible-galaxy install #{roles_formatted} --force"
+        galaxy_out = run(galaxy_install, capture: true)
+
+        if galaxy_out.include?('you do not have permission')
+          if @options[:sudo_password].empty?
+            sudo_galaxy_command = 'sudo'
+          else
+            sudo_galaxy_command = "echo #{@options[:sudo_password]} | sudo -S"
+          end
+
+          run("#{sudo_galaxy_command} #{galaxy_install}")
+        end
+      end
 
       def save_secret_string(file)
         File.open(file, 'w+') { |f| f.write(SecureRandom.hex(64)) }

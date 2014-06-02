@@ -11,6 +11,8 @@ module Orats
     option :auth, type: :boolean, default: false, aliases: '-a'
     option :skip_extras, type: :boolean, default: false, aliases: '-E'
     option :skip_foreman_start, type: :boolean, default: false, aliases: '-F'
+    option :sudo_password, default: ''
+    option :skip_galaxy, type: :boolean, default: false, aliases: '-G'
     desc 'new APP_PATH [options]', ''
     long_desc <<-D
       `orats new myapp --pg-password supersecret` will create a new rails project and it will also create an ansible inventory to go with it by default.
@@ -38,6 +40,12 @@ module Orats
       `--skip-extras` skip creating the services directory and ansible inventory/secrets [false]
 
       `--skip-foreman-start` skip automatically running puma and sidekiq [false]
+
+      Ansible features:
+
+      `--sudo-password` to install ansible roles from the galaxy to a path outside of your user privileges []
+
+      `--skip-galaxy` skip automatically installing roles from the galaxy [false]
     D
     def new(app_name)
       Command.new(app_name, options).new

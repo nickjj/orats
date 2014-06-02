@@ -73,6 +73,9 @@ running `orats <command name> help` from your terminal. You can also type `orats
     - Project features:
         - Optionally takes: `--skip-extras [false]`
         - Optionally takes: `--skip-foreman-start [false]`
+    - Ansible features:
+        - Optionally takes: `--sudo_password []`
+        - Optionally takes: `--skip-galaxy [false]`
 
 - Create an ansible playbook
     - `orats play <PATH>`
@@ -255,9 +258,11 @@ check out each role then here's a link to their repos:
 - `nickjj.nginx` https://github.com/nickjj/ansible-nginx
 - `DavidWittman.redis` https://github.com/DavidWittman/ansible-redis
 
-You will need to install the roles onto your workstation before you can use them. You can do that by running this command:
+The roles will automatically be installed and updated whenever you generate a new application unless you specify the
+`--skip-galaxy` flag. Remember you can also pass in `--sudo-password` so you don't get prompted for a password in 
+case you have ansible installed to `/etc/ansible` or somewhere that requires elevated privileges.
 
-`ansible-galaxy install nickjj.user nickjj.security nickjj.postgres nickjj.ruby nickjj.nodejs nickjj.nginx nickjj.rails nickjj.whenever nickjj.pumacorn nickjj.sidekiq nickjj.monit DavidWittman.redis --force`
+It will only try to run the `ansible-galaxy install` command with sudo when it fails with a permission error first.
 
 ### Try it
 
