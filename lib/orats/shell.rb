@@ -194,7 +194,6 @@ module Orats
         end
       end
 
-
       compare_gem_to_playbook playbook
     end
 
