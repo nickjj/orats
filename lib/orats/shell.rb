@@ -174,18 +174,95 @@ module Orats
       install_role_dependencies unless @options[:skip_galaxy]
     end
 
+    def outdated_playbook
+      base_path = File.expand_path(@app_name)
+      playbook = File.join(base_path, 'site.yml')
+
+      log_status 'info', 'Detecting outdated playbook in:', :blue
+      log_status_under 'path', base_path, :cyan
+
+      unless File.exist?(playbook)
+        yaml_files = Dir["#{base_path}/*.yml"]
+
+        if yaml_files.empty?
+          say_status  'error', "\e[1mCould not find any yaml files in:\e[0m", :red
+          say_status  'path', base_path, :yellow
+
+          return
+        else
+          playbook = yaml_files.first
+        end
+      end
+
+
+      compare_gem_to_playbook playbook
+    end
+
+    def log_status(type, message, color)
+      puts
+      say_status type, set_color(message, :bold), color
+    end
+
+    def log_status_under(type, message, color)
+      say_status type, message, color
+      puts
+    end
+
     private
+
+      def mtime_formatted(path)
+        File.mtime(path).strftime("%m/%d/%Y at %I:%M%p")
+      end
+
+      def compare_gem_to_playbook playbook
+        roles = galaxy_file_contents.split
+        playbook_file = IO.read(playbook)
+        playbook_file_only = File.basename(playbook)
+        yes_count = 0
+
+        say_status  'mtime for', "\e[1m#{playbook_file_only}:\e[0m", :yellow
+        say_status 'yours', mtime_formatted(playbook), :white
+        say_status "v#{VERSION}", mtime_formatted("#{File.expand_path File.dirname(__FILE__)}/templates/play.rb"), :white
+
+        puts
+
+        say_status  'roles in', "\e[1m#{playbook_file_only}:\e[0m", :yellow
+
+        roles.each do |role|
+          role_name = role.split(',').first
+
+          if playbook_file.include?(role_name)
+            say_status 'yes', role_name, :green
+            yes_count += 1
+          else
+            say_status 'no', role_name, :red
+          end
+        end
+
+        puts
+
+        if yes_count == roles.size
+          say_status 'results', "All #{yes_count} roles were found", :magenta
+          say_status 'outcome', 'Chances are your playbook is up to date', :white
+        else
+          say_status 'results', "#{roles.size - yes_count} roles were missing", :red
+          say_status 'outcome', 'You should probably generate a new playbook', :yellow
+        end
+      end
 
       def create_rsa_certificate(secrets_path, keyout, out)
         "openssl req -new -newkey rsa:2048 -days 365 -nodes -x509 -subj '/C=US/ST=Foo/L=Bar/O=Baz/CN=qux.com' -keyout #{secrets_path}/#{keyout} -out #{secrets_path}/#{out}"
       end
 
+      def galaxy_file_contents
+        IO.read("#{File.expand_path File.dirname(__FILE__)}/templates/includes/Galaxyfile")
+        .gsub(/\r?\n/, ' ')
+      end
+
       def install_role_dependencies
         log_message 'shell', 'Updating ansible roles from the galaxy'
-        roles_formatted = IO.read("#{File.expand_path File.dirname(__FILE__)}/templates/includes/Galaxyfile")
-                            .gsub(/\r?\n/, ' ')
 
-        galaxy_install = "ansible-galaxy install #{roles_formatted} --force"
+        galaxy_install = "ansible-galaxy install #{galaxy_file_contents} --force"
         galaxy_out = run(galaxy_install, capture: true)
 
         if galaxy_out.include?('you do not have permission')

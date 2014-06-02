@@ -72,6 +72,14 @@ module Orats
       Command.new(app_name, options).nuke
     end
 
+    desc 'outdated PLAYBOOK_PATH', ''
+    long_desc <<-D
+      `orats outdated playbookpath` will compare your playbook to the latest version relative to this gem's version.
+    D
+    def outdated(app_name)
+      Command.new(app_name).outdated
+    end
+
     desc 'version', ''
     long_desc <<-D
       `orats version` will print the current version.

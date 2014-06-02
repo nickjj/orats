@@ -65,6 +65,22 @@ class TestCLI < Minitest::Test
     assert_nuked app_name
   end
 
+  def test_outdated
+    app_name = generate_app_name
+
+    out, err = capture_subprocess_io do
+      orats "play #{app_name}"
+    end
+    assert_match /success/, out
+
+    out, err = capture_subprocess_io do
+      orats "outdated #{app_name}"
+    end
+    assert_match /Chances are your playbook is up to date/, out
+
+    assert_nuked app_name
+  end
+
   def test_version
     out, err = capture_subprocess_io do
       orats 'version'
