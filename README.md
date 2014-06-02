@@ -132,6 +132,11 @@ Everything has been added with proper git commits so you have a trail of changes
 
 `orats new myapp --pg-password <development postgres db password>`
 
+Towards the end of the run you might get prompted for a sudo password if you have not skipped installing the ansible
+roles from the galaxy. It will only try to use sudo if it fails with a permission error first.
+
+You can also provide a `--sudo-password=foo` flag to set your password so orats can finish without any user input.
+
 #### What's with the services directory?
 
 It is just a naming convention that I like to apply, you can name it whatever you want later or remove it with a flag. My thought
@@ -258,11 +263,7 @@ check out each role then here's a link to their repos:
 - `nickjj.nginx` https://github.com/nickjj/ansible-nginx
 - `DavidWittman.redis` https://github.com/DavidWittman/ansible-redis
 
-The roles will automatically be installed and updated whenever you generate a new application unless you specify the
-`--skip-galaxy` flag. Remember you can also pass in `--sudo-password` so you don't get prompted for a password in 
-case you have ansible installed to `/etc/ansible` or somewhere that requires elevated privileges.
-
-It will only try to run the `ansible-galaxy install` command with sudo when it fails with a permission error first.
+All of the above roles will get installed and updated whenever you generate a `new` orats application.
 
 ### Try it
 
