@@ -1,10 +1,10 @@
 nickjj.user,v0.1.0
 nickjj.security,v0.1.1
 nickjj.postgres,v0.1.1
-nickjj.ruby,v0.1.0
+nickjj.ruby,v0.1.1
 nickjj.nodejs,v0.1.1
 nickjj.nginx,v0.1.3
-nickjj.rails,v0.1.8
+nickjj.rails,v0.1.9
 nickjj.whenever,v0.1.0
 nickjj.pumacorn,v0.1.1
 nickjj.sidekiq,v0.1.1
