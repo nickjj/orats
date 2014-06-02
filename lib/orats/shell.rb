@@ -181,8 +181,6 @@ module Orats
         roles_formatted = IO.read("#{File.expand_path File.dirname(__FILE__)}/templates/includes/Galaxyfile")
                             .gsub(/\r?\n/, ' ')
 
-        puts roles_formatted
-
         galaxy_install = "ansible-galaxy install #{roles_formatted} --force"
         galaxy_out = run(galaxy_install, capture: true)
 
