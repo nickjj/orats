@@ -86,6 +86,7 @@ running `orats <command name> help` from your terminal. You can also type `orats
 
 - Detect whether or not a playbook is outdated
     - `orats outdated <PLAYBOOK_PATH>`
+    - Optionally takes: `--filename []`
 
 
 #### Why is it asking me for my development postgres password?
@@ -106,6 +107,9 @@ it gets the job done for cases where your playbook might be 2 months out of date
 been added.
 
 It also compares the mtime between your playbook and the latest one relative to the version you have installed.
+
+If you renamed your playbook file to something other than `site.yml` then you can pass it into the outdated command
+with the `--filename=mycustomfilename` flag. It will work with and without the `.yml` extension.
 
 ## Base
 

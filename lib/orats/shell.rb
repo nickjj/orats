@@ -176,25 +176,25 @@ module Orats
 
     def outdated_playbook
       base_path = File.expand_path(@app_name)
-      playbook = File.join(base_path, 'site.yml')
+
+      if @options[:filename].empty?
+        playbook_filename = 'site.yml'
+      else
+        playbook_filename = @options[:filename]
+        playbook_filename << '.yml' unless playbook_filename.end_with?('.yml')
+      end
 
       log_status 'info', 'Detecting outdated playbook in:', :blue
       log_status_under 'path', base_path, :cyan
 
-      unless File.exist?(playbook)
-        yaml_files = Dir["#{base_path}/*.yml"]
+      unless File.exist?("#{base_path}/#{playbook_filename}")
+        say_status  'error', "\e[1mCould not find #{playbook_filename} in:\e[0m", :red
+        say_status  'path', base_path, :yellow
 
-        if yaml_files.empty?
-          say_status  'error', "\e[1mCould not find any yaml files in:\e[0m", :red
-          say_status  'path', base_path, :yellow
-
-          return
-        else
-          playbook = yaml_files.first
-        end
+        return
       end
 
-      compare_gem_to_playbook playbook
+      compare_gem_to_playbook File.join(base_path, playbook_filename)
     end
 
     def log_status(type, message, color)

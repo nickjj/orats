@@ -72,12 +72,17 @@ module Orats
       Command.new(app_name, options).nuke
     end
 
+    option :filename, default: ''
     desc 'outdated PLAYBOOK_PATH', ''
     long_desc <<-D
       `orats outdated playbookpath` will compare your playbook to the latest version relative to this gem's version.
+
+      Options:
+
+      `--filename` to supply a playbook filename when it is not site.yml []
     D
     def outdated(app_name)
-      Command.new(app_name).outdated
+      Command.new(app_name, options).outdated
     end
 
     desc 'version', ''
