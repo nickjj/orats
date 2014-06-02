@@ -166,15 +166,19 @@ module Orats
       run "ssh-keygen -t rsa -P '' -f #{secrets_path}/id_rsa"
 
       log_message 'shell', 'Creating self signed ssl certificates'
-      run "openssl req -new -newkey rsa:2048 -days 365 -nodes -x509 -subj '/C=US/ST=Foo/L=Bar/O=Baz/CN=qux.com' -keyout #{secrets_path}/sslkey.key -out #{secrets_path}/sslcert.crt"
+      run create_rsa_certificate(secrets_path, 'sslkey.key', 'sslcert.crt')
 
       log_message 'shell', 'Creating monit pem file'
-      run "openssl req -new -newkey rsa:2048 -days 365 -nodes -x509 -subj '/C=US/ST=Foo/L=Bar/O=Baz/CN=qux.com' -keyout #{secrets_path}/monit.pem -out #{secrets_path}/monit.pem && openssl gendh 512 >> #{secrets_path}/monit.pem"
+      run "#{create_rsa_certificate(secrets_path, 'monit.pem', 'monit.pem')} && openssl gendh 512 >> #{secrets_path}/monit.pem"
 
       install_role_dependencies unless @options[:skip_galaxy]
     end
 
     private
+
+      def create_rsa_certificate(secrets_path, keyout, out)
+        "openssl req -new -newkey rsa:2048 -days 365 -nodes -x509 -subj '/C=US/ST=Foo/L=Bar/O=Baz/CN=qux.com' -keyout #{secrets_path}/#{keyout} -out #{secrets_path}/#{out}"
+      end
 
       def install_role_dependencies
         log_message 'shell', 'Updating ansible roles from the galaxy'
