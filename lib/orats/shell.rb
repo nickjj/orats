@@ -214,7 +214,7 @@ module Orats
       end
 
       def compare_gem_to_playbook(playbook)
-        roles = galaxy_file_contents.split
+        roles = IO.read(galaxy_file_path).split
         playbook_file = IO.read(playbook)
         playbook_file_only = File.basename(playbook)
         yes_count = 0
@@ -253,15 +253,14 @@ module Orats
         "openssl req -new -newkey rsa:2048 -days 365 -nodes -x509 -subj '/C=US/ST=Foo/L=Bar/O=Baz/CN=qux.com' -keyout #{secrets_path}/#{keyout} -out #{secrets_path}/#{out}"
       end
 
-      def galaxy_file_contents
-        IO.read("#{File.expand_path File.dirname(__FILE__)}/templates/includes/Galaxyfile")
-        .gsub(/\r?\n/, ' ')
+      def galaxy_file_path
+        "#{File.expand_path File.dirname(__FILE__)}/templates/includes/Galaxyfile"
       end
 
       def install_role_dependencies
         log_message 'shell', 'Updating ansible roles from the galaxy'
 
-        galaxy_install = "ansible-galaxy install #{galaxy_file_contents} --force"
+        galaxy_install = "ansible-galaxy install -r #{galaxy_file_path} --force"
         galaxy_out = run(galaxy_install, capture: true)
 
         if galaxy_out.include?('you do not have permission')
