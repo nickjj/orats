@@ -74,9 +74,9 @@ class TestCLI < Minitest::Test
     assert_match /success/, out
 
     out, err = capture_subprocess_io do
-      orats "outdated #{app_name}"
+      orats 'outdated'
     end
-    assert_match /Chances are your playbook is up to date/, out
+    assert_match /Comparing this version of/, out
 
     assert_nuked app_name
   end
