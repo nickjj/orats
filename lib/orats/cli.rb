@@ -72,17 +72,26 @@ module Orats
       Command.new(app_name, options).nuke
     end
 
-    option :filename, default: ''
-    desc 'outdated PLAYBOOK_PATH', ''
+    option :playbook_file, default: ''
+    option :inventory_file, default: ''
+    desc 'outdated [options]', ''
     long_desc <<-D
-      `orats outdated playbookpath` will compare your playbook to the latest version relative to this gem's version.
+      `orats outdated` will run various comparisons on your ansible files.
+
+      Help:
+
+      `The green/yellow labels` denote a remote check to compare the files contained in your version of orats to the latest files on github.
+
+      `The blue/cyan labels` denote a local check between the files contained in your version of orats to the files you have generated such as your own playbook or inventories.
 
       Options:
 
-      `--filename` to supply a playbook filename when it is not site.yml []
+      `--playbook-file` to supply a playbook file for comparison []
+
+      `--inventory-file` to supply an inventory file for comparison []
     D
-    def outdated(app_name)
-      Command.new(app_name, options).outdated
+    def outdated
+      Command.new(nil, options).outdated
     end
 
     desc 'version', ''
@@ -95,6 +104,7 @@ module Orats
     map %w(-v --version) => :version
 
     private
+
       def invoked?
         caller_locations(0).any? { |backtrace| backtrace.label == 'invoke' }
       end

@@ -88,7 +88,7 @@ module Orats
     end
 
     def outdated
-      outdated_playbook
+      outdated_init
     end
 
     def version

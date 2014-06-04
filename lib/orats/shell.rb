@@ -1,4 +1,5 @@
 require 'securerandom'
+require 'open-uri'
 
 module Orats
   module Shell
@@ -20,6 +21,11 @@ module Orats
     def log_status_under(type, message, color)
       say_status type, message, color
       puts
+    end
+
+    def log_results(results, message)
+      log_status 'results', results, :magenta
+      log_status_under 'message', message, :white
     end
 
     def git_commit(message)
@@ -184,69 +190,223 @@ module Orats
       install_role_dependencies unless @options[:skip_galaxy]
     end
 
-    def outdated_playbook
-      base_path = File.expand_path(@app_name)
+    def outdated_init
+      github_repo = 'https://raw.githubusercontent.com/nickjj/orats/master/lib/orats'
 
-      if @options[:filename].empty?
-        playbook_filename = 'site.yml'
-      else
-        playbook_filename = @options[:filename]
-        playbook_filename << '.yml' unless playbook_filename.end_with?('.yml')
+      version_url = "#{github_repo}/version.rb"
+      galaxy_url = "#{github_repo}/templates/includes/Galaxyfile"
+      playbook_url = "#{github_repo}/templates/play.rb"
+      inventory_url = "#{github_repo}/templates/includes/inventory/group_vars/all.yml"
+
+      remote_version_contents = url_to_string(version_url)
+      remote_galaxy_contents = url_to_string(galaxy_url)
+      remote_playbook_contents = url_to_string(playbook_url)
+      remote_inventory_contents = url_to_string(inventory_url)
+
+      compare_gem_version remote_version_contents
+
+      compare_remote_role_version_to_local remote_galaxy_contents
+
+      local_playbook = compare_remote_to_local('playbook',
+                              'roles',
+                              playbook_file_stats(remote_playbook_contents),
+                              playbook_file_stats(IO.read(playbook_file_path)))
+
+      local_inventory = compare_remote_to_local('inventory',
+                              'variables',
+                              inventory_file_stats(remote_inventory_contents),
+                              inventory_file_stats(IO.read(inventory_file_path)))
+
+      unless @options[:playbook_file].empty?
+        compare_user_to_local('playbook', 'roles', @options[:playbook_file], local_playbook) do
+          playbook_file_stats IO.read(@options[:playbook_file])
+        end
       end
 
-      log_status 'info', 'Detecting outdated playbook in:', :blue
-      log_status_under 'path', base_path, :cyan
-
-      unless File.exist?("#{base_path}/#{playbook_filename}")
-        say_status  'error', "\e[1mCould not find #{playbook_filename} in:\e[0m", :red
-        say_status  'path', base_path, :yellow
-
-        exit 1
+      unless @options[:inventory_file].empty?
+        compare_user_to_local('inventory', 'variables', @options[:inventory_file], local_inventory) do
+          inventory_file_stats IO.read(@options[:inventory_file])
+        end
       end
-
-      compare_gem_to_playbook File.join(base_path, playbook_filename)
     end
 
     private
 
-      def mtime_formatted(path)
-        File.mtime(path).strftime("%m/%d/%Y at %I:%M%p")
+      def inventory_file_stats(file)
+        # pluck out all of the values contained with {{ }}
+        ansible_variable_list = file.scan(/\{\{([^{{}}]*)\}\}/)
+
+        # remove the leading space
+        ansible_variable_list.map! { |line| line.first[0] = '' }
+
+        # match every line that is not a comment and contains a colon
+        inventory_variable_list = file.scan(/^[^#].*:/)
+
+        inventory_variable_list.map! do |line|
+          # only strip lines that need it
+          line.strip! if line.include?(' ') || line.include?("\n")
+
+          # get rid of the trailing colon
+          line.chomp(':')
+
+          # if a value of a certain variable has a colon then the regex
+          # picks this up as a match. only take the variable name
+          # if this happens to occur
+          line.split(':').first if line.include?(':')
+        end
+
+        (ansible_variable_list + inventory_variable_list).uniq
       end
 
-      def compare_gem_to_playbook(playbook)
-        roles = IO.read(galaxy_file_path).split
-        playbook_file = IO.read(playbook)
-        playbook_file_only = File.basename(playbook)
-        yes_count = 0
+      def playbook_file_stats(file)
+        # match every line that is not a comment and has a role defined
+        roles_list = file.scan(/^.*role:.*/)
 
-        say_status  'mtime for', "\e[1m#{playbook_file_only}:\e[0m", :yellow
-        say_status 'yours', mtime_formatted(playbook), :white
-        say_status "v#{VERSION}", mtime_formatted("#{File.expand_path File.dirname(__FILE__)}/templates/play.rb"), :white
+        roles_list.map! do |line|
+          # only strip lines that need it
+          line.strip! if line.include?(' ') || line.include?("\n")
 
-        puts
+          role_parts = line.split('role:')
 
-        say_status  'roles in', "\e[1m#{playbook_file_only}:\e[0m", :yellow
+          line = role_parts[1]
 
-        roles.each do |role|
-          role_name = role.split(',').first
+          if line.include?(',')
+            line = line.split(',').first
+          end
 
-          if playbook_file.include?(role_name)
-            say_status 'yes', role_name, :green
-            yes_count += 1
+          line.strip! if line.include?(' ')
+        end
+
+        roles_list.reject! { |line| line.start_with?('#') }
+
+        roles_list.uniq
+      end
+
+      def compare_gem_version(latest_contents)
+        latest = latest_contents.match(/\'(.*)\'/)[1..-1].first
+
+        log_status 'gem', 'Comparing this version of orats to the latest orats version:', :green
+        log_status_under 'version', "Latest: v#{latest}, Yours: v#{VERSION}", :yellow
+      end
+
+      def compare_remote_role_version_to_local(remote_galaxy_contents)
+        remote_galaxy_list = remote_galaxy_contents.split
+        local_galaxy_contents = IO.read(galaxy_file_path)
+        local_galaxy_list = local_galaxy_contents.split
+
+        galaxy_difference = remote_galaxy_list - local_galaxy_list
+
+        local_role_count = local_galaxy_list.size
+        different_roles = galaxy_difference.size
+
+        log_status 'roles', "Comparing this version of orats' roles to the latest version:", :green
+
+        if different_roles == 0
+          log_status_under 'message', "All #{local_role_count} roles are up to date", :yellow
+        else
+          log_status_under 'message', "There are #{different_roles} differences", :yellow
+
+          galaxy_difference.each do |role_line|
+            name = role_line.split(',').first
+            status = 'outdated'
+            color = :yellow
+
+            unless local_galaxy_contents.include?(name)
+              status = 'missing'
+              color = :red
+            end
+
+            say_status status, name, color
+          end
+
+          log_results 'The latest version of orats may benefit you:', 'Check github to see if the changes interest you'
+        end
+      end
+
+      def compare_remote_to_local(label, keyword, remote_list, local_list)
+        list_difference = remote_list - local_list
+
+        remote_count = list_difference.size#log_unmatched remote_list, local_list, 'remote', :yellow
+
+        log_status label, "Comparing this version of orats' #{label} to the latest version:", :green
+        log_status_under 'file', label == 'playbook' ? 'site.yml' : 'all.yml', :yellow
+
+        list_difference.each do |line|
+          say_status 'missing', line, :red unless local_list.include?(line)
+        end
+
+        if remote_count > 0
+          log_results "#{remote_count} new #{keyword} are available:", 'You may benefit from upgrading to the latest orats'
+        else
+          log_results 'Everything appears to be in order:', "No missing #{keyword} were found"
+        end
+
+        local_list
+      end
+
+      def compare_user_to_local(label, keyword, user_path, local_list)
+        if File.exist?(user_path) && File.file?(user_path)
+          user_list = yield
+
+          just_file_name = user_path.split('/').last
+
+          log_status label, "Comparing this version of orats' #{label} to #{just_file_name}:", :blue
+          log_status_under 'path', user_path, :cyan
+
+          # really ugly hack to not count rails ENV variables as "missing" for each inventory that was generated
+          local_list = local_list.join("\n").gsub!('TESTPROJ_', '').split("\n") if label == 'inventory'
+
+          missing_count = log_unmatched local_list, user_list, 'missing', :red
+          extra_count = log_unmatched user_list, local_list, 'extra', :yellow
+
+          if missing_count > 0
+            log_results "#{missing_count} #{keyword} are missing:", "Your ansible run will likely fail with this #{label}"
           else
-            say_status 'no', role_name, :red
+            log_results 'Everything appears to be in order:', "No missing #{keyword} were found"
+          end
+
+          if extra_count > 0
+            log_results "#{extra_count} extra #{keyword} were detected:", "No problem but remember to add them to a future #{keyword}"
+          else
+            log_results "No extra #{keyword} were found:", "Extra #{keyword} are fine but you have none"
+          end
+        else
+          log_status label, "Comparing this version of orats' #{label} to ???:", :blue
+          puts
+          say_status 'error', "\e[1mError comparing #{label}:\e[0m", :red
+          say_status 'path', user_path, :yellow
+          say_status 'help', 'Make sure you supply a file name', :white
+        end
+      end
+
+      def url_to_string(url)
+        begin
+          file_contents = open(url).read
+        rescue OpenURI::HTTPError => ex
+          say_status 'error', "\e[1mError browsing #{url}:\e[0m", :red
+          say_status 'msg', ex, :yellow
+          exit 1
+        end
+
+        file_contents
+      end
+
+      def log_unmatched(compare, against, label, color)
+        count = 0
+
+        against = against.join
+
+        compare.each do |item|
+          unless against.include?(item)
+            # really ugly hack to not count rails ENV variables as "extra" for each inventory that was generated
+            unless item == item.upcase && item.count('_') > 1
+              say_status label, item, color
+              count += 1
+            end
           end
         end
 
-        puts
-
-        if yes_count == roles.size
-          say_status 'results', "All #{yes_count} roles were found", :magenta
-          say_status 'outcome', 'Chances are your playbook is up to date', :white
-        else
-          say_status 'results', "#{roles.size - yes_count} roles were missing", :red
-          say_status 'outcome', 'You should probably generate a new playbook', :yellow
-        end
+        count
       end
 
       def create_rsa_certificate(secrets_path, keyout, out)
@@ -255,6 +415,14 @@ module Orats
 
       def galaxy_file_path
         "#{File.expand_path File.dirname(__FILE__)}/templates/includes/Galaxyfile"
+      end
+
+      def inventory_file_path
+        "#{File.expand_path File.dirname(__FILE__)}/templates/includes/inventory/group_vars/all.yml"
+      end
+
+      def playbook_file_path
+        "#{File.expand_path File.dirname(__FILE__)}/templates/play.rb"
       end
 
       def install_role_dependencies

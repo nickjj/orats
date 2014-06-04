@@ -84,10 +84,10 @@ running `orats <command name> help` from your terminal. You can also type `orats
     - `orats nuke <APP_PATH>`
     - Optionally takes: `--skip-data [false]`
 
-- Detect whether or not a playbook is outdated
-    - `orats outdated <PLAYBOOK_PATH>`
-    - Optionally takes: `--filename []`
-
+- Detect whether or not orats, the playbook or inventory is outdated
+    - `orats outdated [options]`
+    - Optionally takes: `--playbook-file []`
+    - Optionally takes: `--inventory-file []`
 
 #### Why is it asking me for my development postgres password?
 
@@ -97,19 +97,21 @@ location will be `localhost` and the username will be `postgres` so these values
 
 Remember, this is only your development postgres password. It will **never** ask for your production passwords.
 
-#### Is the outdated playbook detection guaranteed to be accurate?
+#### Is the outdated detection guaranteed to be accurate?
 
-No, because you may decide to change the playbook so I can't just do a checksum comparison. What it does is get a list of
-roles used in the latest playbook given your installed version of orats.
+The version comparisons can be fully trusted but when comparing a specific playbook or inventory file it's not really
+possible to guarantee a valid comparison.
 
-Then it looks through your playbook and compares each role to your playbook to see if it's there. It's fairly naive but
-it gets the job done for cases where your playbook might be 2 months out of date and you want to see if new roles have
-been added.
+When passing in `--playbook-file` or `--inventory-file` it will look for certain keywords in the file. If it finds the
+keyword then it will assume that keyword is working and up to date. Since you can edit these files freely there may be
+cases where it reports a false positive.
 
-It also compares the mtime between your playbook and the latest one relative to the version you have installed.
+It's better than nothing and it also doubles as an upgrade guide too if you wanted to add in new role lines to your
+playbook file or paste in a few new variables in your inventory that exist in a newer version of orats that you planned
+to update.
 
-If you renamed your playbook file to something other than `site.yml` then you can pass it into the outdated command
-with the `--filename=mycustomfilename` flag. It will work with and without the `.yml` extension.
+It will detect missing, outdated and extra keywords between your version of orats, your user generated files and the
+latest version on github. Execute `orats help outdated` if you get confused.
 
 ## Base
 
