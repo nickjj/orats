@@ -1,6 +1,6 @@
 module Orats
   module Play
-    def play_app(path)
+    def play_init(path)
       return unless can_play?
 
       @active_path = path

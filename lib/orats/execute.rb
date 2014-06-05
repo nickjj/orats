@@ -60,7 +60,7 @@ module Orats
     end
 
     def play
-      play_app @target_path
+      play_init @target_path
     end
 
     def nuke
