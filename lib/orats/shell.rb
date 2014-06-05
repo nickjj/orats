@@ -355,7 +355,7 @@ module Orats
       def url_to_string(url)
         begin
           file_contents = open(url).read
-        rescue OpenURI::HTTPError => ex
+        rescue *[OpenURI::HTTPError, SocketError] => ex
           log_error 'error', "Error browsing #{url}",
                     'message', ex
           exit 1
