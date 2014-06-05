@@ -353,9 +353,6 @@ module Orats
           log_status label, "Comparing this version of orats' #{label} to #{just_file_name}:", :blue
           log_status_under 'path', user_path, :cyan
 
-          # really ugly hack to not count rails ENV variables as "missing" for each inventory that was generated
-          local_list = local_list.join("\n").gsub!('TESTPROJ_', '').split("\n") if label == 'inventory'
-
           missing_count = log_unmatched local_list, user_list, 'missing', :red
           extra_count = log_unmatched user_list, local_list, 'extra', :yellow
 
@@ -394,15 +391,10 @@ module Orats
       def log_unmatched(compare, against, label, color)
         count = 0
 
-        against = against.join
-
         compare.each do |item|
           unless against.include?(item)
-            # really ugly hack to not count rails ENV variables as "extra" for each inventory that was generated
-            unless item == item.upcase && item.count('_') > 1
-              say_status label, item, color
-              count += 1
-            end
+            say_status label, item, color
+            count += 1
           end
         end
 

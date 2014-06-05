@@ -48,43 +48,43 @@ rails_deploy_migrate_master_host: "{{ groups['app'][0] }}"
 rails_deploy_env:
   RAILS_ENV: production
 
-  TESTPROJ_PROJECT_PATH: "{{ rails_deploy_path }}"
+  PROJECT_PATH: "{{ rails_deploy_path }}"
 
-  TESTPROJ_DATABASE_HOST: localhost
-  TESTPROJ_DATABASE_NAME: "{{ rails_deploy_app_name }}"
-  TESTPROJ_DATABASE_USERNAME: "{{ postgres_user }}"
-  TESTPROJ_DATABASE_PASSWORD: "{{ postgres_password }}"
-  TESTPROJ_DATABASE_POOL: 25
-  TESTPROJ_DATABASE_TIMEOUT: 5000
+  DATABASE_HOST: localhost
+  DATABASE_NAME: "{{ rails_deploy_app_name }}"
+  DATABASE_USERNAME: "{{ postgres_user }}"
+  DATABASE_PASSWORD: "{{ postgres_password }}"
+  DATABASE_POOL: 25
+  DATABASE_TIMEOUT: 5000
 
-  TESTPROJ_CACHE_HOST: "{{ redis_bind }}"
-  TESTPROJ_CACHE_PORT: "{{ redis_port }}"
-  TESTPROJ_CACHE_DATABASE: 0
-  TESTPROJ_CACHE_PASSWORD: "{{ secrets_redis_password }}"
+  CACHE_HOST: "{{ redis_bind }}"
+  CACHE_PORT: "{{ redis_port }}"
+  CACHE_DATABASE: 0
+  CACHE_PASSWORD: "{{ secrets_redis_password }}"
 
-  TESTPROJ_TOKEN_RAILS_SECRET: "{{ secrets_rails_token }}"
-  TESTPROJ_TOKEN_DEVISE_SECRET: "{{ secrets_devise_token }}"
-  TESTPROJ_TOKEN_DEVISE_PEPPER: "{{ secrets_devise_pepper_token }}"
+  TOKEN_RAILS_SECRET: "{{ secrets_rails_token }}"
+  TOKEN_DEVISE_SECRET: "{{ secrets_devise_token }}"
+  TOKEN_DEVISE_PEPPER: "{{ secrets_devise_pepper_token }}"
 
-  TESTPROJ_SMTP_ADDRESS: smtp.testproj.com
-  TESTPROJ_SMTP_PORT: 25
-  TESTPROJ_SMTP_DOMAIN: testproj.com
-  TESTPROJ_SMTP_USERNAME: info@testproj.com
-  TESTPROJ_SMTP_PASSWORD: "{{ secrets_mail_password }}"
-  TESTPROJ_SMTP_AUTH: plain
-  TESTPROJ_SMTP_STARTTTLS_AUTO: true
+  SMTP_ADDRESS: smtp.testproj.com
+  SMTP_PORT: 25
+  SMTP_DOMAIN: testproj.com
+  SMTP_USERNAME: info@testproj.com
+  SMTP_PASSWORD: "{{ secrets_mail_password }}"
+  SMTP_AUTH: plain
+  SMTP_STARTTTLS_AUTO: true
 
-  TESTPROJ_ACTION_MAILER_HOST: www.testproj.com
-  TESTPROJ_ACTION_MAILER_DEFAULT_EMAIL: info@testproj.com
-  TESTPROJ_ACTION_MAILER_DEVISE_DEFAULT_EMAIL: info@testproj.com
+  ACTION_MAILER_HOST: www.testproj.com
+  ACTION_MAILER_DEFAULT_EMAIL: info@testproj.com
+  ACTION_MAILER_DEVISE_DEFAULT_EMAIL: info@testproj.com
 
-  TESTPROJ_PUMA_THREADS_MIN: 0
-  TESTPROJ_PUMA_THREADS_MAX: 16
+  PUMA_THREADS_MIN: 0
+  PUMA_THREADS_MAX: 16
 
   # ensure there are always at least 2 workers so puma can properly do phased restarts
-  TESTPROJ_PUMA_WORKERS: "{{ ansible_processor_cores if ansible_processor_cores > 1 else 2 }}"
+  PUMA_WORKERS: "{{ ansible_processor_cores if ansible_processor_cores > 1 else 2 }}"
 
-  TESTPROJ_SIDEKIQ_CONCURRENCY: 25
+  SIDEKIQ_CONCURRENCY: 25
 
 # nginx configuration
 nginx_base_domain: 0.0.0.0

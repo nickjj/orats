@@ -730,14 +730,14 @@ puts
 say_status  'root', 'Modifying the .env file...', :yellow
 puts        '-'*80, ''; sleep 0.25
 
-inject_into_file '.env', before: "\n#{app_name_upper}_SMTP_ADDRESS" do <<-CODE
-#{app_name_upper}_TOKEN_DEVISE_SECRET: #{generate_token}
-#{app_name_upper}_TOKEN_DEVISE_PEPPER: #{generate_token}
+inject_into_file '.env', before: "\nSMTP_ADDRESS" do <<-CODE
+TOKEN_DEVISE_SECRET: #{generate_token}
+TOKEN_DEVISE_PEPPER: #{generate_token}
 CODE
 end
 
-inject_into_file '.env', before: "\n#{app_name_upper}_DATABASE_NAME" do <<-CODE
-#{app_name_upper}_ACTION_MAILER_DEVISE_DEFAULT_EMAIL: info@#{app_name}.com
+inject_into_file '.env', before: "\nDATABASE_NAME" do <<-CODE
+ACTION_MAILER_DEVISE_DEFAULT_EMAIL: info@#{app_name}.com
 CODE
 end
 
@@ -763,9 +763,9 @@ say_status  'config', 'Modifying the devise initializer...', :yellow
 puts        '-'*80, ''; sleep 0.25
 
 gsub_file 'config/initializers/devise.rb',
-          "'please-change-me-at-config-initializers-devise@example.com'", "ENV['#{app_name_upper}_ACTION_MAILER_DEVISE_DEFAULT_EMAIL']"
-gsub_file 'config/initializers/devise.rb', /(?<=key = )'\w{128}'/, "ENV['#{app_name_upper}_TOKEN_DEVISE_SECRET']"
-gsub_file 'config/initializers/devise.rb', /(?<=pepper = )'\w{128}'/, "ENV['#{app_name_upper}_TOKEN_DEVISE_PEPPER']"
+          "'please-change-me-at-config-initializers-devise@example.com'", "ENV['ACTION_MAILER_DEVISE_DEFAULT_EMAIL']"
+gsub_file 'config/initializers/devise.rb', /(?<=key = )'\w{128}'/, "ENV['TOKEN_DEVISE_SECRET']"
+gsub_file 'config/initializers/devise.rb', /(?<=pepper = )'\w{128}'/, "ENV['TOKEN_DEVISE_PEPPER']"
 
 gsub_file 'config/initializers/devise.rb', '# config.timeout_in = 30.minutes',
           'config.timeout_in = 2.hours'

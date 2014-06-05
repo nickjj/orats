@@ -23,7 +23,6 @@ def from_gem(source, destination = nil)
   run "cp #{base_path}/#{file_name} #{destination}"
 end
 
-app_name_upper = app_name.upcase
 app_name_class = app_name.humanize
 
 # ----- Create the git repo ----------------------------------------------------------------------------
@@ -93,44 +92,44 @@ puts        '-'*80, ''; sleep 0.25
 file '.env' do <<-CODE
 RAILS_ENV: development
 
-#{app_name_upper}_PROJECT_PATH: /full/path/to/your/project
+PROJECT_PATH: /full/path/to/your/project
 
-#{app_name_upper}_TOKEN_RAILS_SECRET: #{generate_token}
+TOKEN_RAILS_SECRET: #{generate_token}
 
-#{app_name_upper}_SMTP_ADDRESS: smtp.gmail.com
-#{app_name_upper}_SMTP_PORT: 587
-#{app_name_upper}_SMTP_DOMAIN: gmail.com
-#{app_name_upper}_SMTP_USERNAME: #{app_name}@gmail.com
-#{app_name_upper}_SMTP_PASSWORD: thebestpassword
-#{app_name_upper}_SMTP_AUTH: plain
-#{app_name_upper}_SMTP_STARTTTLS_AUTO: true
+SMTP_ADDRESS: smtp.gmail.com
+SMTP_PORT: 587
+SMTP_DOMAIN: gmail.com
+SMTP_USERNAME: #{app_name}@gmail.com
+SMTP_PASSWORD: thebestpassword
+SMTP_AUTH: plain
+SMTP_STARTTTLS_AUTO: true
 
-#{app_name_upper}_ACTION_MAILER_HOST: localhost:3000
-#{app_name_upper}_ACTION_MAILER_DEFAULT_EMAIL: info@#{app_name}.com
+ACTION_MAILER_HOST: localhost:3000
+ACTION_MAILER_DEFAULT_EMAIL: info@#{app_name}.com
 
-#{app_name_upper}_DATABASE_NAME: #{app_name}
-#{app_name_upper}_DATABASE_HOST: localhost
-#{app_name_upper}_DATABASE_POOL: 25
-#{app_name_upper}_DATABASE_TIMEOUT: 5000
-#{app_name_upper}_DATABASE_USERNAME: postgres
-#{app_name_upper}_DATABASE_PASSWORD: supersecrets
+DATABASE_NAME: #{app_name}
+DATABASE_HOST: localhost
+DATABASE_POOL: 25
+DATABASE_TIMEOUT: 5000
+DATABASE_USERNAME: postgres
+DATABASE_PASSWORD: supersecrets
 
-#{app_name_upper}_CACHE_HOST: localhost
-#{app_name_upper}_CACHE_PORT: 6379
-#{app_name_upper}_CACHE_DATABASE: 0
-#{app_name_upper}_CACHE_PASSWORD:
+CACHE_HOST: localhost
+CACHE_PORT: 6379
+CACHE_DATABASE: 0
+CACHE_PASSWORD:
 
-#{app_name_upper}_PUMA_THREADS_MIN: 0
-#{app_name_upper}_PUMA_THREADS_MAX: 1
-#{app_name_upper}_PUMA_WORKERS: 0
+PUMA_THREADS_MIN: 0
+PUMA_THREADS_MAX: 1
+PUMA_WORKERS: 0
 
-#{app_name_upper}_SIDEKIQ_CONCURRENCY: 25
+SIDEKIQ_CONCURRENCY: 25
 CODE
 end
 
 # ----- Modify the secrets yaml file -----------------------------------------------------------------------
 
-env_rails_secret_token = "<%= ENV['#{app_name_upper}_TOKEN_RAILS_SECRET'] %>"
+env_rails_secret_token = "<%= ENV['TOKEN_RAILS_SECRET'] %>"
 
 gsub_file 'config/secrets.yml', /\w{128}/, env_rails_secret_token
 gsub_file 'config/secrets.yml', '<%= ENV["SECRET_KEY_BASE"] %>', env_rails_secret_token
@@ -144,25 +143,25 @@ puts        '-'*80, ''; sleep 0.25
 inject_into_file 'config/application.rb', after: "automatically loaded.\n" do <<-CODE
     config.x.track.google_analytics = ''
     config.x.track.disqus_shortname = 'test-#{app_name}'
-    config.x.email.default_to = ENV['#{app_name_upper}_ACTION_MAILER_DEFAULT_EMAIL']
+    config.x.email.default_to = ENV['ACTION_MAILER_DEFAULT_EMAIL']
 
     config.action_mailer.delivery_method = :smtp
     config.action_mailer.smtp_settings = {
-      :address              => ENV['#{app_name_upper}_SMTP_ADDRESS'],
-      :port                 => ENV['#{app_name_upper}_SMTP_PORT'].to_i,
-      :domain               => ENV['#{app_name_upper}_SMTP_DOMAIN'],
-      :user_name            => ENV['#{app_name_upper}_SMTP_USERNAME'],
-      :password             => ENV['#{app_name_upper}_SMTP_PASSWORD'],
-      :authentication       => ENV['#{app_name_upper}_SMTP_AUTH'],
-      :enable_starttls_auto => ENV['#{app_name_upper}_SMTP_STARTTTLS_AUTO'] == 'true'
+      :address              => ENV['SMTP_ADDRESS'],
+      :port                 => ENV['SMTP_PORT'].to_i,
+      :domain               => ENV['SMTP_DOMAIN'],
+      :user_name            => ENV['SMTP_USERNAME'],
+      :password             => ENV['SMTP_PASSWORD'],
+      :authentication       => ENV['SMTP_AUTH'],
+      :enable_starttls_auto => ENV['SMTP_STARTTTLS_AUTO'] == 'true'
     }
 
-    config.action_mailer.default_url_options = { host: ENV['#{app_name_upper}_ACTION_MAILER_HOST'] }
+    config.action_mailer.default_url_options = { host: ENV['ACTION_MAILER_HOST'] }
 
-    config.cache_store = :redis_store, { host: ENV['#{app_name_upper}_CACHE_HOST'],
-                                         port: ENV['#{app_name_upper}_CACHE_PORT'].to_i,
-                                         db: ENV['#{app_name_upper}_CACHE_DATABASE'].to_i,
-                                         # password: ENV['#{app_name_upper}_CACHE_PASSWORD'].to_i,
+    config.cache_store = :redis_store, { host: ENV['CACHE_HOST'],
+                                         port: ENV['CACHE_PORT'].to_i,
+                                         db: ENV['CACHE_DATABASE'].to_i,
+                                         # password: ENV['CACHE_PASSWORD'].to_i,
                                          namespace: '#{app_name}::cache'
                                        }
 CODE
@@ -196,16 +195,16 @@ gsub_file 'config/database.yml', /.*\n/, ''
 append_file 'config/database.yml' do <<-FILE
 development: &default
   adapter: postgresql
-  database: <%= ENV['#{app_name_upper}_DATABASE_NAME'] %>
-  host: <%= ENV['#{app_name_upper}_DATABASE_HOST'] %>
-  pool: <%= ENV['#{app_name_upper}_DATABASE_POOL'] %>
-  timeout: <%= ENV['#{app_name_upper}_DATABASE_TIMEOUT'] %>
-  username: <%= ENV['#{app_name_upper}_DATABASE_USERNAME'] %>
-  password: <%= ENV['#{app_name_upper}_DATABASE_PASSWORD'] %>
+  database: <%= ENV['DATABASE_NAME'] %>
+  host: <%= ENV['DATABASE_HOST'] %>
+  pool: <%= ENV['DATABASE_POOL'] %>
+  timeout: <%= ENV['DATABASE_TIMEOUT'] %>
+  username: <%= ENV['DATABASE_USERNAME'] %>
+  password: <%= ENV['DATABASE_PASSWORD'] %>
 
 test:
   <<: *default
-  database: <%= ENV['#{app_name_upper}_DATABASE_NAME'] %>_test
+  database: <%= ENV['DATABASE_NAME'] %>_test
 
 staging:
   <<: *default
@@ -221,13 +220,13 @@ git commit: "-m 'Dry up the database settings'"
 file 'config/puma.rb', <<-'CODE'
 environment ENV['RAILS_ENV']
 
-threads ENV['app_name_upper_PUMA_THREADS_MIN'].to_i,ENV['app_name_upper_PUMA_THREADS_MAX'].to_i
-workers ENV['app_name_upper_PUMA_WORKERS'].to_i
+threads ENV['PUMA_THREADS_MIN'].to_i,ENV['PUMA_THREADS_MAX'].to_i
+workers ENV['PUMA_WORKERS'].to_i
 
-pidfile "#{ENV['app_name_upper_PROJECT_PATH']}/tmp/puma.pid"
+pidfile "#{ENV['PROJECT_PATH']}/tmp/puma.pid"
 
 if ENV['RAILS_ENV'] == 'production'
-  bind "unix://#{ENV['app_name_upper_PROJECT_PATH']}/tmp/puma.sock"
+  bind "unix://#{ENV['PROJECT_PATH']}/tmp/puma.sock"
 else
   port '3000'
 end
@@ -246,15 +245,13 @@ on_worker_boot do
 end
 CODE
 
-gsub_file 'config/puma.rb', 'app_name_upper', app_name_upper
-
 git add:    '.'
 git commit: "-m 'Add the puma config'"
 
 file 'config/sidekiq.yml', <<-CODE
 ---
-:pidfile: <%= ENV['#{app_name_upper}_PROJECT_PATH'] %>/tmp/sidekiq.pid
-:concurrency: <%= ENV['#{app_name_upper}_SIDEKIQ_CONCURRENCY'].to_i %>
+:pidfile: <%= ENV['PROJECT_PATH'] %>/tmp/sidekiq.pid
+:concurrency: <%= ENV['SIDEKIQ_CONCURRENCY'].to_i %>
 :queues:
   - default
 CODE
@@ -348,7 +345,7 @@ puts        '-'*80, ''; sleep 0.25
 
 file 'config/initializers/sidekiq.rb', <<-'CODE'
 sidekiq_config = {
-  url: "redis://#{ENV['app_name_CACHE_HOST']}:#{ENV['app_name_CACHE_PORT']}/#{ENV['app_name_CACHE_DATABASE']}",
+  url: "redis://#{ENV['CACHE_HOST']}:#{ENV['CACHE_PORT']}/#{ENV['CACHE_DATABASE']}",
   namespace: "ns_app::sidekiq_#{Rails.env}"
 }
 
@@ -361,7 +358,6 @@ Sidekiq.configure_client do |config|
 end
 CODE
 
-gsub_file 'config/initializers/sidekiq.rb', 'app_name', app_name_upper
 gsub_file 'config/initializers/sidekiq.rb', 'ns_app', app_name
 
 git add:    '.'
