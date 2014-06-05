@@ -2,7 +2,7 @@ require 'orats/version'
 require 'orats/shell'
 require 'orats/foreman'
 require 'orats/ui'
-require 'orats/after_rails'
+require 'orats/rails'
 require 'orats/nuke'
 
 module Orats
@@ -14,7 +14,7 @@ module Orats
 
     include Shell
     include UI
-    include AfterRails
+    include Rails
     include Nuke
     include Foreman
 
