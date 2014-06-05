@@ -1,5 +1,5 @@
 require 'thor'
-require 'orats/command'
+require 'orats/execute'
 
 module Orats
   class CLI < Thor
@@ -48,7 +48,7 @@ module Orats
       `--skip-galaxy` skip automatically installing roles from the galaxy [false]
     D
     def new(app_name)
-      Command.new(app_name, options).new
+      Execute.new(app_name, options).new
     end
 
     desc 'play PATH', ''
@@ -56,7 +56,7 @@ module Orats
       `orats play path` will create an ansible playbook.
     D
     def play(app_name)
-      Command.new(app_name).play
+      Execute.new(app_name).play
     end
 
     option :skip_data, type: :boolean, default: false, aliases: '-D'
@@ -69,7 +69,7 @@ module Orats
       `--skip-data` will skip deleting app specific postgres databases and redis namespaces [false]
     D
     def nuke(app_name)
-      Command.new(app_name, options).nuke
+      Execute.new(app_name, options).nuke
     end
 
     option :playbook, default: ''
@@ -91,7 +91,7 @@ module Orats
       `--inventory` to supply an inventory file for comparison []
     D
     def outdated
-      Command.new(nil, options).outdated
+      Execute.new(nil, options).outdated
     end
 
     desc 'version', ''
@@ -99,7 +99,7 @@ module Orats
       `orats version` will print the current version.
     D
     def version
-      Command.new.version
+      Execute.new.version
     end
     map %w(-v --version) => :version
 

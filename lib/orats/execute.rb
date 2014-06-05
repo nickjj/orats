@@ -4,7 +4,7 @@ require 'orats/foreman'
 require 'orats/ui'
 
 module Orats
-  class Command
+  class Execute
     include Thor::Base
     include Thor::Shell
     include Thor::Actions
