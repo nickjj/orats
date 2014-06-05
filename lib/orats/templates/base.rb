@@ -519,8 +519,10 @@ file 'app/views/layouts/application.html.erb', <<-HTML
     <script src="//cdnjs.cloudflare.com/ajax/libs/json3/3.3.0/json3.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/respond.js/1.4.2/respond.js"></script>
   <![endif]-->
+  <%= render 'layouts/google_analytics_snippet' %>
 </head>
 <body>
+  <%= render 'layouts/google_analytics_tracker' %>
   <header>
     <%= render 'layouts/navigation' %>
   </header>
@@ -539,8 +541,6 @@ file 'app/views/layouts/application.html.erb', <<-HTML
       <%= render 'layouts/footer' %>
     </div>
   </footer>
-
-  <% render 'layouts/google_analytics' %>
 </body>
 </html>
 HTML
@@ -604,11 +604,30 @@ HTML
 git add:    '-A'
 git commit: "-m 'Add footer partial'"
 
-file 'app/views/layouts/_google_analytics.html.erb', <<-HTML
+file 'app/views/layouts/_google_analytics_snippet.html.erb', <<-HTML
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+<% if Rails.configuration.x.track.google_analytics.present? %>
+  _gaq.push(['_setAccount', '<%= Rails.configuration.x.track.google_analytics %>']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+<% end %>
+</script>
+HTML
+
+file 'app/views/layouts/_google_analytics_tracker.html.erb', <<-HTML
+<script type="text/javascript">
+  // This is added in the body to track both turbolinks and regular hits.
+  _gaq.push(['_trackPageview']);
+</script>
 HTML
 
 git add:    '-A'
-git commit: "-m 'Add google analytics partial'"
+git commit: "-m 'Add google analytics partials'"
 
 # ----- Creating public files -------------------------------------------------------------------------
 
