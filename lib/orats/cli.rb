@@ -13,7 +13,7 @@ module Orats
     option :skip_foreman_start, type: :boolean, default: false, aliases: '-F'
     option :sudo_password, default: ''
     option :skip_galaxy, type: :boolean, default: false, aliases: '-G'
-    desc 'new APP_PATH [options]', ''
+    desc 'new TARGET_PATH [options]', ''
     long_desc <<-D
       `orats new target_path --pg-password supersecret` will create a new rails project and it will also create an ansible inventory to go with it by default.
 
