@@ -523,6 +523,26 @@ file 'app/views/layouts/application.html.erb', <<-HTML
     <div class="page-header">
       <h1><%= yield :heading %></h1>
     </div>
+    <h4>Using disqus</h4>
+    <p>Disqus related html and javascript will only be loaded when the short name is not empty.</p>
+    <ul>
+      <li>Set the <code>DISQUS_SHORT_NAME</code> env variable in `.env` and restart the server</li>
+      <li>
+        To output the main comments (place this where you want it):
+        <ul><li>&lt;%= render 'layouts/disqus_comments_snippet' %&gt;</li></ul>
+      </li>
+      <li>
+        <strong>(optional)</strong> The count snippet is already right before &lt;/body&gt;
+        <ul>
+          <li>
+            <strong>(optional)</strong> Append #disqus_thread to the href attribute in your links.<br />
+            This will tell Disqus which links to look up and return the comment count.<br />
+            For example: <a href="http://foo.com/bar.html#disqus_thread">Link</a>.
+          </li>
+        </ul>
+      </li>
+    </ul>
+
     <%= render 'layouts/flash' %>
     <%= yield %>
   </main>
@@ -533,6 +553,8 @@ file 'app/views/layouts/application.html.erb', <<-HTML
       <%= render 'layouts/footer' %>
     </div>
   </footer>
+
+  <%= render 'layouts/disqus_count_snippet' %>
 </body>
 </html>
 HTML
@@ -620,6 +642,41 @@ HTML
 
 git add:    '-A'
 git commit: "-m 'Add google analytics partials'"
+
+file 'app/views/layouts/_disqus_comments_snippet.html.erb', <<-HTML
+<% if ENV['DISQUS_SHORT_NAME'].present? %>
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    var disqus_shortname = '<%= ENV["DISQUS_SHORT_NAME"] %>';
+
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+<% end %>
+HTML
+
+file 'app/views/layouts/_disqus_count_snippet.html.erb', <<-HTML
+<% if ENV['DISQUS_SHORT_NAME'].present? %>
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    var disqus_shortname = '<%= ENV["DISQUS_SHORT_NAME"] %>';
+
+    (function () {
+        var s = document.createElement('script'); s.async = true;
+        s.type = 'text/javascript';
+        s.src = '//' + disqus_shortname + '.disqus.com/count.js';
+        (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+    }());
+<% end %>
+HTML
+
+git add:    '-A'
+git commit: "-m 'Add disqus partials'"
 
 # ----- Creating public files -------------------------------------------------------------------------
 
