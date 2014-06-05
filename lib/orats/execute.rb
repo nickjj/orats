@@ -6,6 +6,7 @@ require 'orats/new/rails'
 require 'orats/new/ansible'
 require 'orats/nuke'
 require 'orats/play'
+require 'orats/outdated'
 
 module Orats
   class Execute
@@ -20,6 +21,7 @@ module Orats
     include New::Ansible
     include Nuke
     include Play
+    include Outdated
     include Foreman
 
     attr_accessor :active_path
