@@ -54,7 +54,7 @@ module Orats
 
     def nuke_warning
       log_error 'nuke', 'You are about to permanently delete this directory',
-                'path', File.expand_path(@app_name)
+                'path', File.expand_path(@target_path)
     end
 
     def rails_directories

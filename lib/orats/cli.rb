@@ -15,7 +15,7 @@ module Orats
     option :skip_galaxy, type: :boolean, default: false, aliases: '-G'
     desc 'new APP_PATH [options]', ''
     long_desc <<-D
-      `orats new myapp --pg-password supersecret` will create a new rails project and it will also create an ansible inventory to go with it by default.
+      `orats new target_path --pg-password supersecret` will create a new rails project and it will also create an ansible inventory to go with it by default.
 
       You must supply at least this flag:
 
@@ -47,29 +47,29 @@ module Orats
 
       `--skip-galaxy` skip automatically installing roles from the galaxy [false]
     D
-    def new(app_name)
-      Execute.new(app_name, options).new
+    def new(target_path)
+      Execute.new(target_path, options).new
     end
 
     desc 'play PATH', ''
     long_desc <<-D
-      `orats play path` will create an ansible playbook.
+      `orats play target_path` will create an ansible playbook.
     D
-    def play(app_name)
-      Execute.new(app_name).play
+    def play(target_path)
+      Execute.new(target_path).play
     end
 
     option :skip_data, type: :boolean, default: false, aliases: '-D'
     desc 'nuke APP_PATH [options]', ''
     long_desc <<-D
-      `orats nuke myapp` will delete the directory and optionally all data associated to it.
+      `orats nuke target_path` will delete the directory and optionally all data associated to it.
 
       Options:
 
       `--skip-data` will skip deleting app specific postgres databases and redis namespaces [false]
     D
-    def nuke(app_name)
-      Execute.new(app_name, options).nuke
+    def nuke(target_path)
+      Execute.new(target_path, options).nuke
     end
 
     option :playbook, default: ''

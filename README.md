@@ -62,7 +62,7 @@ Here is an overview of the available commands. You can find out more information
 running `orats <command name> help` from your terminal. You can also type `orats` on its own to see a list of all commands.
 
 - Create a new orats project
-    - `orats new <APP_PATH> --pg-password <development postgres db password>`
+    - `orats new <TARGET_PATH> --pg-password <development postgres db password>`
     - Configuration:
         - Optionally takes: `--pg-location [localhost]`
         - Optionally takes: `--pg-username [postgres]`
@@ -78,10 +78,10 @@ running `orats <command name> help` from your terminal. You can also type `orats
         - Optionally takes: `--skip-galaxy [false]`
 
 - Create an ansible playbook
-    - `orats play <PATH>`
+    - `orats play <TARGET_PATH>`
 
 - Delete the directory and optionally all data associated to it
-    - `orats nuke <APP_PATH>`
+    - `orats nuke <TARGET_PATH>`
     - Optionally takes: `--skip-data [false]`
 
 - Detect whether or not orats, the playbook or inventory is outdated

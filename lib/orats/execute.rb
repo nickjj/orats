@@ -16,8 +16,8 @@ module Orats
 
     attr_accessor :active_path
 
-    def initialize(app_name = '', options = {})
-      @app_name = app_name
+    def initialize(target_path = '', options = {})
+      @target_path = target_path
       @options = options
 
       # required to mix in thor actions without having a base thor class
@@ -27,8 +27,8 @@ module Orats
     end
 
     def new
-      @active_path = @app_name
-      @active_path = services_path(@app_name)
+      @active_path = @target_path
+      @active_path = services_path(@target_path)
 
       rails_template 'base' do
         gsub_postgres_info
@@ -62,19 +62,19 @@ module Orats
       end
 
       unless @options[:skip_extras]
-        ansible_init @app_name
+        ansible_init @target_path
       end
 
-      @active_path = services_path(@app_name)
+      @active_path = services_path(@target_path)
       foreman_init
     end
 
     def play
-      play_app @app_name
+      play_app @target_path
     end
 
     def nuke
-      @active_path = @app_name
+      @active_path = @target_path
 
       nuke_warning
 
@@ -102,8 +102,8 @@ module Orats
         File.basename @active_path
       end
 
-      def services_path(app_name)
-        @options[:skip_extras] ?  app_name : "#{app_name}/services/#{active_project}"
+      def services_path(target_path)
+        @options[:skip_extras] ?  target_path : "#{target_path}/services/#{active_project}"
       end
   end
 end
