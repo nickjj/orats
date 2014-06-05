@@ -4,6 +4,7 @@ require 'orats/foreman'
 require 'orats/ui'
 require 'orats/rails'
 require 'orats/nuke'
+require 'orats/play'
 
 module Orats
   class Execute
@@ -16,6 +17,7 @@ module Orats
     include UI
     include Rails
     include Nuke
+    include Play
     include Foreman
 
     attr_accessor :active_path

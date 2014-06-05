@@ -11,13 +11,6 @@ module Orats
       run_from @active_path, "git add -A && git commit -m '#{message}'"
     end
 
-    def play_app(path)
-      return unless can_play?
-
-      @active_path = path
-      rails_template 'play'
-    end
-
     def ansible_init(path)
       log_thor_task 'shell', 'Creating ansible inventory'
       run "mkdir #{path}/inventory"
@@ -321,18 +314,6 @@ module Orats
 
       log_thor_task 'shell', "Creating #{file}"
       run "cp #{base_path}/#{file} #{destination_root_path}/#{file}"
-    end
-
-    def can_play?
-      log_thor_task 'shell', 'Checking for the ansible binary'
-
-      has_ansible = run('which ansible', capture: true)
-
-      log_error 'error', 'Cannot access ansible', 'question', 'Are you sure you have ansible setup correctly?', true do
-        log_status_bottom 'tip', 'http://docs.ansible.com/intro_installation.html', :white
-      end if has_ansible.empty?
-
-      !has_ansible.empty?
     end
   end
 end
