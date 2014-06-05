@@ -146,7 +146,6 @@ module Orats
 
       log_thor_task 'shell', 'Modifying the place holder app name in group_vars/all.yml'
       gsub_file "#{path}/inventory/group_vars/all.yml", 'testproj', File.basename(path)
-      gsub_file "#{path}/inventory/group_vars/all.yml", 'TESTPROJ', File.basename(path).upcase
 
       log_thor_task 'shell', 'Creating ssh keypair'
       run "ssh-keygen -t rsa -P '' -f #{secrets_path}/id_rsa"
