@@ -124,6 +124,9 @@ PUMA_THREADS_MAX: 1
 PUMA_WORKERS: 0
 
 SIDEKIQ_CONCURRENCY: 25
+
+GOOGLE_ANALYTICS_UA:
+DISQUS_SHORT_NAME: test-#{app_name}
 CODE
 end
 
@@ -141,10 +144,6 @@ say_status  'config', 'Modifying the application file...', :yellow
 puts        '-'*80, ''; sleep 0.25
 
 inject_into_file 'config/application.rb', after: "automatically loaded.\n" do <<-CODE
-    config.x.track.google_analytics = ''
-    config.x.track.disqus_shortname = 'test-#{app_name}'
-    config.x.email.default_to = ENV['ACTION_MAILER_DEFAULT_EMAIL']
-
     config.action_mailer.delivery_method = :smtp
     config.action_mailer.smtp_settings = {
       :address              => ENV['SMTP_ADDRESS'],
@@ -306,19 +305,12 @@ file 'config/environments/staging.rb', <<-CODE
 require_relative 'production.rb'
 
 #{app_name_class}::Application.configure do
-  config.x.track.google_analytics = ''
-  config.x.track.disqus_shortname = 'test-#{app_name}'
+  # Overwrite any production settings here, or if you want to start from scratch then remove line 1.
 end
 CODE
 
 git add:    '-A'
-git commit: "-m 'Add tweakable settings'"
-
-inject_into_file 'config/environments/production.rb', after: "config/application.rb.\n" do <<-"CODE"
-    config.x.track.google_analytics = 'YOUR_UA_CODE'
-    config.x.track.disqus_shortname = '#{app_name}'
-CODE
-end
+git commit: "-m 'Add add staging environment'"
 
 inject_into_file 'config/environments/production.rb', after: "config.log_level = :info\n" do <<-"CODE"
   config.logger = Logger.new(config.paths['log'].first, 'daily')
@@ -335,7 +327,7 @@ CODE
 end
 
 git add:    '-A'
-git commit: "-m 'Add tweakable settings, setup daily log rotation and add fonts/pngs to the asset precompiler'"
+git commit: "-m 'Change production config options'"
 
 # ----- Modify the initializer files ------------------------------------------------------------------
 
@@ -607,8 +599,8 @@ git commit: "-m 'Add footer partial'"
 file 'app/views/layouts/_google_analytics_snippet.html.erb', <<-HTML
 <script type="text/javascript">
   var _gaq = _gaq || [];
-<% if Rails.configuration.x.track.google_analytics.present? %>
-  _gaq.push(['_setAccount', '<%= Rails.configuration.x.track.google_analytics %>']);
+<% if ENV['GOOGLE_ANALYTICS_UA'].present? %>
+  _gaq.push(['_setAccount', '<%= ENV["GOOGLE_ANALYTICS_UA"] %>']);
 
   (function() {
     var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
