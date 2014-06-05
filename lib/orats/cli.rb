@@ -76,7 +76,7 @@ module Orats
     option :inventory, default: ''
     desc 'outdated [options]', ''
     long_desc <<-D
-      `orats outdated` will run various comparisons on your ansible files.
+      `orats outdated` will run various comparisons on orats and your ansible files.
 
       Help:
 
