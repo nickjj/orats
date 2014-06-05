@@ -130,7 +130,6 @@ it includes these features and when I do not want a specific thing it is much qu
 - Use foreman in development mode to manage starting both the rails server using puma and sidekiq.
 - Set the production asset precompiler to include fonts and png files.
 - Set the production logger to rotate the logs daily.
-- Use DHH's config gem to store application wide configuration variables.
 - Set the timezone to EST.
 - Change how validation errors are reported by having them be displayed inline for each element.
 - Dry out the `database.yml` and use postgres.
@@ -140,7 +139,8 @@ it includes these features and when I do not want a specific thing it is much qu
 - Add 2 view helpers, `humanize_boolean` and `css_for_boolean` to nicely output true/false values and they can be changed easily.
 - Add 3 view helpers to easily set a page's title, meta description and page heading. All of which are optional.
 - Bootstrap ~3 layout file with conditionally loaded `html5shiv`, `json3` and `respondjs` libs for IE < 9 support.
-- Separate the navigation, navigation links, flash messages, footer and google analytics snippets into partials.
+- Separate the navigation, navigation links, flash messages and footer partials.
+- Add partials and environment variables for both google analytics and disqus.
 - Public 404, 422, 500 and 502 pages so they can be served directly from your web server.
 - Use sass and coffeescript.
 - jquery 1.10.x loaded through a CDN.
