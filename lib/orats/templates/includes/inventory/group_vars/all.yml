@@ -86,6 +86,9 @@ rails_deploy_env:
 
   SIDEKIQ_CONCURRENCY: 25
 
+  GOOGLE_ANALYTICS_UA:
+  DISQUS_SHORT_NAME:
+
 # nginx configuration
 nginx_base_domain: 0.0.0.0
 nginx_upstream_name: "{{ rails_deploy_app_name }}"
