@@ -28,11 +28,21 @@ module Orats
 
     private
 
-      def rails_directories
-        rails_gemfiles = run("find #{@active_path} -type f -name Gemfile | xargs grep -lE \"gem 'rails'|gem \\\"rails\\\"\"", capture: true)
-        gemfile_paths = rails_gemfiles.split("\n")
+    def rails_directories
+      rails_gemfiles = run("find #{@active_path} -type f -name Gemfile | xargs grep -lE \"gem 'rails'|gem \\\"rails\\\"\"", capture: true)
+      gemfile_paths = rails_gemfiles.split("\n")
 
-        gemfile_paths.map { |gemfile| File.dirname(gemfile) }
-      end
+      gemfile_paths.map { |gemfile| File.dirname(gemfile) }
+    end
+
+    def nuke_redis(namespace)
+      log_thor_task 'root', 'Removing redis keys'
+      run "redis-cli KEYS '#{namespace}:*' | xargs --delim='\n' redis-cli DEL"
+    end
+
+    def nuke_directory
+      log_thor_task 'root', 'Deleting directory'
+      run "rm -rf #{@active_path}"
+    end
   end
 end

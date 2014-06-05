@@ -11,6 +11,15 @@ module Orats
       run_from @active_path, "git add -A && git commit -m '#{message}'"
     end
 
+    def rails_template(command, flags = '')
+      exit_if_cannot_rails
+      exit_if_exists unless flags.index(/--skip/)
+
+      run "rails new #{@active_path} #{flags} --skip-bundle --template #{File.expand_path File.dirname(__FILE__)}/templates/#{command}.rb"
+      yield if block_given?
+    end
+
+
 
 
     def can_play?
@@ -25,13 +34,7 @@ module Orats
        !has_ansible.empty?
     end
 
-    def rails_template(command, flags = '')
-      exit_if_cannot_rails
-      exit_if_exists unless flags.index(/--skip/)
 
-      run "rails new #{@active_path} #{flags} --skip-bundle --template #{File.expand_path File.dirname(__FILE__)}/templates/#{command}.rb"
-      yield if block_given?
-    end
 
     def play_app(path)
       return unless can_play?
@@ -343,16 +346,6 @@ module Orats
 
         log_thor_task 'shell', "Creating #{file}"
         run "cp #{base_path}/#{file} #{destination_root_path}/#{file}"
-      end
-
-      def nuke_redis(namespace)
-        log_thor_task 'root', 'Removing redis keys'
-        run "redis-cli KEYS '#{namespace}:*' | xargs --delim='\n' redis-cli DEL"
-      end
-
-      def nuke_directory
-        log_thor_task 'root', 'Deleting directory'
-        run "rm -rf #{@active_path}"
       end
 
       def exit_if_cannot_rails
