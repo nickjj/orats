@@ -1,6 +1,7 @@
 require 'orats/version'
 require 'orats/shell'
 require 'orats/foreman'
+require 'orats/ui'
 
 module Orats
   class Command
@@ -10,6 +11,7 @@ module Orats
     #source_root Dir.pwd
 
     include Shell
+    include UI
     include Foreman
 
     attr_accessor :active_path

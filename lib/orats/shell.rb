@@ -7,42 +7,19 @@ module Orats
       run "cd #{path} && #{command} && cd -"
     end
 
-    def log_message(type, message)
-      puts
-      say_status  type, "#{message}...", :yellow
-      puts        '-'*80, ''; sleep 0.25
-    end
-
-    def log_status(type, message, color)
-      puts
-      say_status type, set_color(message, :bold), color
-    end
-
-    def log_status_under(type, message, color)
-      say_status type, message, color
-      puts
-    end
-
-    def log_results(results, message)
-      log_status 'results', results, :magenta
-      log_status_under 'message', message, :white
-    end
-
     def git_commit(message)
       run_from @active_path, "git add -A && git commit -m '#{message}'"
     end
 
     def gsub_postgres_info
-      log_message 'root', 'Changing the postgres information'
-
+      log_thor_task 'root', 'Changing the postgres information'
       gsub_file "#{@active_path}/.env", 'DATABASE_HOST: localhost', "DATABASE_HOST: #{@options[:pg_location]}"
       gsub_file "#{@active_path}/.env", ': postgres', ": #{@options[:pg_username]}"
       gsub_file "#{@active_path}/.env", ': supersecrets', ": #{@options[:pg_password]}"
     end
 
     def gsub_redis_info
-      log_message 'root', 'Adding the redis password'
-
+      log_thor_task 'root', 'Adding the redis password'
       gsub_file "#{@active_path}/config/initializers/sidekiq.rb", '//', "//:#{ENV['CACHE_PASSWORD']}@"
       gsub_file "#{@active_path}/.env", 'HE_PASSWORD: ', "HE_PASSWORD: #{@options[:redis_password]}"
       gsub_file "#{@active_path}/.env", 'CACHE_HOST: localhost', "CACHE_HOST: #{@options[:redis_location]}"
@@ -50,40 +27,34 @@ module Orats
     end
 
     def gsub_project_path
-      log_message 'root', 'Changing the project path'
-
+      log_thor_task 'root', 'Changing the project path'
       gsub_file "#{@active_path}/.env", ': /full/path/to/your/project', ": #{File.expand_path(@active_path)}"
     end
 
     def run_rake(command)
-      log_message 'shell', 'Running rake commands'
+      log_thor_task 'shell', 'Running rake commands'
 
       run_from @active_path, "bundle exec rake #{command}"
     end
 
     def bundle_install
-      log_message 'shell', 'Running bundle install, this may take a while'
-
+      log_thor_task 'shell', 'Running bundle install, this may take a while'
       run_from @active_path, 'bundle install'
     end
 
     def bundle_binstubs
-      log_message 'shell', 'Running bundle binstubs for a few gems'
-
+      log_thor_task 'shell', 'Running bundle binstubs for a few gems'
       run_from @active_path, 'bundle binstubs whenever puma sidekiq'
     end
 
     def spring_binstub
-      log_message 'shell', 'Running spring binstub'
-
+      log_thor_task 'shell', 'Running spring binstub'
       run_from @active_path, 'bundle exec spring binstub --all'
     end
 
     def nuke_warning
-      puts
-      say_status  'nuke', "\e[1mYou are about to permanently delete this directory:\e[0m", :red
-      say_status  'path', "#{File.expand_path(@app_name)}", :yellow
-      puts
+      log_error 'nuke', 'You are about to permanently delete this directory',
+                'path', File.expand_path(@app_name)
     end
 
     def rails_directories
@@ -102,31 +73,30 @@ module Orats
 
       project_names = rails_projects.join(', ')
 
-      puts
-      say_status  'nuke', "\e[1mYou are about to permanently delete all postgres databases for:\e[0m", :red
-      say_status  'databases', project_names, :yellow
-      puts
-      say_status  'nuke', "\e[1mYou are about to permanently delete all redis namespaces for:\e[0m", :red
-      say_status  'namespace', project_names, :yellow
-      puts
+      log_error 'nuke', 'You are about to permanently delete all postgres databases for',
+                'databases', project_names, true
+
+      log_error 'nuke', 'You are about to permanently delete all redis namespaces for',
+                'namespace', project_names
     end
 
     def nuke_data
       rails_directories.each do |directory|
-        log_message 'root', 'Removing postgres databases'
+        log_thor_task 'root', 'Removing postgres databases'
         run_from directory, 'bundle exec rake db:drop:all'
+
         nuke_redis File.basename(directory)
       end
     end
 
     def can_play?
-      log_message 'shell', 'Checking for the ansible binary'
+      log_thor_task 'shell', 'Checking for the ansible binary'
 
-       has_ansible = run('which ansible', capture: true)
+      has_ansible = run('which ansible', capture: true)
 
-       dependency_error 'Cannot access ansible',
-                        'Are you sure you have ansible setup correctly?',
-                        'http://docs.ansible.com/intro_installation.html`' if has_ansible.empty?
+      log_error 'error', 'Cannot access ansible', 'question', 'Are you sure you have ansible setup correctly?', true do
+        log_status_bottom 'tip', 'http://docs.ansible.com/intro_installation.html', :white
+      end if has_ansible.empty?
 
        !has_ansible.empty?
     end
@@ -147,14 +117,14 @@ module Orats
     end
 
     def ansible_init(path)
-      log_message 'shell', 'Creating ansible inventory'
+      log_thor_task 'shell', 'Creating ansible inventory'
       run "mkdir #{path}/inventory"
       run "mkdir #{path}/inventory/group_vars"
       copy_from_includes 'inventory/hosts', path
       copy_from_includes 'inventory/group_vars/all.yml', path
 
       secrets_path = "#{path}/secrets"
-      log_message 'shell', 'Creating ansible secrets'
+      log_thor_task 'shell', 'Creating ansible secrets'
       run "mkdir #{secrets_path}"
 
       save_secret_string "#{secrets_path}/postgres_password"
@@ -171,20 +141,20 @@ module Orats
       save_secret_string "#{secrets_path}/devise_token"
       save_secret_string "#{secrets_path}/devise_pepper_token"
 
-      log_message 'shell', 'Modifying secrets path in group_vars/all.yml'
+      log_thor_task 'shell', 'Modifying secrets path in group_vars/all.yml'
       gsub_file "#{path}/inventory/group_vars/all.yml", '~/tmp/testproj/secrets/', File.expand_path(secrets_path)
 
-      log_message 'shell', 'Modifying the place holder app name in group_vars/all.yml'
+      log_thor_task 'shell', 'Modifying the place holder app name in group_vars/all.yml'
       gsub_file "#{path}/inventory/group_vars/all.yml", 'testproj', File.basename(path)
       gsub_file "#{path}/inventory/group_vars/all.yml", 'TESTPROJ', File.basename(path).upcase
 
-      log_message 'shell', 'Creating ssh keypair'
+      log_thor_task 'shell', 'Creating ssh keypair'
       run "ssh-keygen -t rsa -P '' -f #{secrets_path}/id_rsa"
 
-      log_message 'shell', 'Creating self signed ssl certificates'
+      log_thor_task 'shell', 'Creating self signed ssl certificates'
       run create_rsa_certificate(secrets_path, 'sslkey.key', 'sslcert.crt')
 
-      log_message 'shell', 'Creating monit pem file'
+      log_thor_task 'shell', 'Creating monit pem file'
       run "#{create_rsa_certificate(secrets_path, 'monit.pem', 'monit.pem')} && openssl gendh 512 >> #{secrets_path}/monit.pem"
 
       install_role_dependencies unless @options[:skip_galaxy]
@@ -284,15 +254,15 @@ module Orats
         latest_gem_contents = `gem list orats --remote`.split.last
 
         if latest_gem_contents.include?('ERROR')
-          say_status 'error', "\e[1mError running `gem list orats --remote`:\e[0m", :red
-          say_status 'msg', 'Chances are their API is down, try again soon', :yellow
+          log_error 'error', 'Error running `gem list orats --remote`',
+                    'message', 'Chances are their API is down, try again soon'
           exit 1
         end
 
         latest_gem_version = "v#{latest_gem_contents.split.first[1...-1]}"
 
-        log_status 'gem', 'Comparing this version of orats to the latest orats version:', :green
-        log_status_under 'version', "Latest: #{latest_gem_version}, Yours: v#{VERSION}", :yellow
+        log_remote_info 'gem', 'Comparing this version of orats to the latest orats version',
+                        'version', "Latest: #{latest_gem_version}, Yours: v#{VERSION}"
 
         latest_gem_version
       end
@@ -307,12 +277,12 @@ module Orats
         local_role_count = local_galaxy_list.size
         different_roles = galaxy_difference.size
 
-        log_status 'roles', "Comparing this version of orats' roles to the latest version:", :green
+        log_status_top 'roles', "Comparing this version of orats' roles to the latest version:", :green
 
         if different_roles == 0
-          log_status_under 'message', "All #{local_role_count} roles are up to date", :yellow
+          log_status_bottom 'message', "All #{local_role_count} roles are up to date", :yellow
         else
-          log_status_under 'message', "There are #{different_roles} differences", :yellow
+          log_status_bottom 'message', "There are #{different_roles} differences", :yellow
 
           galaxy_difference.each do |role_line|
             name = role_line.split(',').first
@@ -324,29 +294,29 @@ module Orats
               color = :red
             end
 
-            say_status status, name, color
+            log_status_bottom status, name, color
           end
 
-          log_results 'The latest version of orats may benefit you:', 'Check github to see if the changes interest you'
+          log_results 'The latest version of orats may benefit you', 'Check github to see if the changes interest you'
         end
       end
 
       def compare_remote_to_local(label, keyword, remote_list, local_list)
         list_difference = remote_list - local_list
 
-        remote_count = list_difference.size#log_unmatched remote_list, local_list, 'remote', :yellow
+        remote_count = list_difference.size
 
-        log_status label, "Comparing this version of orats' #{label} to the latest version:", :green
-        log_status_under 'file', label == 'playbook' ? 'site.yml' : 'all.yml', :yellow
+        log_remote_info label, "Comparing this version of orats' #{label} to the latest version",
+                        'file', label == 'playbook' ? 'site.yml' : 'all.yml'
 
         list_difference.each do |line|
-          say_status 'missing', line, :red unless local_list.include?(line)
+          log_status_bottom 'missing', line, :red unless local_list.include?(line)
         end
 
         if remote_count > 0
-          log_results "#{remote_count} new #{keyword} are available:", 'You may benefit from upgrading to the latest orats'
+          log_results "#{remote_count} new #{keyword} are available", 'You may benefit from upgrading to the latest orats'
         else
-          log_results 'Everything appears to be in order:', "No missing #{keyword} were found"
+          log_results 'Everything appears to be in order', "No missing #{keyword} were found"
         end
 
         local_list
@@ -358,16 +328,16 @@ module Orats
 
           just_file_name = user_path.split('/').last
 
-          log_status label, "Comparing this version of orats' #{label} to #{just_file_name}:", :blue
-          log_status_under 'path', user_path, :cyan
+          log_local_info label, "Comparing this version of orats' #{label} to #{just_file_name}",
+                         'path', user_path
 
           missing_count = log_unmatched local_list, user_list, 'missing', :red
           extra_count = log_unmatched user_list, local_list, 'extra', :yellow
 
           if missing_count > 0
-            log_results "#{missing_count} #{keyword} are missing:", "Your ansible run will likely fail with this #{label}"
+            log_results "#{missing_count} #{keyword} are missing", "Your ansible run will likely fail with this #{label}"
           else
-            log_results 'Everything appears to be in order:', "No missing #{keyword} were found"
+            log_results 'Everything appears to be in order', "No missing #{keyword} were found"
           end
 
           if extra_count > 0
@@ -376,11 +346,10 @@ module Orats
             log_results "No extra #{keyword} were found:", "Extra #{keyword} are fine but you have none"
           end
         else
-          log_status label, "Comparing this version of orats' #{label} to ???:", :blue
-          puts
-          say_status 'error', "\e[1mError comparing #{label}:\e[0m", :red
-          say_status 'path', user_path, :yellow
-          say_status 'help', 'Make sure you supply a file name', :white
+          log_status_top label, "Comparing this version of orats' #{label} to ???:", :blue
+          log_error 'error', "Error comparing #{label}", 'path', user_path, true do
+            log_status_bottom 'tip', 'Make sure you supply a file name', :white
+          end
         end
       end
 
@@ -388,8 +357,8 @@ module Orats
         begin
           file_contents = open(url).read
         rescue OpenURI::HTTPError => ex
-          say_status 'error', "\e[1mError browsing #{url}:\e[0m", :red
-          say_status 'msg', ex, :yellow
+          log_error 'error', "Error browsing #{url}",
+                    'message', ex
           exit 1
         end
 
@@ -401,7 +370,7 @@ module Orats
 
         compare.each do |item|
           unless against.include?(item)
-            say_status label, item, color
+            log_status_bottom label, item, color
             count += 1
           end
         end
@@ -426,7 +395,7 @@ module Orats
       end
 
       def install_role_dependencies
-        log_message 'shell', 'Updating ansible roles from the galaxy'
+        log_thor_task 'shell', 'Updating ansible roles from the galaxy'
 
         galaxy_install = "ansible-galaxy install -r #{galaxy_file_path} --force"
         galaxy_out = run(galaxy_install, capture: true)
@@ -449,53 +418,37 @@ module Orats
       def copy_from_includes(file, destination_root_path)
         base_path = "#{File.expand_path File.dirname(__FILE__)}/templates/includes"
 
-        log_message 'shell', "Creating #{file}"
+        log_thor_task 'shell', "Creating #{file}"
         run "cp #{base_path}/#{file} #{destination_root_path}/#{file}"
       end
 
       def nuke_redis(namespace)
-        log_message 'root', 'Removing redis keys'
-
+        log_thor_task 'root', 'Removing redis keys'
         run "redis-cli KEYS '#{namespace}:*' | xargs --delim='\n' redis-cli DEL"
       end
 
       def nuke_directory
-        log_message 'root', 'Deleting directory'
-
+        log_thor_task 'root', 'Deleting directory'
         run "rm -rf #{@active_path}"
       end
 
-      def dependency_error(message, question, answer)
-        puts
-        say_status  'error', "\e[1m#{message}\e[0m", :red
-        say_status  'question', question, :yellow
-        say_status  'answer', answer, :cyan
-        puts        '-'*80
-        puts
-      end
-
       def exit_if_cannot_rails
-        log_message 'shell', 'Checking for rails'
+        log_thor_task 'shell', 'Checking for rails'
 
         has_rails = run('which rails', capture: true)
 
-        dependency_error 'Cannot access rails',
-                         'Are you sure you have rails setup correctly?',
-                         'You can install it by running `gem install rails`' if has_rails.empty?
+        log_error 'error', 'Cannot access rails', 'question', 'Are you sure you have rails setup correctly?', true do
+          log_status_bottom 'tip', 'You can install it by running `gem install rails`', :white
+        end if has_rails.empty?
 
         exit 1 if has_rails.empty?
       end
 
       def exit_if_exists
-        log_message 'shell', 'Checking if a file or directory already exists'
+        log_thor_task 'shell', 'Checking if a file or directory already exists'
 
         if Dir.exist?(@active_path) || File.exist?(@active_path)
-          puts
-          say_status  'aborting', "\e[1mA file or directory already exists at this location:\e[0m", :red
-          say_status  'location', @active_path, :yellow
-          puts        '-'*80
-          puts
-
+          log_error 'error', 'A file or directory already exists at this location', 'path', @active_path
           exit 1
         end
       end
