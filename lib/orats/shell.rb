@@ -191,19 +191,17 @@ module Orats
     end
 
     def outdated_init
-      github_repo = 'https://raw.githubusercontent.com/nickjj/orats/master/lib/orats'
+      latest_gem_version = compare_gem_version
 
-      version_url = "#{github_repo}/version.rb"
+      github_repo = "https://raw.githubusercontent.com/nickjj/orats/#{latest_gem_version}/lib/orats"
+
       galaxy_url = "#{github_repo}/templates/includes/Galaxyfile"
       playbook_url = "#{github_repo}/templates/play.rb"
       inventory_url = "#{github_repo}/templates/includes/inventory/group_vars/all.yml"
 
-      remote_version_contents = url_to_string(version_url)
       remote_galaxy_contents = url_to_string(galaxy_url)
       remote_playbook_contents = url_to_string(playbook_url)
       remote_inventory_contents = url_to_string(inventory_url)
-
-      compare_gem_version remote_version_contents
 
       compare_remote_role_version_to_local remote_galaxy_contents
 
@@ -282,11 +280,21 @@ module Orats
         roles_list.uniq
       end
 
-      def compare_gem_version(latest_contents)
-        latest = latest_contents.match(/\'(.*)\'/)[1..-1].first
+      def compare_gem_version
+        latest_gem_contents = `gem list orats --remote`.split.last
+
+        if latest_gem_contents.include?('ERROR')
+          say_status 'error', "\e[1mError running `gem list orats --remote`:\e[0m", :red
+          say_status 'msg', 'Chances are their API is down, try again soon', :yellow
+          exit 1
+        end
+
+        latest_gem_version = "v#{latest_gem_contents.split.first[1...-1]}"
 
         log_status 'gem', 'Comparing this version of orats to the latest orats version:', :green
-        log_status_under 'version', "Latest: v#{latest}, Yours: v#{VERSION}", :yellow
+        log_status_under 'version', "Latest: #{latest_gem_version}, Yours: v#{VERSION}", :yellow
+
+        latest_gem_version
       end
 
       def compare_remote_role_version_to_local(remote_galaxy_contents)
