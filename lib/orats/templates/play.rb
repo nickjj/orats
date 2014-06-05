@@ -56,7 +56,7 @@ say_status  'git', 'Creating initial commit...', :yellow
 puts        '-'*80, ''; sleep 0.25
 
 git :init
-git add: '.'
+git add: '-A'
 git commit: "-m 'Initial commit'"
 
 # ----- Create the license ----------------------------------------------------------------------------
@@ -93,7 +93,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 TEXT
 end
 
-git add: '.'
+git add: '-A'
 git commit: "-m 'Add MIT license'"
 
 # ----- Create the site file --------------------------------------------------------------------------
@@ -159,7 +159,7 @@ file 'site.yml' do <<-TEXT
 TEXT
 end
 
-git add: '.'
+git add: '-A'
 git commit: "-m 'Add site.yml file'"
 
 # ----- Installation complete message -----------------------------------------------------------------

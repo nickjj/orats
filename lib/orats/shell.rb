@@ -29,7 +29,7 @@ module Orats
     end
 
     def git_commit(message)
-      run_from @active_path, "git add . && git commit -m '#{message}'"
+      run_from @active_path, "git add -A && git commit -m '#{message}'"
     end
 
     def gsub_postgres_info
