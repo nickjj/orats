@@ -2,6 +2,8 @@ require 'orats/version'
 require 'orats/shell'
 require 'orats/foreman'
 require 'orats/ui'
+require 'orats/after_rails'
+require 'orats/nuke'
 
 module Orats
   class Execute
@@ -12,6 +14,8 @@ module Orats
 
     include Shell
     include UI
+    include AfterRails
+    include Nuke
     include Foreman
 
     attr_accessor :active_path
@@ -32,27 +36,14 @@ module Orats
 
       rails_template 'base' do
         gsub_postgres_info
-        git_commit 'Change the postgres information'
-
-        unless @options[:redis_password].empty?
-          gsub_redis_info
-          git_commit 'Add the redis password'
-        end
-
+        gsub_redis_info unless @options[:redis_password].empty?
         gsub_project_path
-        git_commit 'Add the development project path'
 
         bundle_install
-        git_commit 'Add gem lock file'
-
         bundle_binstubs
-        git_commit 'Add binstubs for the important gems'
-
         spring_binstub
-        git_commit 'Springify all of the bins'
 
-        run_rake 'db:create:all db:migrate'
-        git_commit 'Add the database schema file'
+        create_and_migrate_database
       end
 
       if @options[:auth]
@@ -61,11 +52,8 @@ module Orats
         end
       end
 
-      unless @options[:skip_extras]
-        ansible_init @target_path
-      end
+      ansible_init(@target_path) unless @options[:skip_extras]
 
-      @active_path = services_path(@target_path)
       foreman_init
     end
 
@@ -76,15 +64,13 @@ module Orats
     def nuke
       @active_path = @target_path
 
-      nuke_warning
+      nuke_info
+      nuke_details unless @options[:skip_data]
 
-      nuke_data_details_warning unless @options[:skip_data]
-
-      confirmed_to_delete = yes?('Are you sure? (y/N)', :cyan)
+      confirmed_to_delete = yes?('Are you sure? (y/N)', :cyan); puts
 
       if confirmed_to_delete
         nuke_data unless @options[:skip_data]
-
         nuke_directory
       end
     end
