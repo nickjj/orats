@@ -2,7 +2,8 @@ require 'orats/version'
 require 'orats/shell'
 require 'orats/foreman'
 require 'orats/ui'
-require 'orats/new'
+require 'orats/new/rails'
+require 'orats/new/ansible'
 require 'orats/nuke'
 require 'orats/play'
 
@@ -15,7 +16,8 @@ module Orats
 
     include Shell
     include UI
-    include New
+    include New::Rails
+    include New::Ansible
     include Nuke
     include Play
     include Foreman
