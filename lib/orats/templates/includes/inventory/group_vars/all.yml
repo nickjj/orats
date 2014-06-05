@@ -50,6 +50,9 @@ rails_deploy_env:
 
   PROJECT_PATH: "{{ rails_deploy_path }}"
 
+  GOOGLE_ANALYTICS_UA:
+  DISQUS_SHORT_NAME:
+
   DATABASE_HOST: localhost
   DATABASE_NAME: "{{ rails_deploy_app_name }}"
   DATABASE_USERNAME: "{{ postgres_user }}"
@@ -85,9 +88,6 @@ rails_deploy_env:
   PUMA_WORKERS: "{{ ansible_processor_cores if ansible_processor_cores > 1 else 2 }}"
 
   SIDEKIQ_CONCURRENCY: 25
-
-  GOOGLE_ANALYTICS_UA:
-  DISQUS_SHORT_NAME:
 
 # nginx configuration
 nginx_base_domain: 0.0.0.0
