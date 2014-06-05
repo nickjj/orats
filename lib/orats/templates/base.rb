@@ -552,7 +552,7 @@ file 'app/views/layouts/application.html.erb', <<-HTML
     <h4>Using disqus</h4>
     <p>Disqus related html and javascript will only be loaded when the short name is not empty.</p>
     <ul>
-      <li>Set the <code>DISQUS_SHORT_NAME</code> env variable in `.env` and restart the server</li>
+      <li>Set the <code>DISQUS_SHORT_NAME</code> env variable in <code>.env</code> and restart the server</li>
       <li>
         To output the main comments (place this where you want it):
         <ul><li>&lt;%= render 'layouts/disqus_comments_snippet' %&gt;</li></ul>
