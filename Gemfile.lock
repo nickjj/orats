@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    orats (0.4.6)
+    orats (0.5.1)
       thor (~> 0)
 
 GEM
