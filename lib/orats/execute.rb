@@ -84,12 +84,9 @@ module Orats
     end
 
     private
-      def active_project
-        File.basename @active_path
-      end
 
-      def services_path(target_path)
-        @options[:skip_extras] ?  target_path : "#{target_path}/services/#{active_project}"
-      end
+    def services_path(target_path)
+      @options[:skip_extras] ?  target_path : "#{target_path}/services/#{File.basename @active_path}"
+    end
   end
 end
