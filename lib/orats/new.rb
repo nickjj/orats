@@ -1,5 +1,5 @@
 module Orats
-  module Rails
+  module New
     def rails_template(command, flags = '')
       exit_if_cannot_rails
       exit_if_exists unless flags.index(/--skip/)
