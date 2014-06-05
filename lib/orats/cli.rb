@@ -72,8 +72,8 @@ module Orats
       Command.new(app_name, options).nuke
     end
 
-    option :playbook_file, default: ''
-    option :inventory_file, default: ''
+    option :playbook, default: ''
+    option :inventory, default: ''
     desc 'outdated [options]', ''
     long_desc <<-D
       `orats outdated` will run various comparisons on your ansible files.
@@ -86,9 +86,9 @@ module Orats
 
       Options:
 
-      `--playbook-file` to supply a playbook file for comparison []
+      `--playbook` to supply a playbook file for comparison []
 
-      `--inventory-file` to supply an inventory file for comparison []
+      `--inventory` to supply an inventory file for comparison []
     D
     def outdated
       Command.new(nil, options).outdated

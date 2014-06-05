@@ -86,8 +86,8 @@ running `orats <command name> help` from your terminal. You can also type `orats
 
 - Detect whether or not orats, the playbook or inventory is outdated
     - `orats outdated [options]`
-    - Optionally takes: `--playbook-file []`
-    - Optionally takes: `--inventory-file []`
+    - Optionally takes: `--playbook []`
+    - Optionally takes: `--inventory []`
 
 #### Why is it asking me for my development postgres password?
 
@@ -102,7 +102,7 @@ Remember, this is only your development postgres password. It will **never** ask
 The version comparisons can be fully trusted but when comparing a specific playbook or inventory file it's not really
 possible to guarantee a valid comparison.
 
-When passing in `--playbook-file` or `--inventory-file` it will look for certain keywords in the file. If it finds the
+When passing in `--playbook` or `--inventory` it will look for certain keywords in the file. If it finds the
 keyword then it will assume that keyword is working and up to date. Since you can edit these files freely there may be
 cases where it reports a false positive.
 

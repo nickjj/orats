@@ -217,15 +217,15 @@ module Orats
                               inventory_file_stats(remote_inventory_contents),
                               inventory_file_stats(IO.read(inventory_file_path)))
 
-      unless @options[:playbook_file].empty?
-        compare_user_to_local('playbook', 'roles', @options[:playbook_file], local_playbook) do
-          playbook_file_stats IO.read(@options[:playbook_file])
+      unless @options[:playbook].empty?
+        compare_user_to_local('playbook', 'roles', @options[:playbook], local_playbook) do
+          playbook_file_stats IO.read(@options[:playbook])
         end
       end
 
-      unless @options[:inventory_file].empty?
-        compare_user_to_local('inventory', 'variables', @options[:inventory_file], local_inventory) do
-          inventory_file_stats IO.read(@options[:inventory_file])
+      unless @options[:inventory].empty?
+        compare_user_to_local('inventory', 'variables', @options[:inventory], local_inventory) do
+          inventory_file_stats IO.read(@options[:inventory])
         end
       end
     end
