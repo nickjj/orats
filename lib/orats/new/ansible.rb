@@ -2,29 +2,10 @@ module Orats
   module New
     module Ansible
       def ansible_init(path)
-        log_thor_task 'shell', 'Creating ansible inventory'
-        run "mkdir #{path}/inventory"
-        run "mkdir #{path}/inventory/group_vars"
-        copy_from_includes 'inventory/hosts', path
-        copy_from_includes 'inventory/group_vars/all.yml', path
+        create_inventory path
 
         secrets_path = "#{path}/secrets"
-        log_thor_task 'shell', 'Creating ansible secrets'
-        run "mkdir #{secrets_path}"
-
-        save_secret_string "#{secrets_path}/postgres_password"
-
-        if @options[:redis_password].empty?
-          run "touch #{secrets_path}/redis_password"
-        else
-          save_secret_string "#{secrets_path}/redis_password"
-          gsub_file "#{path}/inventory/group_vars/all.yml", 'redis_password: false', 'redis_password: true'
-        end
-
-        save_secret_string "#{secrets_path}/mail_password"
-        save_secret_string "#{secrets_path}/rails_token"
-        save_secret_string "#{secrets_path}/devise_token"
-        save_secret_string "#{secrets_path}/devise_pepper_token"
+        create_secrets secrets_path
 
         log_thor_task 'shell', 'Modifying secrets path in group_vars/all.yml'
         gsub_file "#{path}/inventory/group_vars/all.yml", '~/tmp/testproj/secrets/', File.expand_path(secrets_path)
@@ -45,6 +26,32 @@ module Orats
       end
 
       private
+
+      def create_inventory(path)
+        log_thor_task 'shell', 'Creating ansible inventory'
+        run "mkdir #{path}/inventory"
+        run "mkdir #{path}/inventory/group_vars"
+        copy_from_includes 'inventory/hosts', path
+        copy_from_includes 'inventory/group_vars/all.yml', path
+      end
+
+      def create_secrets(secrets_path)
+        log_thor_task 'shell', 'Creating ansible secrets'
+        run "mkdir #{secrets_path}"
+
+        if @options[:redis_password].empty?
+          run "touch #{secrets_path}/redis_password"
+        else
+          save_secret_string "#{secrets_path}/redis_password"
+          gsub_file "#{path}/inventory/group_vars/all.yml", 'redis_password: false', 'redis_password: true'
+        end
+
+        save_secret_string "#{secrets_path}/postgres_password"
+        save_secret_string "#{secrets_path}/mail_password"
+        save_secret_string "#{secrets_path}/rails_token"
+        save_secret_string "#{secrets_path}/devise_token"
+        save_secret_string "#{secrets_path}/devise_pepper_token"
+      end
 
       def copy_from_includes(file, destination_root_path)
         base_path = "#{File.expand_path File.dirname(__FILE__)}/../templates/includes"
