@@ -45,11 +45,12 @@ module Orats
       end
 
       def build_common_paths
+        @remote_paths[:version] = "#{repo_path[0]}/master/#{repo_path[1]}/#{RELATIVE_PATHS[:version]}"
+        @remote_gem_version = gem_version
+
         RELATIVE_PATHS.each_pair do |key, value|
-          unless key == :version
-            @local_paths[key] = "#{base_path}/#{value}"
-            @remote_paths[key] = "#{repo_path[0]}/#{gem_version}/#{repo_path[1]}/#{value}"
-          end
+          @local_paths[key] = "#{base_path}/#{value}"
+          @remote_paths[key] = "#{repo_path[0]}/#{@remote_gem_version}/#{repo_path[1]}/#{value}"
         end
       end
     end

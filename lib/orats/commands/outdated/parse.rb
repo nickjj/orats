@@ -3,9 +3,6 @@ module Orats
     module Outdated
       module Parse
         def gem_version
-          @remote_paths[:version] =
-              "#{repo_path[0]}/master/#{repo_path[1]}/#{Commands::Common::RELATIVE_PATHS[:version]}"
-
           "v#{url_to_string(@remote_paths[:version]).match(/'(.*)'/)[1..-1].first}"
         end
 
