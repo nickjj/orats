@@ -23,8 +23,6 @@ end
   }
 end
 
-app_name_upper = app_name.upcase
-
 # ----- Delete application.css ------------------------------------------------------------------------
 
 # This gets created by rails automatically when you make a new project
