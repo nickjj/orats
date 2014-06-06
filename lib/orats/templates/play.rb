@@ -18,9 +18,6 @@ def git_config(field)
   git_field_value.to_s.empty? ? default_value : git_field_value
 end
 
-app_name_upper = app_name.upcase
-app_name_class = app_name.humanize
-
 author_name = git_config 'name'
 author_email = git_config 'email'
 
