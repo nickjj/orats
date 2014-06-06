@@ -1,11 +1,11 @@
 require 'orats/version'
 require 'orats/shell'
 require 'orats/foreman'
-require 'orats/ui'
+require 'orats/cli/ui'
 require 'orats/new/rails'
 require 'orats/new/ansible'
-require 'orats/nuke'
-require 'orats/play'
+#require 'orats/nuke'
+#require 'orats/play'
 
 module Orats
   class Execute
@@ -15,7 +15,7 @@ module Orats
     #source_root Dir.pwd
 
     include Shell
-    include UI
+    include CLI::UI
     include New::Rails
     include New::Ansible
     include Nuke
