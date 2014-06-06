@@ -40,7 +40,10 @@ module Orats
       end
 
       def valid_rails_directories
-        rails_gemfiles = run("find #{@active_path} -type f -name Gemfile | xargs grep -lE \"gem 'rails'|gem \\\"rails\\\"\"", capture: true)
+        rails_gemfiles =
+            run("find #{@active_path} -type f -name Gemfile | xargs grep -lE \"gem 'rails'|gem \\\"rails\\\"\"",
+                capture: true)
+
         gemfile_paths = rails_gemfiles.split("\n")
 
         gemfile_paths.map { |gemfile| File.dirname(gemfile) }
