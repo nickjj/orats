@@ -45,11 +45,12 @@ module Orats
                           'file', label == 'playbook' ? 'site.yml' : 'all.yml'
 
           item_diff.each do |line|
-            log_status_bottom 'missing', line, :red unless local.include?(line)
+            log_status_bottom 'missing', line, :red, true unless local.include?(line)
           end
 
           if item_diff_count > 0
-            log_results "#{item_diff_count} new #{keyword} are available", 'You may benefit from upgrading to the latest orats'
+            log_results "#{item_diff_count} new #{keyword} are available",
+                        'You may benefit from upgrading to the latest orats'
           else
             log_results 'Everything appears to be in order', "No missing #{keyword} were found"
           end
@@ -65,13 +66,15 @@ module Orats
           extra_count = log_unmatched(user, local, 'extra', :yellow)
 
           if missing_count > 0
-            log_results "#{missing_count} #{keyword} are missing", "Your ansible run will likely fail with this #{label}"
+            log_results "#{missing_count} #{keyword} are missing",
+                        "Your ansible run will likely fail with this #{label}"
           else
             log_results 'Everything appears to be in order', "No missing #{keyword} were found"
           end
 
           if extra_count > 0
-            log_results "#{extra_count} extra #{keyword} were detected:", "No problem but remember to add them to future #{keyword}"
+            log_results "#{extra_count} extra #{keyword} were detected:",
+                        "No problem but remember to add them to future #{keyword}"
           else
             log_results "No extra #{keyword} were found:", "Extra #{keyword} are fine but you have none"
           end
