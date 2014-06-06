@@ -40,8 +40,8 @@ module Orats
 
         private
 
-        def services_path(target_path)
-          @options[:skip_extras] ?  target_path : "#{target_path}/services/#{File.basename target_path}"
+        def services_path
+          @options[:skip_extras] ?  @target_path : "#{@target_path}/services/#{File.basename @target_path}"
         end
       end
     end
