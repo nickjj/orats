@@ -94,7 +94,7 @@ module Orats
       `--inventory` to supply an inventory file for comparison []
     D
     def outdated
-      Commands::Outdated::Exec.new(options).init
+      Commands::Outdated::Exec.new(nil, options).init
     end
 
     desc 'version', ''

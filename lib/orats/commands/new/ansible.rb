@@ -5,16 +5,18 @@ module Orats
     module New
       module Ansible
         def ansible_extras
-          create_inventory @target_path
+          create_inventory
 
           secrets_path = "#{@target_path}/secrets"
           create_secrets secrets_path
 
           log_thor_task 'shell', 'Modifying secrets path in group_vars/all.yml'
-          gsub_file "#{@target_path}/inventory/group_vars/all.yml", '~/tmp/testproj/secrets/', File.expand_path(secrets_path)
+          gsub_file "#{@target_path}/#{fix_path_for_user(Commands::Common::RELATIVE_PATHS[:inventory])}",
+                    '~/tmp/testproj/secrets/', File.expand_path(secrets_path)
 
           log_thor_task 'shell', 'Modifying the place holder app name in group_vars/all.yml'
-          gsub_file "#{@target_path}/inventory/group_vars/all.yml", 'testproj', File.basename(@target_path)
+          gsub_file "#{@target_path}/#{fix_path_for_user(Commands::Common::RELATIVE_PATHS[:inventory])}",
+                    'testproj', File.basename(@target_path)
 
           log_thor_task 'shell', 'Creating ssh keypair'
           run "ssh-keygen -t rsa -P '' -f #{secrets_path}/id_rsa"
@@ -23,19 +25,27 @@ module Orats
           run create_rsa_certificate(secrets_path, 'sslkey.key', 'sslcert.crt')
 
           log_thor_task 'shell', 'Creating monit pem file'
-          run "#{create_rsa_certificate(secrets_path, 'monit.pem', 'monit.pem')} && openssl gendh 512 >> #{secrets_path}/monit.pem"
+          run "#{create_rsa_certificate(secrets_path,
+                                        'monit.pem', 'monit.pem')} && openssl gendh 512 >> #{secrets_path}/monit.pem"
 
           install_role_dependencies unless @options[:skip_galaxy]
         end
 
         private
 
-        def create_inventory(path)
+        def create_inventory
           log_thor_task 'shell', 'Creating ansible inventory'
-          run "mkdir #{path}/inventory"
-          run "mkdir #{path}/inventory/group_vars"
-          copy_from_includes 'inventory/hosts', path
-          copy_from_includes 'inventory/group_vars/all.yml', path
+          run "mkdir -p #{@target_path}/inventory/group_vars"
+
+          local_to_user Commands::Common::RELATIVE_PATHS[:hosts]
+          local_to_user Commands::Common::RELATIVE_PATHS[:inventory]
+        end
+
+        def local_to_user(file)
+          fixed_file = fix_path_for_user(file)
+
+          log_thor_task 'shell', "Creating #{fixed_file}"
+          run "cp #{base_path}/#{file} #{@target_path}/#{fixed_file}"
         end
 
         def create_secrets(secrets_path)
@@ -46,7 +56,8 @@ module Orats
             run "touch #{secrets_path}/redis_password"
           else
             save_secret_string "#{secrets_path}/redis_password"
-            gsub_file "#{path}/inventory/group_vars/all.yml", 'redis_password: false', 'redis_password: true'
+            gsub_file "#{@target_path}/#{fix_path_for_user(Commands::Common::RELATIVE_PATHS[:inventory])}",
+                      'redis_password: false', 'redis_password: true'
           end
 
           save_secret_string "#{secrets_path}/postgres_password"
@@ -54,13 +65,6 @@ module Orats
           save_secret_string "#{secrets_path}/rails_token", :token
           save_secret_string "#{secrets_path}/devise_token", :token
           save_secret_string "#{secrets_path}/devise_pepper_token", :token
-        end
-
-        def copy_from_includes(file, destination_root_path)
-          base_path = "#{File.expand_path File.dirname(__FILE__)}/../../templates/includes"
-
-          log_thor_task 'shell', "Creating #{file}"
-          run "cp #{base_path}/#{file} #{destination_root_path}/#{file}"
         end
 
         def save_secret_string(file, secure_mode = :password)
@@ -76,7 +80,9 @@ module Orats
         def install_role_dependencies
           log_thor_task 'shell', 'Updating ansible roles from the galaxy'
 
-          galaxy_install = "ansible-galaxy install -r #{base_path}/#{Commands::Common::RELATIVE_PATHS[:galaxyfile]} --force"
+          galaxy_install =
+              "ansible-galaxy install -r #{base_path}/#{Commands::Common::RELATIVE_PATHS[:galaxyfile]} --force"
+
           galaxy_out = run(galaxy_install, capture: true)
 
           if galaxy_out.include?('you do not have permission')
@@ -92,8 +98,8 @@ module Orats
 
         private
 
-        def base_path
-          File.join(File.expand_path(File.dirname(__FILE__)), '..', '..')
+        def fix_path_for_user(file)
+          file.sub('templates/includes/', '')
         end
       end
     end

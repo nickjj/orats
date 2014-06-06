@@ -6,7 +6,7 @@ module Orats
           exit_if_cannot_rails
           exit_if_exists unless flags.index(/--skip/)
 
-          run "rails new #{@active_path} #{flags} --skip-bundle --template #{File.expand_path File.dirname(__FILE__)}/../../templates/#{command}.rb"
+          run "rails new #{@active_path} #{flags} --skip-bundle --template #{base_path}/templates/#{command}.rb"
           yield if block_given?
         end
 
