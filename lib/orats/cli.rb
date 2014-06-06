@@ -1,6 +1,7 @@
 require 'thor'
 require 'orats/commands/new/exec'
 require 'orats/commands/outdated/exec'
+require 'orats/commands/nuke'
 
 module Orats
   class CLI < Thor
@@ -62,7 +63,7 @@ module Orats
     end
 
     option :skip_data, type: :boolean, default: false, aliases: '-D'
-    desc 'nuke APP_PATH [options]', ''
+    desc 'nuke TARGET_PATH [options]', ''
     long_desc <<-D
       `orats nuke target_path` will delete the directory and optionally all data associated to it.
 
@@ -71,7 +72,7 @@ module Orats
       `--skip-data` will skip deleting app specific postgres databases and redis namespaces [false]
     D
     def nuke(target_path)
-      #Execute.new(target_path, options).nuke
+      Commands::Nuke.new(target_path, options).init
     end
 
     option :playbook, default: ''
