@@ -13,6 +13,8 @@ module Orats
 
         def initialize(target_path = '', options = {})
           super
+
+          @active_path = services_path
         end
 
         def init
