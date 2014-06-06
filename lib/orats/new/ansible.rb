@@ -1,17 +1,17 @@
 module Orats
   module New
     module Ansible
-      def ansible_init(path)
-        create_inventory path
+      def ansible_extras
+        create_inventory @target_path
 
-        secrets_path = "#{path}/secrets"
+        secrets_path = "#{@target_path}/secrets"
         create_secrets secrets_path
 
         log_thor_task 'shell', 'Modifying secrets path in group_vars/all.yml'
-        gsub_file "#{path}/inventory/group_vars/all.yml", '~/tmp/testproj/secrets/', File.expand_path(secrets_path)
+        gsub_file "#{@target_path}/inventory/group_vars/all.yml", '~/tmp/testproj/secrets/', File.expand_path(secrets_path)
 
         log_thor_task 'shell', 'Modifying the place holder app name in group_vars/all.yml'
-        gsub_file "#{path}/inventory/group_vars/all.yml", 'testproj', File.basename(path)
+        gsub_file "#{@target_path}/inventory/group_vars/all.yml", 'testproj', File.basename(@target_path)
 
         log_thor_task 'shell', 'Creating ssh keypair'
         run "ssh-keygen -t rsa -P '' -f #{secrets_path}/id_rsa"
@@ -71,7 +71,7 @@ module Orats
       def install_role_dependencies
         log_thor_task 'shell', 'Updating ansible roles from the galaxy'
 
-        galaxy_install = "ansible-galaxy install -r #{galaxy_file_path} --force"
+        galaxy_install = "ansible-galaxy install -r #{base_path}/#{Orats::Outdated::Exec::RELATIVE_PATHS[:galaxyfile]} --force"
         galaxy_out = run(galaxy_install, capture: true)
 
         if galaxy_out.include?('you do not have permission')
@@ -83,6 +83,12 @@ module Orats
 
           run("#{sudo_galaxy_command} #{galaxy_install}")
         end
+      end
+
+      private
+
+      def base_path
+        File.join(File.expand_path(File.dirname(__FILE__)), '..')
       end
     end
   end

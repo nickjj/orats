@@ -34,33 +34,6 @@ module Orats
       @behavior = :invoke
     end
 
-    def new
-      @active_path = @target_path
-      @active_path = services_path(@target_path)
-
-      rails_template 'base' do
-        gsub_postgres_info
-        gsub_redis_info unless @options[:redis_password].empty?
-        gsub_project_path
-
-        bundle_install
-        bundle_binstubs
-        spring_binstub
-
-        create_and_migrate_database
-      end
-
-      if @options[:auth]
-        rails_template 'auth', '--skip ' do
-          run_rake 'db:migrate db:seed'
-        end
-      end
-
-      ansible_init(@target_path) unless @options[:skip_extras]
-
-      foreman_init
-    end
-
     def play
       play_init @target_path
     end

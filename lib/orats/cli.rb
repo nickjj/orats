@@ -1,5 +1,6 @@
 require 'thor'
 require 'orats/execute'
+require 'orats/new/exec'
 require 'orats/outdated/exec'
 
 module Orats
@@ -49,7 +50,7 @@ module Orats
       `--skip-galaxy` skip automatically installing roles from the galaxy [false]
     D
     def new(target_path)
-      Execute.new(target_path, options).new
+      New::Exec.new(target_path, options).init
     end
 
     desc 'play PATH', ''

@@ -39,16 +39,6 @@ module Orats
       log_status_bottom bottom_label, bottom_message, :cyan
     end
 
-    def log_foreman_start
-      @options[:skip_foreman_start] ? message = 'Start your' : message = 'Starting'
-
-      puts  '', '='*80
-      log_status_top 'action', "#{message} server with the following commands", :cyan
-      log_status_bottom 'command', "cd #{@active_path}", :magenta, true
-      log_status_bottom 'command', 'bundle exec foreman start', :magenta
-      puts  '='*80, ''
-    end
-
     def run_from(path, command)
       run "cd #{path} && #{command} && cd -"
     end
