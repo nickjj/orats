@@ -1,6 +1,7 @@
 require 'thor'
 require 'orats/commands/new/exec'
 require 'orats/commands/outdated/exec'
+require 'orats/commands/play'
 require 'orats/commands/nuke'
 
 module Orats
@@ -58,8 +59,7 @@ module Orats
       `orats play target_path` will create an ansible playbook.
     D
     def play(target_path)
-      #Play::Exec.new(target_path).init
-      #Execute.new(target_path).play
+      Commands::Play.new(target_path).init
     end
 
     option :skip_data, type: :boolean, default: false, aliases: '-D'
