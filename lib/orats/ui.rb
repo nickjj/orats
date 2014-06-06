@@ -1,5 +1,7 @@
 module Orats
   module UI
+    include Thor::Shell
+
     def log_thor_task(type, message)
       puts
       say_status  type, "#{message}...", :yellow
