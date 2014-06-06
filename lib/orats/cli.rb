@@ -1,5 +1,6 @@
 require 'thor'
 require 'orats/execute'
+require 'orats/outdated'
 
 module Orats
   class CLI < Thor
@@ -91,7 +92,7 @@ module Orats
       `--inventory` to supply an inventory file for comparison []
     D
     def outdated
-      Execute.new(nil, options).outdated
+      Outdated.new(options).exec
     end
 
     desc 'version', ''

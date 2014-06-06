@@ -6,7 +6,6 @@ require 'orats/new/rails'
 require 'orats/new/ansible'
 require 'orats/nuke'
 require 'orats/play'
-require 'orats/outdated'
 
 module Orats
   class Execute
@@ -21,7 +20,6 @@ module Orats
     include New::Ansible
     include Nuke
     include Play
-    include Outdated
     include Foreman
 
     attr_accessor :active_path
@@ -79,10 +77,6 @@ module Orats
         nuke_data unless @options[:skip_data]
         nuke_directory
       end
-    end
-
-    def outdated
-      outdated_init
     end
 
     def version
