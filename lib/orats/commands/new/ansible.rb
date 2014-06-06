@@ -76,7 +76,7 @@ module Orats
         def install_role_dependencies
           log_thor_task 'shell', 'Updating ansible roles from the galaxy'
 
-          galaxy_install = "ansible-galaxy install -r #{base_path}/#{Orats::Commands::Outdated::Exec::RELATIVE_PATHS[:galaxyfile]} --force"
+          galaxy_install = "ansible-galaxy install -r #{base_path}/#{Commands::Common::RELATIVE_PATHS[:galaxyfile]} --force"
           galaxy_out = run(galaxy_install, capture: true)
 
           if galaxy_out.include?('you do not have permission')

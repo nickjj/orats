@@ -3,10 +3,10 @@ module Orats
     module Outdated
       module Parse
         def gem_version
-          Commands::Outdated::Exec::REMOTE_FILE_PATHS[:version] =
-              "#{repo_path[0]}/master/#{repo_path[1]}/#{Commands::Outdated::Exec::RELATIVE_PATHS[:version]}"
+          Commands::Common::REMOTE_FILE_PATHS[:version] =
+              "#{repo_path[0]}/master/#{repo_path[1]}/#{Commands::Common::RELATIVE_PATHS[:version]}"
 
-          "v#{url_to_string(Commands::Outdated::Exec::REMOTE_FILE_PATHS[:version]).match(/'(.*)'/)[1..-1].first}"
+          "v#{url_to_string(Commands::Common::REMOTE_FILE_PATHS[:version]).match(/'(.*)'/)[1..-1].first}"
         end
 
         def galaxyfile(contents)

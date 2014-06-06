@@ -1,20 +1,10 @@
-require 'orats/commands/ui'
+require 'orats/commands/common'
 
 module Orats
   module Commands
-    class Nuke
-      include Thor::Base
-      include Thor::Shell
-      include Thor::Actions
-      include UI
-
+    class Nuke < Common
       def initialize(target_path = '', options = {})
-        @target_path = target_path
-        @options = options
-        @active_path = @target_path
-
-        self.destination_root = Dir.pwd
-        @behavior = :invoke
+        super
       end
 
       def init

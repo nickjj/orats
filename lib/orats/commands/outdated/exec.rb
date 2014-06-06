@@ -1,23 +1,14 @@
-require 'orats/commands/ui'
+require 'orats/commands/common'
+require 'orats/version'
 require 'orats/commands/outdated/parse'
 require 'orats/commands/outdated/compare'
 
 module Orats
   module Commands
     module Outdated
-      class Exec
-        include Commands::UI
+      class Exec < Commands::Common
         include Parse
         include Compare
-
-        RELATIVE_PATHS = {
-            galaxyfile: 'templates/includes/Galaxyfile',
-            inventory: 'templates/includes/inventory/group_vars/all.yml',
-            playbook: 'templates/play.rb',
-            version: 'version.rb'
-        }
-
-        REMOTE_FILE_PATHS = {} ; LOCAL_FILE_PATHS = {}
 
         def initialize(options = {})
           @options = options
@@ -55,10 +46,6 @@ module Orats
         end
 
         private
-
-        def base_path
-          File.join(File.expand_path(File.dirname(__FILE__)), '..', '..')
-        end
 
         def repo_path
           %w(https://raw.githubusercontent.com/nickjj/orats lib/orats)

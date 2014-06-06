@@ -1,4 +1,4 @@
-require 'orats/commands/ui'
+require 'orats/commands/common'
 require 'orats/commands/new/ansible'
 require 'orats/commands/new/rails'
 require 'orats/commands/new/foreman'
@@ -6,22 +6,13 @@ require 'orats/commands/new/foreman'
 module Orats
   module Commands
     module New
-      class Exec
-        include Thor::Base
-        include Thor::Shell
-        include Thor::Actions
-        include Commands::UI
+      class Exec < Commands::Common
         include Ansible
         include Rails
         include Foreman
 
         def initialize(target_path = '', options = {})
-          @target_path = target_path
-          @options = options
-          @active_path = services_path(@target_path)
-
-          self.destination_root = Dir.pwd
-          @behavior = :invoke
+          super
         end
 
         def init

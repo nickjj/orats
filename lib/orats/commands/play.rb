@@ -1,22 +1,13 @@
-require 'orats/commands/ui'
+require 'orats/commands/common'
 require 'orats/commands/new/rails'
 
 module Orats
   module Commands
-    class Play
-      include Thor::Base
-      include Thor::Shell
-      include Thor::Actions
-      include UI
+    class Play < Common
       include New::Rails
 
       def initialize(target_path = '', options = {})
-        @target_path = target_path
-        @options = options
-        @active_path = @target_path
-
-        self.destination_root = Dir.pwd
-        @behavior = :invoke
+        super
       end
 
       def init
