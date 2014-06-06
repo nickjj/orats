@@ -51,15 +51,5 @@ module Orats
         nuke_directory
       end
     end
-
-    def version
-      puts "Orats version #{VERSION}"
-    end
-
-    private
-
-    def services_path(target_path)
-      @options[:skip_extras] ?  target_path : "#{target_path}/services/#{File.basename @active_path}"
-    end
   end
 end

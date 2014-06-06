@@ -101,7 +101,7 @@ module Orats
       `orats version` will print the current version.
     D
     def version
-      Execute.new.version
+      puts "Orats version #{VERSION}"
     end
     map %w(-v --version) => :version
 
