@@ -6,16 +6,16 @@ require 'orats/commands/nuke'
 
 module Orats
   class CLI < Thor
-    option :pg_location, default: 'localhost'
-    option :pg_username, default: 'postgres'
-    option :pg_password, required: true
-    option :redis_location, default: 'localhost'
-    option :redis_password, default: ''
+    option :pg_location, default: 'localhost', aliases: '-l'
+    option :pg_username, default: 'postgres', aliases: '-u'
+    option :pg_password, required: true, aliases: '-p'
+    option :redis_location, default: 'localhost', aliases: '-n'
+    option :redis_password, default: '', aliases: '-d'
     option :auth, type: :boolean, default: false, aliases: '-a'
-    option :template, default: ''
+    option :template, default: '', aliases: '-m'
     option :skip_extras, type: :boolean, default: false, aliases: '-E'
     option :skip_foreman_start, type: :boolean, default: false, aliases: '-F'
-    option :sudo_password, default: ''
+    option :sudo_password, default: '', aliases: '-s'
     option :skip_galaxy, type: :boolean, default: false, aliases: '-G'
     desc 'new TARGET_PATH [options]', ''
     long_desc <<-D
@@ -57,8 +57,8 @@ module Orats
       Commands::New::Exec.new(target_path, options).init
     end
 
-    option :template, default: ''
-    desc 'play PATH', ''
+    option :template, default: '', aliases: '-m'
+    desc 'play PATH [options]', ''
     long_desc <<-D
       `orats play target_path` will create an ansible playbook.
 
@@ -83,8 +83,8 @@ module Orats
       Commands::Nuke.new(target_path, options).init
     end
 
-    option :playbook, default: ''
-    option :inventory, default: ''
+    option :playbook, default: '', aliases: '-p'
+    option :inventory, default: '', aliases: '-i'
     desc 'outdated [options]', ''
     long_desc <<-D
       `orats outdated` will run various comparisons on orats and your ansible files.
