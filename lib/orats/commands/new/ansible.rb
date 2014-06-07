@@ -62,15 +62,13 @@ module Orats
 
           save_secret_string "#{secrets_path}/postgres_password"
           save_secret_string "#{secrets_path}/mail_password"
-          save_secret_string "#{secrets_path}/rails_token", :token
-          save_secret_string "#{secrets_path}/devise_token", :token
-          save_secret_string "#{secrets_path}/devise_pepper_token", :token
+          save_secret_string "#{secrets_path}/rails_token"
+          save_secret_string "#{secrets_path}/devise_token"
+          save_secret_string "#{secrets_path}/devise_pepper_token"
         end
 
-        def save_secret_string(file, secure_mode = :password)
-          secure_mode == :password ? output = SecureRandom.urlsafe_base64.gsub(' ', '-') : output = SecureRandom.hex(64)
-
-          File.open(file, 'w+') { |f| f.write(output) }
+        def save_secret_string(file)
+          File.open(file, 'w+') { |f| f.write(SecureRandom.hex(64)) }
         end
 
         def create_rsa_certificate(secrets_path, keyout, out)
