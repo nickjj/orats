@@ -13,7 +13,7 @@ module Orats
       def init
         return unless can_play?
         rails_template 'play'
-        custom_rails_template if @options[:template]
+        custom_rails_template unless @options[:template].empty?
       end
 
       private
