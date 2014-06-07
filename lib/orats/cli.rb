@@ -12,6 +12,7 @@ module Orats
     option :redis_location, default: 'localhost'
     option :redis_password, default: ''
     option :auth, type: :boolean, default: false, aliases: '-a'
+    option :template, default: ''
     option :skip_extras, type: :boolean, default: false, aliases: '-E'
     option :skip_foreman_start, type: :boolean, default: false, aliases: '-F'
     option :sudo_password, default: ''
@@ -38,6 +39,8 @@ module Orats
 
       `--auth` will include authentication and authorization [false]
 
+      `--template` will let you supply a custom template, a url or file is ok but urls must start with http or https []
+
       Project features:
 
       `--skip-extras` skip creating the services directory and ansible inventory/secrets [false]
@@ -54,12 +57,17 @@ module Orats
       Commands::New::Exec.new(target_path, options).init
     end
 
+    option :template, default: ''
     desc 'play PATH', ''
     long_desc <<-D
       `orats play target_path` will create an ansible playbook.
+
+      Template features:
+
+      `--template` will let you supply a custom template, a url or file is ok but urls must start with http or https []
     D
     def play(target_path)
-      Commands::Play.new(target_path).init
+      Commands::Play.new(target_path, options).init
     end
 
     option :skip_data, type: :boolean, default: false, aliases: '-D'

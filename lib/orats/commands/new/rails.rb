@@ -6,8 +6,19 @@ module Orats
           exit_if_cannot_rails
           exit_if_exists unless flags.index(/--skip/)
 
-          run "rails new #{@active_path} #{flags} --skip-bundle --template #{base_path}/templates/#{command}.rb"
+          orats_template = "--template #{base_path}/templates/#{command}.rb"
+
+          run "rails new #{@active_path} #{flags} --skip-bundle #{orats_template unless command.empty?}"
           yield if block_given?
+        end
+
+        def custom_rails_template
+          log_thor_task 'shell', 'Running custom rails template'
+
+          @options[:template].include?('://') ? url_to_string(@options[:template])
+                                               : file_to_string(@options[:template])
+
+          rails_template '', "--skip --template #{@options[:template]}"
         end
 
         def gsub_postgres_info

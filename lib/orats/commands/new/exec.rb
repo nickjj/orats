@@ -37,6 +37,9 @@ module Orats
           end
 
           ansible_extras unless @options[:skip_extras]
+
+          custom_rails_template if @options[:template]
+
           foreman_start unless @options[:skip_foreman_start]
         end
 

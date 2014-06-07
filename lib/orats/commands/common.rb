@@ -57,6 +57,26 @@ module Orats
           @remote_paths[key] = select_branch @remote_gem_version, value
         end
       end
+
+      def url_to_string(url)
+        begin
+          open(url).read
+        rescue *[OpenURI::HTTPError, SocketError] => ex
+          log_error 'error', "Error accessing URL #{url}",
+                    'message', ex
+          exit 1
+        end
+      end
+
+      def file_to_string(path)
+        if File.exist?(path) && File.file?(path)
+          IO.read(path)
+        else
+          log_error 'error', 'Error finding file',
+                    'message', path
+          exit 1
+        end
+      end
     end
   end
 end

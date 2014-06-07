@@ -56,28 +56,6 @@ module Orats
 
           roles.uniq
         end
-
-        def url_to_string(url)
-          begin
-            url_contents = open(url).read
-          rescue *[OpenURI::HTTPError, SocketError] => ex
-            log_error 'error', "Error accessing URL #{url}",
-                      'message', ex
-            exit 1
-          end
-
-          url_contents
-        end
-
-        def file_to_string(path)
-          if File.exist?(path) && File.file?(path)
-            IO.read(path)
-          else
-            log_error 'error', 'Error finding file',
-                      'message', path
-            exit 1
-          end
-        end
       end
     end
   end

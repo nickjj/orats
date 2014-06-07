@@ -6,6 +6,8 @@ It stands for opinionated rails application templates. The templates include sol
 projects. It handles creating a rails application with a bunch of opinions and optionally an ansible playbook so you can
 deploy your apps quickly.
 
+You can also optionally include custom rails templates to append to any template you create with orats.
+
 Everything is accessed through the [orats gem](#installation).
 
 ## What version of Rails and Ruby are you targeting?
@@ -70,6 +72,7 @@ running `orats <command name> help` from your terminal. You can also type `orats
         - Optionally takes: `--redis-password []`
     - Template features:
         - Optionally takes: `--auth [false]`
+        - Optionally takes: `--template []`
     - Project features:
         - Optionally takes: `--skip-extras [false]`
         - Optionally takes: `--skip-foreman-start [false]`
@@ -79,6 +82,8 @@ running `orats <command name> help` from your terminal. You can also type `orats
 
 - Create an ansible playbook
     - `orats play <TARGET_PATH>`
+    - Template features:
+        - Optionally takes: `--template []`
 
 - Delete the directory and optionally all data associated to it
     - `orats nuke <TARGET_PATH>`
