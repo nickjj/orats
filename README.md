@@ -129,10 +129,12 @@ it includes these features and when I do not want a specific thing it is much qu
 - Create development, staging and production environments.
 - Use environment variables for things that are likely to change per environment.
 - Use environment variables for anything that is sensitive and should not be included into version control.
+- Add environment variables for google analytics UI, disqus short name and S3 in addition to a bunch of typical rails values.
 - Use redis as the cache backend.
 - Use sidekiq as a background worker.
 - Use puma as the server with settings capable of doing phased restarts.
 - Use foreman in development mode to manage starting both the rails server using puma and sidekiq.
+- Add a rake task to handle upgrades using the `backup` gem.
 - Set the production asset precompiler to include fonts and png files.
 - Set the production logger to rotate the logs daily.
 - Set the timezone to EST.
@@ -145,7 +147,7 @@ it includes these features and when I do not want a specific thing it is much qu
 - Add 3 view helpers to easily set a page's title, meta description and page heading. All of which are optional.
 - Bootstrap ~3 layout file with conditionally loaded `html5shiv`, `json3` and `respondjs` libs for IE < 9 support.
 - Separate the navigation, navigation links, flash messages and footer partials.
-- Add partials and environment variables for both google analytics and disqus.
+- Add partials for both google analytics and disqus.
 - Public 404, 422, 500 and 502 pages so they can be served directly from your web server.
 - Use sass and coffeescript.
 - jquery 1.10.x loaded through a CDN.
