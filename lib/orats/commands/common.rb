@@ -44,13 +44,17 @@ module Orats
         %w(https://raw.githubusercontent.com/nickjj/orats lib/orats)
       end
 
+      def select_branch(branch, value)
+        "#{repo_path[0]}/#{branch}/#{repo_path[1]}/#{value}"
+      end
+
       def build_common_paths
-        @remote_paths[:version] = "#{repo_path[0]}/master/#{repo_path[1]}/#{RELATIVE_PATHS[:version]}"
+        @remote_paths[:version] = select_branch 'master', RELATIVE_PATHS[:version]
         @remote_gem_version = gem_version
 
         RELATIVE_PATHS.each_pair do |key, value|
           @local_paths[key] = "#{base_path}/#{value}"
-          @remote_paths[key] = "#{repo_path[0]}/#{@remote_gem_version}/#{repo_path[1]}/#{value}"
+          @remote_paths[key] = select_branch @remote_gem_version, value
         end
       end
     end
