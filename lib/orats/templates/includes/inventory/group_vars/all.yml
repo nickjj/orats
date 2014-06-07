@@ -9,12 +9,12 @@ user_name: "{{ ansible_ssh_user }}"
 # do not add a trailing slash to the path
 secrets_load_path: /home/yourname/dev/testproj/secrets
 
-secrets_postgres_password: "{{ lookup('password', secrets_load_path + 'postgres_password') }}"
-secrets_redis_password: "{{ lookup('password', secrets_load_path + 'redis_password') }}"
-secrets_mail_password: "{{ lookup('password', secrets_load_path + 'mail_password') }}"
-secrets_rails_token: "{{ lookup('password', secrets_load_path + 'rails_token') }}"
-secrets_devise_token: "{{ lookup('password', secrets_load_path + 'devise_token') }}"
-secrets_devise_pepper_token: "{{ lookup('password', secrets_load_path + 'devise_pepper_token') }}"
+secrets_postgres_password: "{{ lookup('password', secrets_load_path + '/postgres_password') }}"
+secrets_redis_password: "{{ lookup('password', secrets_load_path + '/redis_password') }}"
+secrets_mail_password: "{{ lookup('password', secrets_load_path + '/mail_password') }}"
+secrets_rails_token: "{{ lookup('password', secrets_load_path + '/rails_token') }}"
+secrets_devise_token: "{{ lookup('password', secrets_load_path + '/devise_token') }}"
+secrets_devise_pepper_token: "{{ lookup('password', secrets_load_path + '/devise_pepper_token') }}"
 
 # postgres login credentials
 postgres_user: "{{ user_name }}"
