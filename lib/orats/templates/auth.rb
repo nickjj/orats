@@ -735,7 +735,7 @@ CODE
 end
 
 inject_into_file '.env', before: "\nDATABASE_NAME" do <<-CODE
-ACTION_MAILER_DEVISE_DEFAULT_EMAIL: info@#{app_name}.com
+ACTION_MAILER_DEVISE_DEFAULT_FROM: info@#{app_name}.com
 CODE
 end
 

@@ -57,6 +57,10 @@ append_to_file '.gitignore' do <<-TEXT
 # Ignore app specific folders.
 /vendor/bundle
 /public/assets/*
+
+# Ignore backup paths.
+/lib/backup/log/*
+/lib/backup/tmp/*
 TEXT
 end
 
@@ -94,21 +98,25 @@ RAILS_ENV: development
 
 PROJECT_PATH: /full/path/to/your/project
 
-GOOGLE_ANALYTICS_UA:
-DISQUS_SHORT_NAME:
+GOOGLE_ANALYTICS_UA: ""
+DISQUS_SHORT_NAME: ""
+S3_ACCESS_KEY_ID: ""
+S3_SECRET_ACCESS_KEY: ""
+S3_REGION: ""
 
 TOKEN_RAILS_SECRET: #{generate_token}
 
 SMTP_ADDRESS: smtp.gmail.com
-SMTP_PORT: 587
+SMTP_PORT: 587 # 465 if you use ssl
 SMTP_DOMAIN: gmail.com
 SMTP_USERNAME: #{app_name}@gmail.com
 SMTP_PASSWORD: thebestpassword
 SMTP_AUTH: plain
-SMTP_STARTTTLS_AUTO: true
+SMTP_ENCRYPTION: starttls
 
 ACTION_MAILER_HOST: localhost:3000
-ACTION_MAILER_DEFAULT_EMAIL: info@#{app_name}.com
+ACTION_MAILER_DEFAULT_FROM: info@#{app_name}.com
+ACTION_MAILER_DEFAULT_TO: me@#{app_name}.com
 
 DATABASE_NAME: #{app_name}
 DATABASE_HOST: localhost
@@ -120,7 +128,7 @@ DATABASE_PASSWORD: supersecrets
 CACHE_HOST: localhost
 CACHE_PORT: 6379
 CACHE_DATABASE: 0
-CACHE_PASSWORD:
+CACHE_PASSWORD: ""
 
 PUMA_THREADS_MIN: 0
 PUMA_THREADS_MAX: 1
@@ -177,16 +185,18 @@ inject_into_file 'config/application.rb', after: "automatically loaded.\n" do <<
       :domain               => ENV['SMTP_DOMAIN'],
       :user_name            => ENV['SMTP_USERNAME'],
       :password             => ENV['SMTP_PASSWORD'],
-      :authentication       => ENV['SMTP_AUTH'],
-      :enable_starttls_auto => ENV['SMTP_STARTTTLS_AUTO'] == 'true'
+      :authentication       => ENV['SMTP_AUTH']
     }
+    config.action_mailer.smtp_settings[:enable_starttls_auto] = true if ENV['SMTP_ENCRYPTION'] == 'starttls'
+    config.action_mailer.smtp_settings[:ssl] = true if ENV['SMTP_ENCRYPTION'] == 'ssl'
 
+    config.action_mailer.default_options = { from: ENV['ACTION_MAILER_DEFAULT_FROM'] }
     config.action_mailer.default_url_options = { host: ENV['ACTION_MAILER_HOST'] }
 
     config.cache_store = :redis_store, { host: ENV['CACHE_HOST'],
                                          port: ENV['CACHE_PORT'].to_i,
                                          db: ENV['CACHE_DATABASE'].to_i,
-                                         # password: ENV['CACHE_PASSWORD'].to_i,
+                                         # password: ENV['CACHE_PASSWORD'],
                                          namespace: '#{app_name}::cache'
                                        }
 CODE
@@ -313,6 +323,10 @@ git add:    '-A'
 git commit: "-m 'Add the sitemap config'"
 
 file 'config/schedule.rb', <<-CODE
+every 1.day, at: '3:00 am' do
+  rake 'backup:production'
+end
+
 every 1.day, at: '4:00 am' do
   rake 'sitemap:refresh'
 end
@@ -415,7 +429,7 @@ git commit: "-m 'Add a route concern for pagination'"
 # ----- Creating application tasks --------------------------------------------------------------------
 
 puts
-say_status  'Tasks', 'Creating application tasks...', :yellow
+say_status  'tasks', 'Creating application tasks...', :yellow
 puts        '-'*80, ''; sleep 0.25
 
 file 'lib/tasks/favicon.rake', <<-'CODE'
@@ -450,6 +464,224 @@ CODE
 
 git add:    '-A'
 git commit: "-m 'Add a favicon generator task'"
+
+file 'lib/tasks/backup.rake', <<-'CODE'
+namespace :backup do
+  desc 'Create a backup of your production application'
+  task :production do
+    project_name = File.basename(Rails.root)
+    project_name = project_name.split('.').first if project_name.include?('.')
+
+    # source the production environment
+    # using a best guess of the name based on the folder name, you may have to change it if it does not match
+    sourced_env = ". /etc/default/#{project_name}"
+
+    system "#{sourced_env} && backup perform -t production_backup -c '#{Rails.root.join('lib', 'backup', 'config.rb')}'"
+  end
+end
+CODE
+
+git add:    '-A'
+git commit: "-m 'Add a favicon generator task'"
+
+# ----- Creating application backup --------------------------------------------------------------------
+
+puts
+say_status  'backup', 'Creating application backup script...', :yellow
+puts        '-'*80, ''; sleep 0.25
+
+file 'lib/backup/config.rb', <<-'CODE'
+##
+# Backup v4.x Configuration
+#
+# Documentation: http://meskyanichi.github.io/backup
+# Issue Tracker: https://github.com/meskyanichi/backup/issues
+
+##
+# Config Options
+#
+# The options here may be overridden on the command line, but the result
+# will depend on the use of --root-path on the command line.
+#
+# If --root-path is used on the command line, then all paths set here
+# will be overridden. If a path (like --tmp-path) is not given along with
+# --root-path, that path will use it's default location _relative to --root-path_.
+#
+# If --root-path is not used on the command line, a path option (like --tmp-path)
+# given on the command line will override the tmp_path set here, but all other
+# paths set here will be used.
+#
+# Note that relative paths given on the command line without --root-path
+# are relative to the current directory. The root_path set here only applies
+# to relative paths set here.
+#
+# ---
+#
+# Sets the root path for all relative paths, including default paths.
+# May be an absolute path, or relative to the current working directory.
+#
+
+root_path 'lib/backup'
+
+#
+# Sets the path where backups are processed until they're stored.
+# This must have enough free space to hold apx. 2 backups.
+# May be an absolute path, or relative to the current directory or +root_path+.
+#
+
+tmp_path  'tmp'
+
+#
+# Sets the path where backup stores persistent information.
+# When Backup's Cycler is used, small YAML files are stored here.
+# May be an absolute path, or relative to the current directory or +root_path+.
+#
+
+data_path 'data'
+
+##
+# Utilities
+#
+# If you need to use a utility other than the one Backup detects,
+# or a utility can not be found in your $PATH.
+#
+#   Utilities.configure do
+#     tar       '/usr/bin/gnutar'
+#     redis_cli '/opt/redis/redis-cli'
+#   end
+
+##
+# Logging
+#
+# Logging options may be set on the command line, but certain settings
+# may only be configured here.
+#
+#   Logger.configure do
+#     console.quiet     = true            # Same as command line: --quiet
+#     logfile.max_bytes = 2_000_000       # Default: 500_000
+#     syslog.enabled    = true            # Same as command line: --syslog
+#     syslog.ident      = 'my_app_backup' # Default: 'backup'
+#   end
+#
+# Command line options will override those set here.
+# For example, the following would override the example settings above
+# to disable syslog and enable console output.
+#   backup perform --trigger my_backup --no-syslog --no-quiet
+
+##
+# Component Defaults
+#
+# Set default options to be applied to components in all models.
+# Options set within a model will override those set here.
+#
+#   Storage::S3.defaults do |s3|
+#     s3.access_key_id     = "my_access_key_id"
+#     s3.secret_access_key = "my_secret_access_key"
+#   end
+#
+#   Notifier::Mail.defaults do |mail|
+#     mail.from                 = 'sender@email.com'
+#     mail.to                   = 'receiver@email.com'
+#     mail.address              = 'smtp.gmail.com'
+#     mail.port                 = 587
+#     mail.domain               = 'your.host.name'
+#     mail.user_name            = 'sender@email.com'
+#     mail.password             = 'my_password'
+#     mail.authentication       = 'plain'
+#     mail.encryption           = :starttls
+#   end
+
+##
+# Preconfigured Models
+#
+# Create custom models with preconfigured components.
+# Components added within the model definition will
+# +add to+ the preconfigured components.
+#
+#   preconfigure 'MyModel' do
+#     archive :user_pictures do |archive|
+#       archive.add '~/pictures'
+#     end
+#
+#     notify_by Mail do |mail|
+#       mail.to = 'admin@email.com'
+#     end
+#   end
+#
+#   MyModel.new(:john_smith, 'John Smith Backup') do
+#     archive :user_music do |archive|
+#       archive.add '~/music'
+#     end
+#
+#     notify_by Mail do |mail|
+#       mail.to = 'john.smith@email.com'
+#     end
+#   end
+CODE
+
+git add:    '-A'
+git commit: "-m 'Add backup config'"
+
+file 'lib/backup/models/production_backup.rb', <<-'CODE'
+Model.new(:production_backup, 'Production backup') do
+  split_into_chunks_of 10
+  compress_with Gzip
+
+  database PostgreSQL do |db|
+    # To dump all databases, set `db.name = :all` (or leave blank)
+    db.name               = ENV['DATABASE_NAME']
+    db.username           = ENV['DATABASE_USERNAME']
+    db.password           = ENV['DATABASE_PASSWORD']
+    db.host               = ENV['DATABASE_HOST']
+    db.port               = 5432
+    db.socket             = '/var/run/postgresql'
+    #db.skip_tables        = ['skip', 'these', 'tables']
+    #db.only_tables        = ['only', 'these', 'tables']
+  end
+
+  # uncomment the block below to archive a specific path
+  # this may be useful if you have user supplied content
+
+  # archive :app_archive do |archive|
+  #   archive.add File.join(ENV['PROJECT_PATH'], 'public', 'system')
+  # end
+
+  # uncomment the block below and fill in the required information
+  # to use S3 to store your backups
+
+  # don't want to use S3? check out the other available options:
+  # http://meskyanichi.github.io/backup/v4/storages/
+
+  # store_with S3 do |s3|
+  #   s3.access_key_id = ENV['S3_ACCESS_KEY_ID']
+  #   s3.secret_access_key = ENV['S3_SECRET_ACCESS_KEY']
+  #   s3.region = ENV['S3_REGION']
+  #   s3.bucket = 'backup'
+  #   s3.path = '/production/database'
+  # end
+
+  ENV['SMTP_ENCRYPTION'].empty? ? mail_encryption = 'none' : mail_encryption = ENV['SMTP_ENCRYPTION']
+
+  notify_by Mail do |mail|
+    mail.on_success           = false
+    #mail.on_warning           = true
+    mail.on_failure           = true
+
+    mail.from                 = ENV['ACTION_MAILER_DEFAULT_FROM']
+    mail.to                   = ENV['ACTION_MAILER_DEFAULT_TO']
+    mail.address              = ENV['SMTP_ADDRESS']
+    mail.port                 = ENV['SMTP_PORT'].to_i
+    mail.domain               = ENV['SMTP_DOMAIN']
+    mail.user_name            = ENV['SMTP_USERNAME']
+    mail.password             = ENV['SMTP_PASSWORD']
+    mail.authentication       = ENV['SMTP_AUTH']
+    mail.encryption           = mail_encryption.to_sym
+  end
+end
+CODE
+
+git add:    '-A'
+git commit: "-m 'Add backup model'"
 
 # ----- Creating application helpers ------------------------------------------------------------------
 

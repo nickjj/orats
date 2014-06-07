@@ -56,7 +56,7 @@ module Orats
 
         def bundle_binstubs
           log_thor_task 'shell', 'Running bundle binstubs for a few gems'
-          run_from @active_path, 'bundle binstubs whenever puma sidekiq'
+          run_from @active_path, 'bundle binstubs whenever puma sidekiq backup'
 
           git_commit 'Add binstubs for the important gems'
         end

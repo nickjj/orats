@@ -6,7 +6,8 @@ ansible_ssh_user: deploy
 user_name: "{{ ansible_ssh_user }}"
 
 # load all passwords from a local location outside of version control
-secrets_load_path: ~/tmp/testproj/secrets/
+# do not add a trailing slash to the path
+secrets_load_path: /home/yourname/dev/testproj/secrets
 
 secrets_postgres_password: "{{ lookup('password', secrets_load_path + 'postgres_password') }}"
 secrets_redis_password: "{{ lookup('password', secrets_load_path + 'redis_password') }}"
@@ -50,8 +51,11 @@ rails_deploy_env:
 
   PROJECT_PATH: "{{ rails_deploy_path }}"
 
-  GOOGLE_ANALYTICS_UA:
-  DISQUS_SHORT_NAME:
+  GOOGLE_ANALYTICS_UA: ""
+  DISQUS_SHORT_NAME: ""
+  S3_ACCESS_KEY_ID: ""
+  S3_SECRET_ACCESS_KEY: ""
+  S3_REGION: ""
 
   DATABASE_HOST: localhost
   DATABASE_NAME: "{{ rails_deploy_app_name }}"
@@ -69,17 +73,18 @@ rails_deploy_env:
   TOKEN_DEVISE_SECRET: "{{ secrets_devise_token }}"
   TOKEN_DEVISE_PEPPER: "{{ secrets_devise_pepper_token }}"
 
-  SMTP_ADDRESS: smtp.testproj.com
-  SMTP_PORT: 25
-  SMTP_DOMAIN: testproj.com
+  SMTP_ADDRESS: smtp.gmail.com
+  SMTP_PORT: 587 # 465 if you use ssl
+  SMTP_DOMAIN: gmail.com
   SMTP_USERNAME: info@testproj.com
   SMTP_PASSWORD: "{{ secrets_mail_password }}"
   SMTP_AUTH: plain
-  SMTP_STARTTTLS_AUTO: true
+  SMTP_ENCRYPTION: starttls
 
   ACTION_MAILER_HOST: www.testproj.com
-  ACTION_MAILER_DEFAULT_EMAIL: info@testproj.com
-  ACTION_MAILER_DEVISE_DEFAULT_EMAIL: info@testproj.com
+  ACTION_MAILER_DEFAULT_FROM: info@testproj.com
+  ACTION_MAILER_DEFAULT_TO: me@testproj.com
+  ACTION_MAILER_DEVISE_DEFAULT_FROM: info@testproj.com
 
   PUMA_THREADS_MIN: 0
   PUMA_THREADS_MAX: 16
