@@ -73,7 +73,7 @@ puts
 say_status  'root', 'Creating root files...', :yellow
 puts        '-'*80, ''; sleep 0.25
 
-file '.ruby-version', '2.1.1'
+file '.ruby-version', '2.1.2'
 
 git add:    '-A'
 git commit: "-m 'Add .ruby-version file for common ruby version managers'"
