@@ -52,15 +52,8 @@ module Orats
           log_thor_task 'shell', 'Creating ansible secrets'
           run "mkdir #{secrets_path}"
 
-          if @options[:redis_password].empty?
-            run "touch #{secrets_path}/redis_password"
-          else
-            save_secret_string "#{secrets_path}/redis_password"
-            gsub_file "#{@target_path}/#{fix_path_for_user(Commands::Common::RELATIVE_PATHS[:inventory])}",
-                      'redis_password: false', 'redis_password: true'
-          end
-
           save_secret_string "#{secrets_path}/postgres_password"
+          save_secret_string "#{secrets_path}/redis_password"
           save_secret_string "#{secrets_path}/mail_password"
           save_secret_string "#{secrets_path}/rails_token"
           save_secret_string "#{secrets_path}/devise_token"
