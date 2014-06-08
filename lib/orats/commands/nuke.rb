@@ -60,7 +60,8 @@ module Orats
 
       def nuke_redis(namespace)
         log_thor_task 'root', 'Removing redis keys'
-        run "redis-cli KEYS '#{namespace}:*' | xargs --delim='\n' redis-cli DEL"
+        @options[:redis_password].empty? ? redis_password = '' : redis_password = "-a #{@options[:redis_password]}"
+        run "redis-cli #{redis_password} KEYS '#{namespace}:*' | xargs --delim='\n' redis-cli #{redis_password} DEL"
       end
 
       def nuke_directory

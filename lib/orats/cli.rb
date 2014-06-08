@@ -71,6 +71,7 @@ module Orats
     end
 
     option :skip_data, type: :boolean, default: false, aliases: '-D'
+    option :redis_password, default: '', aliases: '-d'
     desc 'nuke TARGET_PATH [options]', ''
     long_desc <<-D
       `orats nuke target_path` will delete the directory and optionally all data associated to it.
@@ -78,6 +79,8 @@ module Orats
       Options:
 
       `--skip-data` will skip deleting app specific postgres databases and redis namespaces [false]
+
+      `--redis-password` to supply your development redis password []
     D
     def nuke(target_path)
       Commands::Nuke.new(target_path, options).init
