@@ -459,25 +459,46 @@ namespace :assets do
   task favicon: :environment do
     require 'favicon_maker'
 
-    options = {
-      versions: [:apple_144, :apple_120, :apple_114, :apple_72, :apple_57, :apple_pre, :apple, :fav_png, :fav_ico],
-      custom_versions: {
-                         apple_extreme_retina: {
-                           filename: 'apple-touch-icon-228x228-precomposed.png', dimensions: '228x228', format: 'png'
-                         },
-                         speeddial: {
-                           filename: 'speeddial-160px.png', dimensions: '160x160', format: 'png'
-                         }
-                       },
-      root_dir: Rails.root,
-      input_dir: File.join('app', 'assets', 'favicon'),
-      base_image: 'favicon_base.png',
-      output_dir: File.join('app', 'assets', 'images'),
-      copy: true
-    }
+    FaviconMaker.generate do
+      setup do
+        template_dir Rails.root.join('app', 'assets', 'favicon')
+        output_dir Rails.root.join('public')
+      end
 
-    FaviconMaker::Generator.create_versions(options) do |filepath|
-      puts "Created favicon: #{filepath}"
+      favicon_base_path = "#{template_dir}/favicon_base.png"
+
+      unless File.exist?(favicon_base_path)
+        puts
+        puts 'A base favicon could not be found, make sure one exists at:'
+        puts base_favicon
+        puts
+        exit 1
+      end
+
+      from File.basename(favicon_base_path) do
+        icon 'speeddial-160x160.png'
+        icon 'apple-touch-icon-228x228-precomposed.png'
+        icon 'apple-touch-icon-152x152-precomposed.png'
+        icon 'apple-touch-icon-144x144-precomposed.png'
+        icon 'apple-touch-icon-120x120-precomposed.png'
+        icon 'apple-touch-icon-114x114-precomposed.png'
+        icon 'apple-touch-icon-76x76-precomposed.png'
+        icon 'apple-touch-icon-72x72-precomposed.png'
+        icon 'apple-touch-icon-60x60-precomposed.png'
+        icon 'apple-touch-icon-57x57-precomposed.png'
+        icon 'favicon-196x196.png'
+        icon 'favicon-160x160.png'
+        icon 'favicon-96x96.png'
+        icon 'favicon-64x64.png'
+        icon 'favicon-32x32.png'
+        icon 'favicon-24x24.png'
+        icon 'favicon-16x16.png'
+        icon 'favicon.ico', size: '64x64,32x32,24x24,16x16'
+      end
+
+      each_icon do |filepath|
+        puts "Creating favicon for: #{File.basename filepath}"
+      end
     end
   end
 end
@@ -724,20 +745,25 @@ inject_into_file 'app/helpers/application_helper.rb', after: "ApplicationHelper\
   end
 
   def link_to_all_favicons
-    capture do
-      concat favicon_link_tag 'speeddial-160px.png', rel: 'icon', type: 'image/png'
-      concat favicon_link_tag 'favicon.ico', rel: 'icon', type: 'image/x-icon'
-      concat favicon_link_tag 'favicon.ico', rel: 'shortcut icon', type: 'image/x-icon'
-      concat favicon_link_tag 'favicon.png', rel: 'icon', type: 'image/png'
-      concat favicon_link_tag 'apple-touch-icon-228x228-precomposed.png', sizes: '72x72', rel: 'apple-touch-icon-precomposed', type: 'image/png'
-      concat favicon_link_tag 'apple-touch-icon-144x144-precomposed.png', sizes: '144x144', rel: 'apple-touch-icon-precomposed', type: 'image/png'
-      concat favicon_link_tag 'apple-touch-icon-120x120-precomposed.png', sizes: '120x120', rel: 'apple-touch-icon-precomposed', type: 'image/png'
-      concat favicon_link_tag 'apple-touch-icon-114x114-precomposed.png', sizes: '114x114', rel: 'apple-touch-icon-precomposed', type: 'image/png'
-      concat favicon_link_tag 'apple-touch-icon-72x72-precomposed.png', sizes: '72x72', rel: 'apple-touch-icon-precomposed', type: 'image/png'
-      concat favicon_link_tag 'apple-touch-icon-57x57-precomposed.png', sizes: '57x57', rel: 'apple-touch-icon-precomposed', type: 'image/png'
-      concat favicon_link_tag 'apple-touch-icon-precomposed.png', sizes: '57x54', rel: 'apple-touch-icon-precomposed', type: 'image/png'
-      concat favicon_link_tag 'apple-touch-icon.png', sizes: '57x54', rel: 'apple-touch-icon', type: 'image/png'
-    end
+    '<link href="speeddial-160x160.png" rel="icon" type="image/png" />
+    <link href="apple-touch-icon-228x228-precomposed.png" rel="apple-touch-icon-precomposed" sizes="228x228" type="image/png" />
+    <link href="apple-touch-icon-152x152-precomposed.png" rel="apple-touch-icon-precomposed" sizes="152x152" type="image/png" />
+    <link href="apple-touch-icon-144x144-precomposed.png" rel="apple-touch-icon-precomposed" sizes="144x144" type="image/png" />
+    <link href="apple-touch-icon-120x120-precomposed.png" rel="apple-touch-icon-precomposed" sizes="120x120" type="image/png" />
+    <link href="apple-touch-icon-114x114-precomposed.png" rel="apple-touch-icon-precomposed" sizes="114x114" type="image/png" />
+    <link href="apple-touch-icon-76x76-precomposed.png" rel="apple-touch-icon-precomposed" sizes="76x76" type="image/png" />
+    <link href="apple-touch-icon-72x72-precomposed.png" rel="apple-touch-icon-precomposed" sizes="72x72" type="image/png" />
+    <link href="apple-touch-icon-60x60-precomposed.png" rel="apple-touch-icon-precomposed" sizes="60x60" type="image/png" />
+    <link href="apple-touch-icon-57x57-precomposed.png" rel="apple-touch-icon-precomposed" sizes="57x57" type="image/png" />
+    <link href="favicon-196x196.png" rel="icon" sizes="196x196" type="image/png" />
+    <link href="favicon-160x160.png" rel="icon" sizes="160x160" type="image/png" />
+    <link href="favicon-96x96.png" rel="icon" sizes="96x96" type="image/png" />
+    <link href="favicon-64x64.png" rel="icon" sizes="64x64" type="image/png" />
+    <link href="favicon-32x32.png" rel="icon" sizes="32x32" type="image/png" />
+    <link href="favicon-24x24.png" rel="icon" sizes="24x24" type="image/png" />
+    <link href="favicon-16x16.png" rel="icon" sizes="16x16" type="image/png" />
+    <link href="favicon.ico" rel="icon" type="image/x-icon" />
+    <link href="favicon.ico" rel="shortcut icon" type="image/x-icon" />'.html_safe
   end
 
   def humanize_boolean(input)
