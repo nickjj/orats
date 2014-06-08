@@ -69,18 +69,18 @@ git commit: "-m 'Add common OS and editor files to the .gitignore file'"
 
 # ----- Add a bundler config --------------------------------------------------------------------
 
-puts
-say_status  'bundle', 'Creating bundle config...', :yellow
-puts        '-'*80, ''; sleep 0.25
-
-file '.bundle/config' do <<-CODE
----
-BUNDLE_WITHOUT: production:staging
-CODE
-end
-
-git add: '-A'
-git commit: "-m 'Add .bundle/config to ignore production:staging in development mode'"
+# puts
+# say_status  'bundle', 'Creating bundle config...', :yellow
+# puts        '-'*80, ''; sleep 0.25
+#
+# file '.bundle/config' do <<-CODE
+# ---
+# BUNDLE_WITHOUT: production:staging
+# CODE
+# end
+#
+# git add: '-A'
+# git commit: "-m 'Add .bundle/config to ignore production:staging in development mode'"
 
 # ----- Create a few root files -----------------------------------------------------------------------
 
