@@ -45,6 +45,13 @@ module Orats
           git_commit 'Add the development project path'
         end
 
+        def gsub_source_env_path
+          log_thor_task 'root', 'Changing the .env path'
+          gsub_file "#{@active_path}/.env", ': .env', ": #{File.expand_path(@active_path)}/.env"
+
+          git_commit 'Add the development .env path'
+        end
+
         def bundle_install
           log_thor_task 'shell', 'Running bundle install, this may take a while'
           run_from @active_path, 'bundle install'

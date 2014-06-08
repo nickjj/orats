@@ -50,6 +50,7 @@ rails_deploy_env:
   RAILS_ENV: production
 
   PROJECT_PATH: "{{ rails_deploy_path }}"
+  SOURCE_ENV_PATH: "/etc/default/{{ rails_deploy_app_name }}"
 
   GOOGLE_ANALYTICS_UA: ""
   DISQUS_SHORT_NAME: ""

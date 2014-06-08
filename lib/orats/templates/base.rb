@@ -112,6 +112,7 @@ file '.env' do <<-CODE
 RAILS_ENV: development
 
 PROJECT_PATH: /full/path/to/your/project
+SOURCE_ENV_PATH: .env
 
 GOOGLE_ANALYTICS_UA: ""
 DISQUS_SHORT_NAME: ""
@@ -509,22 +510,26 @@ git commit: "-m 'Add a favicon generator task'"
 
 file 'lib/tasks/orats/backup.rake', <<-'CODE'
 namespace :orats do
-  desc 'Create a backup of your production application'
-  task :backup do
-    project_name = File.basename(Rails.root)
-    project_name = project_name.split('.').first if project_name.include?('.')
+  desc 'Create a backup of your application for the current RAILS_ENV'
+  task backup: :environment do
+    if ENV['RAILS_ENV'] == 'development'
+      source_and = ''
+    else
+      source_and = ". #{ENV['SOURCE_ENV_PATH']} &&"
+    end
 
-    # source the production environment
-    # using a best guess of the name based on the folder name, you may have to change it if it does not match
-    sourced_env = ". /etc/default/#{project_name}"
+    # hack'ish way to run the backup command with elevated privileges, it won't prompt for a password on the production
+    # server because passwordless sudo has been enabled if you use the ansible setup provided by orats
+    system 'sudo whoami'
 
-    system "#{sourced_env} && backup perform -t production_backup -c '#{Rails.root.join('lib', 'backup', 'config.rb')}'"
-  end
+    system "#{source_and} backup perform -t backup -c '#{Rails.root.join('lib', 'backup', 'config.rb')}' --log-path='#{Rails.root.join('log')}'"
 end
+end
+
 CODE
 
 git add:    '-A'
-git commit: "-m 'Add a favicon generator task'"
+git commit: "-m 'Add a backup task'"
 
 # ----- Creating application backup --------------------------------------------------------------------
 
@@ -571,7 +576,7 @@ root_path 'lib/backup'
 # May be an absolute path, or relative to the current directory or +root_path+.
 #
 
-tmp_path  'tmp'
+tmp_path  '../../tmp'
 
 #
 # Sets the path where backup stores persistent information.
@@ -579,7 +584,7 @@ tmp_path  'tmp'
 # May be an absolute path, or relative to the current directory or +root_path+.
 #
 
-data_path 'data'
+data_path '../../tmp/backup/data'
 
 ##
 # Utilities
@@ -664,12 +669,14 @@ CODE
 git add:    '-A'
 git commit: "-m 'Add backup config'"
 
-file 'lib/backup/models/production_backup.rb', <<-'CODE'
-Model.new(:production_backup, 'Production backup') do
+file 'lib/backup/models/backup.rb', <<-'CODE'
+Model.new(:backup, 'Backup for the current RAILS_ENV') do
   split_into_chunks_of 10
   compress_with Gzip
 
   database PostgreSQL do |db|
+    db.sudo_user          = ENV['DATABASE_USERNAME']
+
     # To dump all databases, set `db.name = :all` (or leave blank)
     db.name               = ENV['DATABASE_NAME']
     db.username           = ENV['DATABASE_USERNAME']
@@ -699,7 +706,7 @@ Model.new(:production_backup, 'Production backup') do
   #   s3.secret_access_key = ENV['S3_SECRET_ACCESS_KEY']
   #   s3.region = ENV['S3_REGION']
   #   s3.bucket = 'backup'
-  #   s3.path = '/production/database'
+  #   s3.path = "/database/#{ENV['RAILS_ENV']}"
   # end
 
   ENV['SMTP_ENCRYPTION'].empty? ? mail_encryption = 'none' : mail_encryption = ENV['SMTP_ENCRYPTION']

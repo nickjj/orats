@@ -22,6 +22,7 @@ module Orats
             gsub_postgres_info
             gsub_redis_info unless @options[:redis_password].empty?
             gsub_project_path
+            gsub_source_env_path
 
             bundle_install
             bundle_binstubs
