@@ -341,7 +341,7 @@ git commit: "-m 'Add the sitemap config'"
 
 file 'config/schedule.rb', <<-CODE
 every 1.day, at: '3:00 am' do
-  rake 'backup:production'
+  rake 'orats:backup'
 end
 
 every 1.day, at: '4:00 am' do
@@ -453,10 +453,10 @@ puts
 say_status  'tasks', 'Creating application tasks...', :yellow
 puts        '-'*80, ''; sleep 0.25
 
-file 'lib/tasks/favicon.rake', <<-'CODE'
-namespace :assets do
+file 'lib/tasks/orats/favicon.rake', <<-'CODE'
+namespace :orats do
   desc 'Create favicons from a single base png'
-  task favicon: :environment do
+  task :favicons do
     require 'favicon_maker'
 
     FaviconMaker.generate do
@@ -507,10 +507,10 @@ CODE
 git add:    '-A'
 git commit: "-m 'Add a favicon generator task'"
 
-file 'lib/tasks/backup.rake', <<-'CODE'
-namespace :backup do
+file 'lib/tasks/orats/backup.rake', <<-'CODE'
+namespace :orats do
   desc 'Create a backup of your production application'
-  task :production do
+  task :backup do
     project_name = File.basename(Rails.root)
     project_name = project_name.split('.').first if project_name.include?('.')
 
