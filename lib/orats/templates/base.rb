@@ -208,12 +208,14 @@ inject_into_file 'config/application.rb', after: "automatically loaded.\n" do <<
     config.action_mailer.default_options = { from: ENV['ACTION_MAILER_DEFAULT_FROM'] }
     config.action_mailer.default_url_options = { host: ENV['ACTION_MAILER_HOST'] }
 
-    config.cache_store = :redis_store, { host: ENV['CACHE_HOST'],
-                                         port: ENV['CACHE_PORT'].to_i,
-                                         db: ENV['CACHE_DATABASE'].to_i,
-                                         # password: ENV['CACHE_PASSWORD'],
-                                         namespace: '#{app_name}::cache'
-                                       }
+    redis_store_options = { host: ENV['CACHE_HOST'],
+                            port: ENV['CACHE_PORT'].to_i,
+                            db: ENV['CACHE_DATABASE'].to_i,
+                            namespace: '#{app_name}::cache'
+                          }
+    redis_store_options[:password] = ENV['CACHE_PASSWORD'] if ENV['CACHE_PASSWORD'].present?
+
+    config.cache_store = :redis_store, redis_store_options
 CODE
 end
 
@@ -391,8 +393,12 @@ say_status  'config', 'Modifying the initializer files...', :yellow
 puts        '-'*80, ''; sleep 0.25
 
 file 'config/initializers/sidekiq.rb', <<-'CODE'
+redis_host = ENV['CACHE_HOST']
+redis_host_duped = redis_host.dup
+redis_host = redis_host_duped.prepend(":#{ENV['CACHE_PASSWORD']}@") if ENV['CACHE_PASSWORD'].present?
+
 sidekiq_config = {
-  url: "redis://#{ENV['CACHE_HOST']}:#{ENV['CACHE_PORT']}/#{ENV['CACHE_DATABASE']}",
+  url: "redis://#{redis_host}:#{ENV['CACHE_PORT']}/#{ENV['CACHE_DATABASE']}",
   namespace: "ns_app::sidekiq_#{Rails.env}"
 }
 

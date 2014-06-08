@@ -31,11 +31,9 @@ module Orats
         end
 
         def gsub_redis_info
-          log_thor_task 'root', 'Adding the redis password'
-          gsub_file "#{@active_path}/config/initializers/sidekiq.rb", '//', "//:#{ENV['CACHE_PASSWORD']}@"
-          gsub_file "#{@active_path}/.env", 'HE_PASSWORD: ', "HE_PASSWORD: #{@options[:redis_password]}"
+          log_thor_task 'root', 'Changing the redis password'
+          gsub_file "#{@active_path}/.env", 'HE_PASSWORD: ""', "HE_PASSWORD: #{@options[:redis_password]}"
           gsub_file "#{@active_path}/.env", 'CACHE_HOST: localhost', "CACHE_HOST: #{@options[:redis_location]}"
-          gsub_file "#{@active_path}/config/application.rb", '# pass', 'pass'
 
           git_commit 'Add the redis password'
         end
