@@ -510,22 +510,15 @@ git commit: "-m 'Add a favicon generator task'"
 
 file 'lib/tasks/orats/backup.rake', <<-'CODE'
 namespace :orats do
-  desc 'Create a backup of your application for the current RAILS_ENV'
+  desc 'Create a backup of your application for a specific environment'
   task backup: :environment do
-    if ENV['RAILS_ENV'] == 'development'
-      source_and = ''
-    else
-      source_and = ". #{ENV['SOURCE_ENV_PATH']} &&"
-    end
-
     # hack'ish way to run the backup command with elevated privileges, it won't prompt for a password on the production
     # server because passwordless sudo has been enabled if you use the ansible setup provided by orats
     system 'sudo whoami'
 
-    system "#{source_and} backup perform -t backup -c '#{Rails.root.join('lib', 'backup', 'config.rb')}' --log-path='#{Rails.root.join('log')}'"
+    system "backup perform -t backup -c '#{Rails.root.join('lib', 'backup', 'config.rb')}' --log-path='#{Rails.root.join('log')}'"
+  end
 end
-end
-
 CODE
 
 git add:    '-A'
