@@ -60,8 +60,21 @@ module Orats
 
       def nuke_redis(namespace)
         log_thor_task 'root', 'Removing redis keys'
-        @options[:redis_password].empty? ? redis_password = '' : redis_password = "-a #{@options[:redis_password]}"
-        run "redis-cli #{redis_password} KEYS '#{namespace}:*' | xargs --delim='\n' redis-cli #{redis_password} DEL"
+
+        while not_able_to_nuke_redis?(@options[:redis_password], namespace)
+          log_status_top 'error', "The redis password you supplied was incorrect\n", :red
+          new_password = ask('Enter the correct password or CTRL+C to quit:', :cyan)
+          puts
+
+          break unless not_able_to_nuke_redis?(new_password, namespace)
+        end
+      end
+
+      def not_able_to_nuke_redis?(password, namespace)
+        password.empty? ? redis_password = '' : redis_password = "-a #{password}"
+        redis_out = run("redis-cli #{redis_password} KEYS '#{namespace}:*' | xargs --delim='\n' redis-cli #{redis_password} DEL", capture: true)
+
+        redis_out.include?('NOAUTH Authentication required')
       end
 
       def nuke_directory
