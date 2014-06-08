@@ -394,9 +394,9 @@ say_status  'config', 'Modifying the initializer files...', :yellow
 puts        '-'*80, ''; sleep 0.25
 
 file 'config/initializers/sidekiq.rb', <<-'CODE'
-redis_host = ENV['CACHE_HOST']
-redis_host_duped = redis_host.dup
-redis_host = redis_host_duped.prepend(":#{ENV['CACHE_PASSWORD']}@") if ENV['CACHE_PASSWORD'].present?
+ENV['CACHE_PASSWORD'].present? ? pass_string = ":#{ENV['CACHE_PASSWORD']}@" :  pass_string = ''
+
+redis_host = "#{pass_string}#{ENV['CACHE_HOST']}"
 
 sidekiq_config = {
   url: "redis://#{redis_host}:#{ENV['CACHE_PORT']}/#{ENV['CACHE_DATABASE']}",
