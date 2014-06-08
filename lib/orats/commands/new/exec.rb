@@ -28,6 +28,7 @@ module Orats
             spring_binstub
 
             create_and_migrate_database
+            run_rake 'assets:favicon'
           end
 
           if @options[:auth]

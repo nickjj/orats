@@ -1200,3 +1200,16 @@ from_gem 'Gemfile', 'Gemfile'
 
 git add:    '-A'
 git commit: "-m 'Add basic gems to the Gemfile'"
+
+# ----- Adding default favicon-------------------------------------------------------------------------
+
+puts
+say_status  'assets', 'Copying default favicon...', :yellow
+puts        '-'*80, ''; sleep 0.25
+
+base_path = "#{File.expand_path File.dirname(__FILE__)}/includes"
+run 'mkdir -p app/assets/favicon'
+run "cp #{base_path}/app/assets/favicon/favicon_base.png app/assets/favicon/favicon_base.png"
+
+git add:    '-A'
+git commit: "-m 'Add default 256x256 favicon'"
