@@ -134,7 +134,7 @@ it includes these features and when I do not want a specific thing it is much qu
 - Use sidekiq as a background worker.
 - Use puma as the server with settings capable of doing phased restarts.
 - Use foreman in development mode to manage starting both the rails server using puma and sidekiq.
-- Add a rake task to handle upgrades using the `backup` gem.
+- Add a rake task to handle backups using the `backup` gem.
 - Set the production asset precompiler to include fonts and png files.
 - Set the production logger to rotate the logs daily.
 - Set the timezone to EST.
