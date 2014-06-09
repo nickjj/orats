@@ -142,6 +142,7 @@ puts        '-'*80, ''; sleep 0.25
 file 'Procfile' do <<-CODE
 web: puma -C config/puma.rb
 worker: sidekiq -C config/sidekiq.yml
+log: tail -f log/development.log
 CODE
 end
 
