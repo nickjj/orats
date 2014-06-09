@@ -1,14 +1,14 @@
 require 'minitest/autorun'
 require 'securerandom'
-require_relative '../lib/orats/foreman'
+require_relative '../lib/orats/server'
 
 module Orats
   module Test
-    include Foreman
+    include Server
 
     BINARY_PATH = File.absolute_path('../../bin/orats',__FILE__)
     TEST_PATH = '/tmp/orats/test'
-    ORATS_FLAGS = '--pg-password pleasedonthackme --skip-foreman-start'
+    ORATS_FLAGS = '--pg-password pleasedonthackme --skip-server-start'
 
     def orats(command, options = {})
       cmd, app_name = command.split(' ')
