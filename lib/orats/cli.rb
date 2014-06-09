@@ -14,7 +14,7 @@ module Orats
     option :auth, type: :boolean, default: false, aliases: '-a'
     option :template, default: '', aliases: '-m'
     option :skip_extras, type: :boolean, default: false, aliases: '-E'
-    option :skip_foreman_start, type: :boolean, default: false, aliases: '-F'
+    option :skip_server_start, type: :boolean, default: false, aliases: '-F'
     option :sudo_password, default: '', aliases: '-s'
     option :skip_galaxy, type: :boolean, default: false, aliases: '-G'
     desc 'new TARGET_PATH [options]', ''
@@ -45,7 +45,7 @@ module Orats
 
       `--skip-extras` skip creating the services directory and ansible inventory/secrets [false]
 
-      `--skip-foreman-start` skip automatically running puma and sidekiq [false]
+      `--skip-server-start` skip automatically running puma and sidekiq [false]
 
       Ansible features:
 

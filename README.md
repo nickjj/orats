@@ -75,7 +75,7 @@ running `orats <command name> help` from your terminal. You can also type `orats
         - Optionally takes: `--template []`
     - Project features:
         - Optionally takes: `--skip-extras [false]`
-        - Optionally takes: `--skip-foreman-start [false]`
+        - Optionally takes: `--skip-server-start [false]`
     - Ansible features:
         - Optionally takes: `--sudo-password []`
         - Optionally takes: `--skip-galaxy [false]`

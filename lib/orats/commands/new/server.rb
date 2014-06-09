@@ -4,9 +4,9 @@ require 'timeout'
 module Orats
   module Commands
     module New
-      module Foreman
-        def foreman_start
-          @options[:skip_foreman_start] ? message = 'Start your' : message = 'Starting'
+      module Server
+        def server_start
+          @options[:skip_server_start] ? message = 'Start your' : message = 'Starting'
 
           puts  '', '='*80
           log_status_top 'action', "#{message} server with the following commands", :cyan
@@ -28,7 +28,7 @@ module Orats
 
           puts
 
-          run_from @active_path, 'bundle exec foreman start'
+          run_from @active_path, './start'
         end
 
         def port_taken?

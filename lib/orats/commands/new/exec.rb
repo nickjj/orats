@@ -1,7 +1,7 @@
 require 'orats/commands/common'
 require 'orats/commands/new/ansible'
 require 'orats/commands/new/rails'
-require 'orats/commands/new/foreman'
+require 'orats/commands/new/server'
 
 module Orats
   module Commands
@@ -9,7 +9,7 @@ module Orats
       class Exec < Commands::Common
         include Ansible
         include Rails
-        include Foreman
+        include Server
 
         def initialize(target_path = '', options = {})
           super
@@ -22,7 +22,6 @@ module Orats
             gsub_postgres_info
             gsub_redis_info unless @options[:redis_password].empty?
             gsub_project_path
-            gsub_source_env_path
 
             bundle_install
             bundle_binstubs
@@ -42,7 +41,7 @@ module Orats
 
           custom_rails_template unless @options[:template].empty?
 
-          foreman_start unless @options[:skip_foreman_start]
+          server_start unless @options[:skip_server_start]
         end
 
         private
