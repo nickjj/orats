@@ -1,5 +1,5 @@
 # =====================================================================================================
-# Template for generating an opinionated base Rails 4.1.0 project using Ruby 2.1.0
+# Template for generating an opinionated base Rails 4.1.0 project using Ruby 2.1.2
 # =====================================================================================================
 
 # ----- Helper functions and variables ----------------------------------------------------------------
@@ -51,16 +51,12 @@ append_to_file '.gitignore' do <<-TEXT
 *~
 .idea/
 
-# Ignore the main environment file.
+# Ignore the dotenv file.
 .env
 
 # Ignore app specific folders.
 /vendor/bundle
 /public/assets/*
-
-# Ignore backup paths.
-/lib/backup/log/*
-/lib/backup/tmp/*
 TEXT
 end
 
@@ -82,37 +78,17 @@ git commit: "-m 'Add common OS and editor files to the .gitignore file'"
 # git add: '-A'
 # git commit: "-m 'Add .bundle/config to ignore production:staging in development mode'"
 
-# ----- Create a few root files -----------------------------------------------------------------------
+
+# ----- Create a development environment file ---------------------------------------------------
 
 puts
-say_status  'root', 'Creating root files...', :yellow
-puts        '-'*80, ''; sleep 0.25
-
-file '.ruby-version', '2.1.2'
-
-git add:    '-A'
-git commit: "-m 'Add .ruby-version file for common ruby version managers'"
-
-file 'Procfile' do <<-CODE
-web: puma -C config/puma.rb
-worker: sidekiq -C config/sidekiq.yml
-CODE
-end
-
-git add:    '-A'
-git commit: "-m 'Add a basic Procfile to start the puma and sidekiq processes'"
-
-# ----- Create an .env file ---------------------------------------------------------------------------
-
-puts
-say_status  'root', 'Creating .env file...', :yellow
+say_status  'root', 'Creating development environment file...', :yellow
 puts        '-'*80, ''; sleep 0.25
 
 file '.env' do <<-CODE
 RAILS_ENV: development
 
 PROJECT_PATH: /full/path/to/your/project
-SOURCE_ENV_PATH: .env
 
 GOOGLE_ANALYTICS_UA: ""
 DISQUS_SHORT_NAME: ""
@@ -153,6 +129,24 @@ PUMA_WORKERS: 0
 SIDEKIQ_CONCURRENCY: 25
 CODE
 end
+
+git add: '-A'
+git commit: "-m 'Add development environment file'"
+
+# ----- Create the foreman Procfile ------------------------------------------------------------------------
+
+puts
+say_status  'start', 'Creating the Procfile for foreman...', :yellow
+puts        '-'*80, ''; sleep 0.25
+
+file 'Procfile' do <<-CODE
+web: puma -C config/puma.rb
+worker: sidekiq -C config/sidekiq.yml
+CODE
+end
+
+git add:    '-A'
+git commit: "-m 'Add a basic Procfile to start the puma and sidekiq processes'"
 
 # ----- Modify the secrets yaml file -----------------------------------------------------------------------
 
@@ -511,15 +505,26 @@ git commit: "-m 'Add a favicon generator task'"
 file 'lib/tasks/orats/backup.rake', <<-'CODE'
 namespace :orats do
   desc 'Create a backup of your application for a specific environment'
-  task backup: :environment do
+  task :backup do
+    if File.exist?('.env') && File.file?('.env')
+      require 'dotenv'
+      Dotenv.load
+
+      source_external_env = ''
+    else
+      source_external_env = '. /etc/default/app_name &&'
+    end
+
     # hack'ish way to run the backup command with elevated privileges, it won't prompt for a password on the production
     # server because passwordless sudo has been enabled if you use the ansible setup provided by orats
     system 'sudo whoami'
 
-    system "backup perform -t backup -c '#{Rails.root.join('lib', 'backup', 'config.rb')}' --log-path='#{Rails.root.join('log')}'"
+    system "#{source_external_env} backup perform -t backup -c '#{File.join('lib', 'backup', 'config.rb')}' --log-path='#{File.join('log')}'"
   end
 end
 CODE
+
+gsub_file 'lib/tasks/orats/backup.rake', 'app_name', app_name
 
 git add:    '-A'
 git commit: "-m 'Add a backup task'"
