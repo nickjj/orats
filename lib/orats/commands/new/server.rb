@@ -28,7 +28,7 @@ module Orats
 
           puts
 
-          run_from @active_path, './start'
+          run_from @active_path, 'bundle exec foreman start'
         end
 
         def port_taken?
