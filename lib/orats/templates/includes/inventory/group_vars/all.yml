@@ -95,6 +95,9 @@ rails_deploy_env:
 
   SIDEKIQ_CONCURRENCY: 25
 
+# whenever configuration
+whenever_update: rails_deploy_app_name
+
 # nginx configuration
 nginx_base_domain: localhost
 nginx_upstream_name: "{{ rails_deploy_app_name }}"
