@@ -5,7 +5,7 @@ module Orats
 
       def log_task(message)
         puts
-        say_status  'task', "#{message}...", :yellow
+        say_status  'task', "#{message}:", :yellow
         puts        '-'*80, ''; sleep 0.25
       end
 
