@@ -992,7 +992,6 @@ def add_http_error_pages
   git_commit 'Add http status code pages'
 end
 
-
 def update_sass
   log_task __method__
 
