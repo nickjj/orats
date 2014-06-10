@@ -3,8 +3,8 @@ module Orats
     module New
       module Rails
         def check_exit_conditions
-          exit_if_cannot_access 'rails', 'You can install it by running `gem install rails`'
-          exit_if_process_not_running 'postgres', 'redis'
+          exit_if_process :not_found, 'rails', 'git'
+          exit_if_process :not_running, 'postgres', 'redis'
           exit_if_path_exists
         end
 
