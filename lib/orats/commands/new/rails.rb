@@ -73,8 +73,6 @@ module Orats
         end
 
         def create_and_migrate_database
-          log_task 'Add and migrate the database'
-
           run_rake 'db:create:all db:migrate'
           git_commit 'Add the database schema file'
         end
