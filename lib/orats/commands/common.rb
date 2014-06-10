@@ -87,16 +87,29 @@ module Orats
         end
       end
 
-      def exit_if_cannot_access(process, tip_message)
+      def exit_if_cannot_access(process, tip)
         log_task "Check for #{process}"
 
-        which_output = run("which #{process}", capture: true)
+        exit 1 if process_unusable?("which #{process}", process, 'on your path', tip)
+      end
 
-        log_error 'error', "Cannot find #{process}", 'question', "Are you sure you have #{process} on your path?", true do
-          log_status_bottom 'tip', tip_message, :white
-        end if which_output.empty?
+      def exit_if_process_not_running(*processes)
+        processes.each do |process|
+          log_task "Check if #{process} is running"
 
-        exit 1 if which_output.empty?
+          exit 1 if process_unusable?("ps cax | grep #{process}", process,
+                                      'running', "#{process} must be running before running this orats command")
+        end
+      end
+
+      def process_unusable?(command, process, question_suffix, tip)
+        command_output = run(command, capture: true)
+
+        log_error 'error', "Cannot detect #{process}", 'question', "Are you sure #{process} is #{question_suffix}?", true do
+          log_status_bottom 'tip', tip, :white
+        end if command_output.empty?
+
+        command_output.empty?
       end
     end
   end

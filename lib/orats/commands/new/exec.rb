@@ -18,8 +18,7 @@ module Orats
         end
 
         def init
-          exit_if_cannot_access 'rails', 'You can install it by running `gem install rails`'
-          exit_if_path_exists
+          check_exit_conditions
 
           rails_template 'base' do
             gsub_postgres_info
