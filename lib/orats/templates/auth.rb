@@ -1,8 +1,6 @@
 # =====================================================================================================
-# Template for generating authentication and authorization on top of the base template
+# Template for generating an orats auth project for Rails 4.1.x
 # =====================================================================================================
-
-# ----- Helper functions and variables ----------------------------------------------------------------
 
 require 'securerandom'
 
@@ -10,7 +8,18 @@ def generate_token
   SecureRandom.hex(64)
 end
 
-def create_migration(table_name, migration='')
+def log_task(message)
+  puts
+  say_status  'task', "#{message}...", :yellow
+  puts        '-'*80, ''; sleep 0.25
+end
+
+def git_commit(message)
+  git add: '-A'
+  git commit: "-m '#{message}'"
+end
+
+def migrate(table_name, migration='')
   utc_now = Time.now.getutc.strftime("%Y%m%d%H%M%S")
   class_name = table_name.to_s.classify.pluralize
 
@@ -30,50 +39,38 @@ run 'rm -f app/assets/stylesheets/application.css'
 
 # ----- Modify Gemfile --------------------------------------------------------------------------------
 
-puts
-say_status  'root', 'Modifying Gemfile..', :yellow
-puts        '-'*80, ''; sleep 0.25
-
-inject_into_file 'Gemfile', before: "\ngem 'kaminari'" do <<-CODE
+log_task 'Update Gemfile'
+inject_into_file 'Gemfile', before: "\ngem 'kaminari'" do <<-S
 
 gem 'devise', '~> 3.2.4'
 gem 'devise-async', '~> 0.9.0'
 gem 'pundit', '~> 0.2.3'
-CODE
+S
 end
+git_commit 'Add authentication related gems'
 
-git add: '-A'
-git commit: "-m 'Add devise, devise-async and pundit gems'"
-
-# ----- Run bundle install ----------------------------------------------------------------------------
-
-puts
-say_status  'action', 'Running bundle install, it should not take too long', :yellow
-puts        '-'*80, ''; sleep 0.25
-
+log_task 'Run bundle install, it should not take too long'
 run 'bundle install'
 
-# ----- Modify sidekiq config -------------------------------------------------------------------------
-
-puts
-say_status  'config', 'Modifying the sidekiq config', :yellow
-puts        '-'*80, ''; sleep 0.25
-
-append_file 'config/sidekiq.yml' do <<-FILE
+log_task 'Update the sidekiq config'
+append_file 'config/sidekiq.yml' do <<-S
   - mailer
-FILE
+S
 end
+git_commit 'Add the devise mailer queue to sidekiq'
 
-git add: '-A'
-git commit: "-m 'Add the devise mailer queue to the sidekiq config'"
+log_task 'Update the test helper'
+inject_into_file 'test/test_helper.rb', after: "end\n" do <<-S
 
-# ----- Create the account fixtures -------------------------------------------------------------------
+class ActionController::TestCase
+  include Devise::TestHelpers
+end
+S
+end
+git_commit 'Add devise test helper'
 
-puts
-say_status  'test', 'Creating the account fixtures...', :yellow
-puts        '-'*80, ''; sleep 0.25
-
-file 'test/fixtures/accounts.yml' do <<-'CODE'
+log_task 'Add account fixtures'
+file 'test/fixtures/accounts.yml' do <<-S
 foo:
   id: 1
   email: foo@bar.com
@@ -100,36 +97,12 @@ beep:
   email: beep@beep.com
   encrypted_password: beepbeepbeep
   created_at: 2010-03-6 05:15:45
-CODE
+S
 end
+git_commit 'Add account fixtures'
 
-git add: '-A'
-git commit: "-m 'Add the account model'"
-
-# ----- Modify the test helper ------------------------------------------------------------------------
-
-puts
-say_status  'test', 'Modifying the test helper...', :yellow
-puts        '-'*80, ''; sleep 0.25
-
-inject_into_file 'test/test_helper.rb', after: "end\n" do <<-CODE
-
-class ActionController::TestCase
-  include Devise::TestHelpers
-end
-CODE
-end
-
-git add: '-A'
-git commit: "-m 'Add the devise helpers to test helper'"
-
-# ----- Create the account unit tests -----------------------------------------------------------------
-
-puts
-say_status  'test', 'Creating the account unit tests...', :yellow
-puts        '-'*80, ''; sleep 0.25
-
-file 'test/models/account_test.rb' do <<-'CODE'
+log_task 'Add account unit test'
+file 'test/models/account_test.rb' do <<-S
 require 'test_helper'
 
 class AccountTest < ActiveSupport::TestCase
@@ -176,19 +149,15 @@ class AccountTest < ActiveSupport::TestCase
     assert_equal 20, Account.generate_password(20).length
   end
 end
-CODE
+S
 end
+git_commit 'Add account unit tests'
 
 git add: '-A'
 git commit: "-m 'Add the account unit tests'"
 
-# ----- Create the account model ----------------------------------------------------------------------
-
-puts
-say_status  'models', 'Creating the account model...', :yellow
-puts        '-'*80, ''; sleep 0.25
-
-file 'app/models/account.rb' do <<-'CODE'
+log_task 'Add account model'
+file 'app/models/account.rb' do <<-'S'
 class Account < ActiveRecord::Base
   ROLES = %w[admin guest]
 
@@ -229,19 +198,12 @@ class Account < ActiveRecord::Base
       Rails.cache.delete("account:#{id}")
     end
 end
-CODE
+S
 end
+git_commit 'Add account model'
 
-git add: '-A'
-git commit: "-m 'Add the account model'"
-
-# ----- Create devise migration -----------------------------------------------------------------------
-
-puts
-say_status  'db', 'Creating devise model migration...', :yellow
-puts        '-'*80, ''; sleep 0.25
-
-create_migration :accounts, %{
+log_task 'Add devise model migration'
+migrate :accounts, %{
     create_table(:accounts) do |t|
       ## Database authenticatable
       t.string :email,              :null => false, :default => ''
@@ -276,54 +238,31 @@ create_migration :accounts, %{
     add_index :accounts, :reset_password_token, :unique => true
     add_index :accounts, :unlock_token,         :unique => true
   }
+git_commit 'Add devise model migration'
 
-git add: '-A'
-git commit: "-m 'Add devise model migration'"
-
-# ----- Create a seed user ----------------------------------------------------------------------------
-
-puts
-say_status  'db', 'Creating a seed user...', :yellow
-puts        '-'*80, ''; sleep 0.25
-
+log_task 'Add seed user'
 append_file 'db/seeds.rb', "\nAccount.create({ email: \"admin@#{app_name}.com\", password: \"password\", role: \"admin\" })"
+git_commit 'Add seed user'
 
-git add: '-A'
-git commit: "-m 'Add a seed user'"
-
-# ----- Create en i18n entries ------------------------------------------------------------------------
-
-puts
-say_status  'db', 'Creating en i18n entries...', :yellow
-puts        '-'*80, ''; sleep 0.25
-
+log_task 'Add en locale for authorization errors'
 gsub_file 'config/locales/en.yml', "hello: \"Hello world\"\n", ''
-
-append_file 'config/locales/en.yml' do <<-CODE
+append_file 'config/locales/en.yml' do <<-S
 authorization:
     error: 'You are not authorized to perform this action.'
-CODE
+S
 end
+git_commit 'Add en locale entry for authorization errors'
 
-git add: '-A'
-git commit: "-m 'Add en i18n entries'"
-
-# ----- Modify the application controller -------------------------------------------------------------
-
-puts
-say_status  'db', 'Modifying the application controller...', :yellow
-puts        '-'*80, ''; sleep 0.25
-
-inject_into_file 'app/controllers/application_controller.rb', after: "::Base\n" do <<-'CODE'
+log_task 'Add current_user alias'
+inject_into_file 'app/controllers/application_controller.rb', after: "::Base\n" do <<-S
   alias_method :current_user, :current_account
 
-CODE
+S
 end
+git_commit 'Add current_user alias'
 
-git add: '-A'
-git commit: "-m 'Alias current_user to current_account to play nice with other gems'"
-
-inject_into_file 'app/controllers/application_controller.rb', before: "end\n" do <<-'CODE'
+log_task 'Add devise after_sign_in_path_for override'
+inject_into_file 'app/controllers/application_controller.rb', before: "end\n" do <<-S
 
   private
 
@@ -335,19 +274,12 @@ inject_into_file 'app/controllers/application_controller.rb', before: "end\n" do
     #    somewhere_path
     #  end
     #end
-CODE
+S
 end
+git_commit 'Add devise after_sign_in_path_for override'
 
-git add: '-A'
-git commit: "-m 'Change the application controller to allow overriding the devise sign in path'"
-
-# ----- Create the devise views -----------------------------------------------------------------------
-
-puts
-say_status  'views', 'Creating the devise views...', :yellow
-puts        '-'*80, ''; sleep 0.25
-
-file 'app/views/devise/confirmations/new.html.erb' do <<-HTML
+log_task 'Add devise views'
+file 'app/views/devise/confirmations/new.html.erb' do <<-S
 <%
   title 'Confirm'
   meta_description '...'
@@ -374,19 +306,17 @@ file 'app/views/devise/confirmations/new.html.erb' do <<-HTML
     <%= render 'devise/shared/links' %>
   </div>
 </div>
-HTML
+S
 end
-
-file 'app/views/devise/mailer/confirmation_instructions.html.erb' do <<-HTML
+file 'app/views/devise/mailer/confirmation_instructions.html.erb' do <<-S
 <p>Welcome <%= @email %>!</p>
 
 <p>You can confirm your account email through the link below:</p>
 
 <p><%= link_to 'Confirm my account', confirmation_url(@resource, confirmation_token: @token) %></p>
-HTML
+S
 end
-
-file 'app/views/devise/mailer/reset_password_instructions.html.erb' do <<-HTML
+file 'app/views/devise/mailer/reset_password_instructions.html.erb' do <<-S
 <p>Hello <%= @resource.email %>!</p>
 
 <p>Someone has requested a link to change your password. You can do this through the link below.</p>
@@ -395,10 +325,9 @@ file 'app/views/devise/mailer/reset_password_instructions.html.erb' do <<-HTML
 
 <p>If you didn't request this, please ignore this email.</p>
 <p>Your password won't change until you access the link above and create a new one.</p>
-HTML
+S
 end
-
-file 'app/views/devise/mailer/unlock_instructions.html.erb' do <<-HTML
+file 'app/views/devise/mailer/unlock_instructions.html.erb' do <<-S
 <p>Hello <%= @resource.email %>!</p>
 
 <p>Your account has been locked due to an excessive number of unsuccessful sign in attempts.</p>
@@ -406,10 +335,9 @@ file 'app/views/devise/mailer/unlock_instructions.html.erb' do <<-HTML
 <p>Click the link below to unlock your account:</p>
 
 <p><%= link_to 'Unlock my account', unlock_url(@resource, unlock_token: @token) %></p>
-HTML
+S
 end
-
-file 'app/views/devise/passwords/edit.html.erb' do <<-HTML
+file 'app/views/devise/passwords/edit.html.erb' do <<-S
 <%
   title 'Change your password'
   meta_description '...'
@@ -438,10 +366,9 @@ file 'app/views/devise/passwords/edit.html.erb' do <<-HTML
     <%= render 'devise/shared/links' %>
   </div>
 </div>
-HTML
+S
 end
-
-file 'app/views/devise/passwords/new.html.erb' do <<-HTML
+file 'app/views/devise/passwords/new.html.erb' do <<-S
 <%
   title 'Forgot your password?'
   meta_description '...'
@@ -468,10 +395,9 @@ file 'app/views/devise/passwords/new.html.erb' do <<-HTML
     <%= render 'devise/shared/links' %>
   </div>
 </div>
-HTML
+S
 end
-
-file 'app/views/devise/registrations/edit.html.erb' do <<-HTML
+file 'app/views/devise/registrations/edit.html.erb' do <<-S
 <%
   title 'Edit your account'
   meta_description '...'
@@ -522,10 +448,9 @@ file 'app/views/devise/registrations/edit.html.erb' do <<-HTML
     </p>
   </div>
 </div>
-HTML
+S
 end
-
-file 'app/views/devise/registrations/new.html.erb' do <<-HTML
+file 'app/views/devise/registrations/new.html.erb' do <<-S
 <%
   title 'Register a new account'
   meta_description '...'
@@ -557,10 +482,9 @@ file 'app/views/devise/registrations/new.html.erb' do <<-HTML
     <%= render 'devise/shared/links' %>
   </div>
 </div>
-HTML
+S
 end
-
-file 'app/views/devise/sessions/new.html.erb' do <<-HTML
+file 'app/views/devise/sessions/new.html.erb' do <<-S
 <%
   title 'Sign in'
   meta_description '...'
@@ -600,10 +524,9 @@ file 'app/views/devise/sessions/new.html.erb' do <<-HTML
     <%= render 'devise/shared/links' %>
   </div>
 </div>
-HTML
+S
 end
-
-file 'app/views/devise/unlocks/new.html.erb' do <<-HTML
+file 'app/views/devise/unlocks/new.html.erb' do <<-S
 <%
   title 'Re-send unlock instructions'
   meta_description '...'
@@ -630,10 +553,9 @@ file 'app/views/devise/unlocks/new.html.erb' do <<-HTML
     <%= render 'devise/shared/links' %>
   </div>
 </div>
-HTML
+S
 end
-
-file 'app/views/devise/shared/_links.html.erb' do <<-'HTML'
+file 'app/views/devise/shared/_links.html.erb' do <<-'S'
 <%= content_tag(:h4, 'Or do something else') if controller_name != 'sessions' %>
 <ul>
   <%- if controller_name != 'sessions' %>
@@ -672,19 +594,12 @@ file 'app/views/devise/shared/_links.html.erb' do <<-'HTML'
     <% end -%>
   <% end -%>
 </ul>
-HTML
+S
 end
+git_commit 'Add devise views'
 
-git add: '-A'
-git commit: "-m 'Add the devise views'"
-
-# ----- Modify the layout files ------------------------------------------------------------------------
-
-puts
-say_status  'views', 'Modifying the layout files...', :yellow
-puts        '-'*80, ''; sleep 0.25
-
-file 'app/views/layouts/_navigation_auth.html.erb', <<-HTML
+log_task 'Add authentication links to the navigation'
+file 'app/views/layouts/_navigation_auth.html.erb', <<-S
 <% if current_account %>
   <li>
     <%= link_to 'Settings', edit_account_registration_path %>
@@ -700,102 +615,65 @@ file 'app/views/layouts/_navigation_auth.html.erb', <<-HTML
     <%= link_to 'Register', new_account_registration_path %>
   </li>
 <% end %>
-HTML
-
-inject_into_file 'app/views/layouts/_navigation.html.erb', after: "</ul>\n" do <<-CODE
+S
+inject_into_file 'app/views/layouts/_navigation.html.erb', after: "</ul>\n" do <<-S
       <ul class="nav navbar-nav nav-auth">
         <%= render 'layouts/navigation_auth' %>
       </ul>
-CODE
+S
 end
-
-append_file 'app/assets/stylesheets/application.css.scss' do <<-CODE
+append_file 'app/assets/stylesheets/application.css.scss' do <<-S
 
 @media (min-width: $screen-sm) {
   .nav-auth {
     float: right;
   }
 }
-CODE
+S
 end
+git_commit 'Add authentication links to the layout'
 
-git add: '-A'
-git commit: "-m 'Add account management links to the layout and add the necessary css selectors'"
-
-# ----- Modify the .env file --------------------------------------------------------------------------
-
-puts
-say_status  'root', 'Modifying the .env file...', :yellow
-puts        '-'*80, ''; sleep 0.25
-
+log_task 'Add devise environment variables'
 inject_into_file '.env', before: "\nSMTP_ADDRESS" do <<-CODE
 TOKEN_DEVISE_SECRET: #{generate_token}
 TOKEN_DEVISE_PEPPER: #{generate_token}
 CODE
 end
-
 inject_into_file '.env', before: "\nDATABASE_NAME" do <<-CODE
 ACTION_MAILER_DEVISE_DEFAULT_FROM: info@#{app_name}.com
 CODE
 end
+git_commit 'Add devise tokens and default e-mail'
 
-git add: '-A'
-git commit: "-m 'Add the devise tokens and default email to the .env file'"
-
-# ----- Create the config files -----------------------------------------------------------------------
-
-puts
-say_status  'config', 'Creating the devise async initializer...', :yellow
-puts        '-'*80, ''; sleep 0.25
-
+log_task 'Add the devise/devise-async initializers'
 file 'config/initializers/devise_async.rb', 'Devise::Async.backend = :sidekiq'
 generate 'devise:install'
+git_commit 'Add the devise and devise async initializers'
 
-git add: '-A'
-git commit: "-m 'Add the devise and devise async initializers'"
-
-# ----- Modify the config files -----------------------------------------------------------------------
-
-puts
-say_status  'config', 'Modifying the devise initializer...', :yellow
-puts        '-'*80, ''; sleep 0.25
-
+log_task 'Update the devise initializer'
 gsub_file 'config/initializers/devise.rb',
           "'please-change-me-at-config-initializers-devise@example.com'", "ENV['ACTION_MAILER_DEVISE_DEFAULT_EMAIL']"
 gsub_file 'config/initializers/devise.rb', /(?<=key = )'\w{128}'/, "ENV['TOKEN_DEVISE_SECRET']"
 gsub_file 'config/initializers/devise.rb', /(?<=pepper = )'\w{128}'/, "ENV['TOKEN_DEVISE_PEPPER']"
-
 gsub_file 'config/initializers/devise.rb', '# config.timeout_in = 30.minutes',
           'config.timeout_in = 2.hours'
 
 gsub_file 'config/initializers/devise.rb', '# config.expire_auth_token_on_timeout = false',
           'config.expire_auth_token_on_timeout = true'
-
 gsub_file 'config/initializers/devise.rb', '# config.lock_strategy = :failed_attempts',
           'config.lock_strategy = :failed_attempts'
-
 gsub_file 'config/initializers/devise.rb', '# config.unlock_strategy = :both',
           'config.unlock_strategy = :both'
-
 gsub_file 'config/initializers/devise.rb', '# config.maximum_attempts = 20',
           'config.maximum_attempts = 7'
-
 gsub_file 'config/initializers/devise.rb', '# config.unlock_in = 1.hour',
           'config.unlock_in = 2.hours'
-
 gsub_file 'config/initializers/devise.rb', '# config.last_attempt_warning = false',
           'config.last_attempt_warning = true'
+git_commit 'Update the devise defaults'
 
-git add: '-A'
-git commit: "-m 'Change the devise initializer default values'"
-
-# ----- Modify the routes file ------------------------------------------------------------------------
-
-puts
-say_status  'config', 'Modifying the routes file...', :yellow
-puts        '-'*80, ''; sleep 0.25
-
-inject_into_file 'config/routes.rb', after: "collection\n  end\n" do <<-CODE
+log_task 'Update the routes file'
+inject_into_file 'config/routes.rb', after: "collection\n  end\n" do <<-S
 
   # disable users from being able to register by uncommenting the lines below
   # get 'accounts/sign_up(.:format)', to: redirect('/')
@@ -810,42 +688,31 @@ inject_into_file 'config/routes.rb', after: "collection\n  end\n" do <<-CODE
     mount Sidekiq::Web => '/sidekiq'
   end
 
-CODE
+S
 end
+git_commit 'Add devise to the routes file'
 
-git add: '-A'
-git commit: "-m 'Add devise to the routes file'"
-
-# ----- Add pundit support ----------------------------------------------------------------------------
-
-puts
-say_status  'root', 'Adding pundit support...', :yellow
-puts        '-'*80, ''; sleep 0.25
-
+log_task 'Add pundit'
 generate 'pundit:install'
-
-git add: '-A'
-git commit: "-m 'Add pundit application policy'"
-
-inject_into_file 'app/controllers/application_controller.rb', after: "::Base\n" do <<-'CODE'
+inject_into_file 'app/controllers/application_controller.rb', after: "::Base\n" do <<-S
   include Pundit
 
-CODE
+S
 end
-
-inject_into_file 'app/controllers/application_controller.rb', after: ":exception\n" do <<-'CODE'
+inject_into_file 'app/controllers/application_controller.rb', after: ":exception\n" do <<-S
 
   rescue_from Pundit::NotAuthorizedError, with: :account_not_authorized
-CODE
+S
 end
-
-inject_into_file 'app/controllers/application_controller.rb', after: "  #end\n" do <<-'CODE'
+inject_into_file 'app/controllers/application_controller.rb', after: "  #end\n" do <<-S
 
     def account_not_authorized
       redirect_to request.headers['Referer'] || root_path, flash: { error: I18n.t('authorization.error') }
     end
-CODE
+S
 end
+git_commit 'Add pundit policy and controller logic'
 
-git add: '-A'
-git commit: "-m 'Add pundit logic to the application controller'"
+log_task 'Remove unused files from git'
+git add: '-u'
+git_commit 'Remove unused files'
