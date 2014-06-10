@@ -1,16 +1,56 @@
-# =====================================================================================================
-# Template for generating an orats base project for Rails 4.1.x project
-# =====================================================================================================
-
 require 'securerandom'
 
+# =============================================================================
+# template for generating an orats base project for Rails 4.1.x
+# =============================================================================
+# task list:
+# -----------------------------------------------------------------------------
+# initial_git_commit
+# update_gitignore
+# copy_gemfile
+# copy_base_favicon
+# add_dotenv
+# add_procfile
+# update_app_secrets
+# update_app_config
+# update_database_config
+# add_puma_config
+# add_sidekiq_config
+# add_sitemap_config
+# add_whenever_config
+# add_sidekiq_initializer
+# add_mini_profiler_initializer
+# add_staging_environment
+# update_production_environment
+# update_routes
+# add_backup_lib
+# add_favicon_task
+# add_backup_task
+# add_helpers
+# add_layout
+# add_layout_partials
+# add_http_error_pages
+# update_sass
+# update_coffeescript
+# remove_unused_files_from_git
+# -----------------------------------------------------------------------------
+
+# -----------------------------------------------------------------------------
+# private functions
+# -----------------------------------------------------------------------------
 def generate_token
   SecureRandom.hex(64)
 end
 
+def task_to_sentence(task_tag)
+  task_tag.tr!('_', ' ')
+  task_tag[0] = task_tag[0].upcase
+  task_tag
+end
+
 def log_task(message)
   puts
-  say_status  'task', "#{message}...", :yellow
+  say_status  'task', "#{task_to_sentence(message)}:", :yellow
   puts        '-'*80, ''; sleep 0.25
 end
 
@@ -27,10 +67,15 @@ def copy_from_local_gem(source, dest)
   run "cp #{base_path}/#{source} #{dest}"
 end
 
-log_task 'Add a new git repo'
+# -----------------------------------------------------------------------------
+log_task 'initial_git_commit'
+
 git :init
 git_commit 'Initial commit'
-log_task 'Add paths to the .gitignore file'
+
+# -----------------------------------------------------------------------------
+log_task 'update_gitignore'
+
 append_to_file '.gitignore' do <<-S
 # OS and editor files
 .DS_Store
@@ -50,7 +95,24 @@ S
 end
 git_commit 'Add common OS files, editor files and other paths'
 
-log_task 'Add development environment file'
+# -----------------------------------------------------------------------------
+log_task 'copy_gemfile'
+
+run 'rm -f Gemfile'
+copy_from_local_gem 'Gemfile', 'Gemfile'
+git_commit 'Add Gemfile'
+
+# -----------------------------------------------------------------------------
+log_task 'copy_base_favicon'
+
+copy_from_local_gem 'app/assets/favicon/favicon_base.png',
+                    'app/assets/favicon/favicon_base.png'
+git_commit 'Add a 256x256 base favicon'
+
+
+# -----------------------------------------------------------------------------
+log_task 'add_dotenv'
+
 file '.env' do <<-S
 RAILS_ENV: development
 
@@ -97,16 +159,20 @@ S
 end
 git_commit 'Add development environment file'
 
-log_task 'Add a Procfile'
+# -----------------------------------------------------------------------------
+log_task 'add_procfile'
+
 file 'Procfile' do <<-S
 web: puma -C config/puma.rb
 worker: sidekiq -C config/sidekiq.yml
 log: tail -f log/development.log
-S
+  S
 end
 git_commit 'Add a Procfile'
 
-log_task 'Update the secrets.yml file'
+# -----------------------------------------------------------------------------
+log_task 'update_app_secrets'
+
 gsub_file 'config/secrets.yml', /.*\n/, ''
 append_file 'config/secrets.yml' do <<-S
 development: &default
@@ -124,7 +190,9 @@ S
 end
 git_commit 'DRY out the yaml'
 
-log_task 'Update the application file'
+# -----------------------------------------------------------------------------
+log_task 'update_app_config'
+
 inject_into_file 'config/application.rb', after: "automatically loaded.\n" do <<-S
     config.action_mailer.delivery_method = :smtp
     config.action_mailer.smtp_settings = {
@@ -151,6 +219,7 @@ inject_into_file 'config/application.rb', after: "automatically loaded.\n" do <<
     config.cache_store = :redis_store, redis_store_options
 S
 end
+
 gsub_file 'config/application.rb', "# config.time_zone = 'Central Time (US & Canada)'", "config.time_zone = 'Eastern Time (US & Canada)'"
 append_file 'config/application.rb' do <<-'S'
 
@@ -166,7 +235,9 @@ S
 end
 git_commit 'Configure the mailer/redis, update the timezone and adjust the validation output'
 
-log_task 'Update the database.yml file'
+# -----------------------------------------------------------------------------
+log_task 'update_database_config'
+
 gsub_file 'config/database.yml', /.*\n/, ''
 append_file 'config/database.yml' do <<-S
 development: &default
@@ -191,7 +262,9 @@ S
 end
 git_commit 'DRY out the yaml'
 
-log_task 'Add the puma config'
+# -----------------------------------------------------------------------------
+log_task 'add_puma_config'
+
 file 'config/puma.rb', <<-'S'
 environment ENV['RAILS_ENV']
 
@@ -221,7 +294,9 @@ end
 S
 git_commit 'Add the puma config'
 
-log_task 'Add the sidekiq config'
+# -----------------------------------------------------------------------------
+log_task 'add_sidekiq_config'
+
 file 'config/sidekiq.yml', <<-S
 ---
 :pidfile: <%= ENV['PROJECT_PATH'] %>/tmp/sidekiq.pid
@@ -231,7 +306,9 @@ file 'config/sidekiq.yml', <<-S
 S
 git_commit 'Add the sidekiq config'
 
-log_task 'Add the sitemap config'
+# -----------------------------------------------------------------------------
+log_task 'add_sitemap_config'
+
 file 'config/sitemap.rb', <<-'S'
 # Set the host name for URL creation
 SitemapGenerator::Sitemap.default_host = "http://www.app_name.com"
@@ -257,7 +334,9 @@ S
 gsub_file 'config/sitemap.rb', 'app_name', app_name
 git_commit 'Add the sitemap config'
 
-log_task 'Add the whenever config'
+# -----------------------------------------------------------------------------
+log_task 'add_whenever_config'
+
 file 'config/schedule.rb', <<-S
 every 1.day, at: '3:00 am' do
   rake 'orats:backup'
@@ -269,34 +348,9 @@ end
 S
 git_commit 'Add the whenever config'
 
-log_task 'Add a staging environment'
-file 'config/environments/staging.rb', <<-S
-require_relative 'production.rb'
+# -----------------------------------------------------------------------------
+log_task 'add_sidekiq_initializer'
 
-#{app_name.humanize}::Application.configure do
-  # Overwrite any production settings here, or if you want to start from scratch then remove line 1.
-end
-S
-git_commit 'Add a staging environment'
-
-log_task 'Update the production environment'
-inject_into_file 'config/environments/production.rb', after: "config.log_level = :info\n" do <<-'S'
-  config.logger = Logger.new(config.paths['log'].first, 'daily')
-S
-end
-git_commit 'Update the logger to rotate daily'
-
-inject_into_file 'config/environments/production.rb', after: "%w( search.js )\n" do <<-'S'
-  config.assets.precompile << Proc.new { |path|
-    if path =~ /\.(eot|svg|ttf|woff|png)\z/
-      true
-    end
-  }
-S
-end
-git_commit 'Update the assets precompiler to include common file types'
-
-log_task 'Add the sidekiq initializer'
 file 'config/initializers/sidekiq.rb', <<-'S'
 ENV['CACHE_PASSWORD'].present? ? pass_string = ":#{ENV['CACHE_PASSWORD']}@" :  pass_string = ''
 
@@ -318,7 +372,9 @@ S
 gsub_file 'config/initializers/sidekiq.rb', 'ns_app', app_name
 git_commit 'Add the sidekiq initializer'
 
-log_task 'Add the mini profiler initializer'
+# -----------------------------------------------------------------------------
+log_task 'add_mini_profiler_initializer'
+
 file 'config/initializers/mini_profiler.rb', <<-S
 if defined? Rack::MiniProfiler
   # Toggle with ALT+p
@@ -327,9 +383,43 @@ end
 S
 git_commit 'Add the mini profiler initializer'
 
-log_task 'Update the routes file'
+# -----------------------------------------------------------------------------
+log_task 'add_staging_environment'
+
+file 'config/environments/staging.rb', <<-S
+require_relative 'production.rb'
+
+#{app_name.humanize}::Application.configure do
+  # Overwrite any production settings here, or if you want to start from scratch then remove line 1.
+end
+S
+git_commit 'Add a staging environment'
+
+# -----------------------------------------------------------------------------
+log_task 'update_production_environment'
+
+inject_into_file 'config/environments/production.rb', after: "config.log_level = :info\n" do <<-'S'
+config.logger = Logger.new(config.paths['log'].first, 'daily')
+S
+end
+git_commit 'Update the logger to rotate daily'
+
+inject_into_file 'config/environments/production.rb', after: "%w( search.js )\n" do <<-'S'
+config.assets.precompile << Proc.new { |path|
+  if path =~ /\.(eot|svg|ttf|woff|png)\z/
+    true
+  end
+}
+S
+end
+git_commit 'Update the assets precompiler to include common file types'
+
+# -----------------------------------------------------------------------------
+log_task 'update_routes'
+
 prepend_file 'config/routes.rb', "require 'sidekiq/web'\n\n"
 git_commit 'Add the sidekiq web interface'
+
 inject_into_file 'config/routes.rb', after: "draw do\n" do <<-S
   concern :pageable do
     get 'page/:page', action: :index, on: :collection
@@ -338,84 +428,9 @@ S
 end
 git_commit 'Add a concern for pagination'
 
-log_task 'Create favicon generator task'
-file 'lib/tasks/orats/favicon.rake', <<-'S'
-namespace :orats do
-  desc 'Create favicons from a single base png'
-  task :favicons do
-    require 'favicon_maker'
+# -----------------------------------------------------------------------------
+log_task 'add_backup_lib'
 
-    FaviconMaker.generate do
-      setup do
-        template_dir Rails.root.join('app', 'assets', 'favicon')
-        output_dir Rails.root.join('public')
-      end
-
-      favicon_base_path = "#{template_dir}/favicon_base.png"
-
-      unless File.exist?(favicon_base_path)
-        puts
-        puts 'A base favicon could not be found, make sure one exists at:'
-        puts base_favicon
-        puts
-        exit 1
-      end
-
-      from File.basename(favicon_base_path) do
-        icon 'speeddial-160x160.png'
-        icon 'apple-touch-icon-228x228-precomposed.png'
-        icon 'apple-touch-icon-152x152-precomposed.png'
-        icon 'apple-touch-icon-144x144-precomposed.png'
-        icon 'apple-touch-icon-120x120-precomposed.png'
-        icon 'apple-touch-icon-114x114-precomposed.png'
-        icon 'apple-touch-icon-76x76-precomposed.png'
-        icon 'apple-touch-icon-72x72-precomposed.png'
-        icon 'apple-touch-icon-60x60-precomposed.png'
-        icon 'apple-touch-icon-57x57-precomposed.png'
-        icon 'favicon-196x196.png'
-        icon 'favicon-160x160.png'
-        icon 'favicon-96x96.png'
-        icon 'favicon-64x64.png'
-        icon 'favicon-32x32.png'
-        icon 'favicon-24x24.png'
-        icon 'favicon-16x16.png'
-        icon 'favicon.ico', size: '64x64,32x32,24x24,16x16'
-      end
-
-      each_icon do |filepath|
-        puts "Creating favicon for: #{File.basename filepath}"
-      end
-    end
-  end
-end
-S
-git_commit 'Add a favicon generator task'
-
-log_task 'Add an application backup task'
-file 'lib/tasks/orats/backup.rake', <<-'S'
-namespace :orats do
-  desc 'Create a backup of your application for a specific environment'
-  task :backup do
-    if File.exist?('.env') && File.file?('.env')
-      require 'dotenv'
-      Dotenv.load
-      source_external_env = ''
-    else
-      source_external_env = '. /etc/default/app_name &&'
-    end
-
-    # hack'ish way to run the backup command with elevated privileges, it won't prompt for a password on the production
-    # server because passwordless sudo has been enabled if you use the ansible setup provided by orats
-    system 'sudo whoami'
-
-    system "#{source_external_env} backup perform -t backup -c '#{File.join('lib', 'backup', 'config.rb')}' --log-path='#{File.join('log')}'"
-  end
-end
-S
-gsub_file 'lib/tasks/orats/backup.rake', 'app_name', app_name
-
-git_commit 'Add an application backup task'
-log_task 'Add application backup config'
 file 'lib/backup/config.rb', <<-'S'
 ##
 # Backup v4.x Configuration
@@ -534,9 +549,7 @@ data_path '../../tmp/backup/data'
 #     end
 #   end
 S
-git_commit 'Add application backup config'
 
-log_task 'Add application backup rules'
 file 'lib/backup/models/backup.rb', <<-'S'
 Model.new(:backup, 'Backup for the current RAILS_ENV') do
   split_into_chunks_of 10
@@ -594,9 +607,93 @@ Model.new(:backup, 'Backup for the current RAILS_ENV') do
   end
 end
 S
-git_commit 'Add application backup rules'
+git_commit 'Add backup library'
 
-log_task 'Add application helpers'
+# -----------------------------------------------------------------------------
+log_task 'add_favicon_task'
+
+file 'lib/tasks/orats/favicon.rake', <<-'S'
+namespace :orats do
+  desc 'Create favicons from a single base png'
+  task :favicons do
+    require 'favicon_maker'
+
+    FaviconMaker.generate do
+      setup do
+        template_dir Rails.root.join('app', 'assets', 'favicon')
+        output_dir Rails.root.join('public')
+      end
+
+      favicon_base_path = "#{template_dir}/favicon_base.png"
+
+      unless File.exist?(favicon_base_path)
+        puts
+        puts 'A base favicon could not be found, make sure one exists at:'
+        puts base_favicon
+        puts
+        exit 1
+      end
+
+      from File.basename(favicon_base_path) do
+        icon 'speeddial-160x160.png'
+        icon 'apple-touch-icon-228x228-precomposed.png'
+        icon 'apple-touch-icon-152x152-precomposed.png'
+        icon 'apple-touch-icon-144x144-precomposed.png'
+        icon 'apple-touch-icon-120x120-precomposed.png'
+        icon 'apple-touch-icon-114x114-precomposed.png'
+        icon 'apple-touch-icon-76x76-precomposed.png'
+        icon 'apple-touch-icon-72x72-precomposed.png'
+        icon 'apple-touch-icon-60x60-precomposed.png'
+        icon 'apple-touch-icon-57x57-precomposed.png'
+        icon 'favicon-196x196.png'
+        icon 'favicon-160x160.png'
+        icon 'favicon-96x96.png'
+        icon 'favicon-64x64.png'
+        icon 'favicon-32x32.png'
+        icon 'favicon-24x24.png'
+        icon 'favicon-16x16.png'
+        icon 'favicon.ico', size: '64x64,32x32,24x24,16x16'
+      end
+
+      each_icon do |filepath|
+        puts "Creating favicon for: #{File.basename filepath}"
+      end
+    end
+  end
+end
+S
+git_commit 'Add a favicon generator task'
+
+# -----------------------------------------------------------------------------
+log_task 'add_backup_task'
+
+file 'lib/tasks/orats/backup.rake', <<-'S'
+namespace :orats do
+  desc 'Create a backup of your application for a specific environment'
+  task :backup do
+    if File.exist?('.env') && File.file?('.env')
+      require 'dotenv'
+      Dotenv.load
+
+      source_external_env = ''
+    else
+      source_external_env = '. /etc/default/app_name &&'
+    end
+
+    # hack'ish way to run the backup command with elevated privileges, it won't prompt for a password on the production
+    # server because passwordless sudo has been enabled if you use the ansible setup provided by orats
+    system 'sudo whoami'
+
+    system "#{source_external_env} backup perform -t backup -c '#{File.join('lib', 'backup', 'config.rb')}' --log-path='#{File.join('log')}'"
+  end
+end
+S
+gsub_file 'lib/tasks/orats/backup.rake', 'app_name', app_name
+git_commit 'Add an application backup task'
+
+# -----------------------------------------------------------------------------
+log_task 'add_helpers'
+
 inject_into_file 'app/helpers/application_helper.rb', after: "ApplicationHelper\n" do <<-S
   def title(page_title)
     content_for(:title) { page_title }
@@ -651,9 +748,11 @@ inject_into_file 'app/helpers/application_helper.rb', after: "ApplicationHelper\
   end
 S
 end
-git_commit 'Add various helper functions'
+git_commit 'Add various helpers'
 
-log_task 'Add application layout'
+# -----------------------------------------------------------------------------
+log_task 'add_layout'
+
 run 'rm -f app/views/layouts/application.html.erb'
 file 'app/views/layouts/application.html.erb', <<-S
 <!doctype html>
@@ -721,9 +820,11 @@ file 'app/views/layouts/application.html.erb', <<-S
 </body>
 </html>
 S
-git_commit 'Add application layout'
+git_commit 'Add layout'
 
-log_task 'Add layout partials'
+# -----------------------------------------------------------------------------
+log_task 'add_layout_partials'
+
 file 'app/views/layouts/_flash.html.erb', <<-'S'
 <% flash.each do |key, msg| %>
   <% unless key == :timedout %>
@@ -820,7 +921,9 @@ file 'app/views/layouts/_disqus_count_snippet.html.erb', <<-S
 S
 git_commit 'Add layout partials'
 
-log_task 'Add public http status code pages'
+# -----------------------------------------------------------------------------
+log_task 'add_http_error_pages'
+
 run 'rm -f public/404.html'
 run 'rm -f public/422.html'
 run 'rm -f public/500.html'
@@ -839,6 +942,7 @@ file 'public/404.html', <<-S
 </body>
 </html>
 S
+
 file 'public/422.html', <<-S
 <!DOCTYPE html>
 <html>
@@ -854,6 +958,7 @@ file 'public/422.html', <<-S
 </body>
 </html>
 S
+
 file 'public/500.html', <<-S
 <!DOCTYPE html>
 <html>
@@ -869,24 +974,27 @@ file 'public/500.html', <<-S
 </body>
 </html>
 S
+
 file 'public/502.html', <<-S
 <!DOCTYPE html>
 <html>
 <head>
-
   <title>Error 502</title>
   <meta charset="utf-8" />
   <style>
   </style>
 </head>
+
 <body>
   <h1>Error 502</h1>
 </body>
 </html>
 S
-git_commit 'Add public http status code pages'
+git_commit 'Add http status code pages'
 
-log_task 'Update application sass'
+# -----------------------------------------------------------------------------
+log_task 'update_sass'
+
 run 'mv app/assets/stylesheets/application.css app/assets/stylesheets/application.css.scss'
 inject_into_file 'app/assets/stylesheets/application.css.scss',
                  " *= require font-awesome\n",
@@ -944,30 +1052,33 @@ append_file 'app/assets/stylesheets/application.css.scss' do <<-S
 @import "bootstrap/responsive-utilities";
 
 .alert-notice {
-  @extend .alert-success;
+@extend .alert-success;
 }
 
 .alert-alert {
-  @extend .alert-danger;
+@extend .alert-danger;
 }
 
 img {
-  @extend .img-responsive;
-  margin: 0 auto;
+@extend .img-responsive;
+margin: 0 auto;
 }
 
 .validation-error {
-  margin-top: 2px;
-  color: $brand-danger;
-  font-size: $font-size-small;
+margin-top: 2px;
+color: $brand-danger;
+font-size: $font-size-small;
 }
 S
 end
 git_commit 'Add font-awesome, bootstrap and a few default styles'
 
-log_task 'Update application coffeescript'
+# -----------------------------------------------------------------------------
+log_task 'update_coffeescript'
+
 gsub_file 'app/assets/javascripts/application.js', "//= require jquery\n", ''
 git_commit 'Remove jquery because it is loaded from a CDN'
+
 inject_into_file 'app/assets/javascripts/application.js',
                  "//= require jquery.turbolinks\n",
                  before: "//= require_tree .\n"
@@ -988,14 +1099,8 @@ S
 end
 git_commit 'Add jquery.turbolinks and bootstrap'
 
-log_task 'Copy the Gemfile'
-run 'rm -f Gemfile'
-copy_from_local_gem 'Gemfile', 'Gemfile'
-git_commit 'Add Gemfile'
+# -----------------------------------------------------------------------------
+log_task 'remove_unused_files_from_git'
 
-log_task 'Copy the default base favicon'
-copy_from_local_gem 'app/assets/favicon/favicon_base.png', 'app/assets/favicon/favicon_base.png'
-
-log_task 'Remove unused files from git'
 git add: '-u'
 git_commit 'Remove unused files'
