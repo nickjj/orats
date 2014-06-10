@@ -77,6 +77,27 @@ module Orats
           exit 1
         end
       end
+
+      def exit_if_path_exists
+        log_task 'Check if this path exists'
+
+        if Dir.exist?(@active_path) || File.exist?(@active_path)
+          log_error 'error', 'A file or directory already exists at this location', 'path', @active_path
+          exit 1
+        end
+      end
+
+      def exit_if_cannot_access(name, process, tip_message)
+        log_task "Check for #{name}"
+
+        which_output = run("which #{process}", capture: true)
+
+        log_error 'error', 'Cannot access rails', 'question', "Are you sure you have #{name} setup correctly?", true do
+          log_status_bottom 'tip', tip_message, :white
+        end if which_output.empty?
+
+        exit 1 if which_output.empty?
+      end
     end
   end
 end

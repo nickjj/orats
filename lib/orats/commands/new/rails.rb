@@ -3,9 +3,6 @@ module Orats
     module New
       module Rails
         def rails_template(command, flags = '')
-          exit_if_cannot_rails
-          exit_if_exists unless flags.index(/--skip/)
-
           orats_template = "--template #{base_path}/templates/#{command}.rb"
 
           run "rails new #{@active_path} #{flags} --skip-bundle #{orats_template unless command.empty?}"
@@ -75,29 +72,6 @@ module Orats
         def create_and_migrate_database
           run_rake 'db:create:all db:migrate'
           git_commit 'Add the database schema file'
-        end
-
-        private
-
-        def exit_if_cannot_rails
-          log_task 'Checking for rails'
-
-          has_rails = run('which rails', capture: true)
-
-          log_error 'error', 'Cannot access rails', 'question', 'Are you sure you have rails setup correctly?', true do
-            log_status_bottom 'tip', 'You can install it by running `gem install rails`', :white
-          end if has_rails.empty?
-
-          exit 1 if has_rails.empty?
-        end
-
-        def exit_if_exists
-          log_task 'Checking if a file or directory already exists'
-
-          if Dir.exist?(@active_path) || File.exist?(@active_path)
-            log_error 'error', 'A file or directory already exists at this location', 'path', @active_path
-            exit 1
-          end
         end
       end
     end

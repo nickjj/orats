@@ -18,6 +18,9 @@ module Orats
         end
 
         def init
+          exit_if_cannot_access 'rails', 'rails', 'You can install it by running `gem install rails`'
+          exit_if_path_exists
+
           rails_template 'base' do
             gsub_postgres_info
             gsub_redis_info unless @options[:redis_password].empty?
