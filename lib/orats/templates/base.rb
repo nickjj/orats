@@ -173,29 +173,29 @@ def update_app_config
   log_task __method__
 
   inject_into_file 'config/application.rb', after: "automatically loaded.\n" do <<-S
-  config.action_mailer.delivery_method = :smtp
-  config.action_mailer.smtp_settings = {
-    :address              => ENV['SMTP_ADDRESS'],
-    :port                 => ENV['SMTP_PORT'].to_i,
-    :domain               => ENV['SMTP_DOMAIN'],
-    :user_name            => ENV['SMTP_USERNAME'],
-    :password             => ENV['SMTP_PASSWORD'],
-    :authentication       => ENV['SMTP_AUTH']
-  }
+    config.action_mailer.delivery_method = :smtp
+    config.action_mailer.smtp_settings = {
+      :address              => ENV['SMTP_ADDRESS'],
+      :port                 => ENV['SMTP_PORT'].to_i,
+      :domain               => ENV['SMTP_DOMAIN'],
+      :user_name            => ENV['SMTP_USERNAME'],
+      :password             => ENV['SMTP_PASSWORD'],
+      :authentication       => ENV['SMTP_AUTH']
+    }
 
-  config.action_mailer.smtp_settings[:enable_starttls_auto] = true if ENV['SMTP_ENCRYPTION'] == 'starttls'
-  config.action_mailer.smtp_settings[:ssl] = true if ENV['SMTP_ENCRYPTION'] == 'ssl'
-  config.action_mailer.default_options = { from: ENV['ACTION_MAILER_DEFAULT_FROM'] }
-  config.action_mailer.default_url_options = { host: ENV['ACTION_MAILER_HOST'] }
+    config.action_mailer.smtp_settings[:enable_starttls_auto] = true if ENV['SMTP_ENCRYPTION'] == 'starttls'
+    config.action_mailer.smtp_settings[:ssl] = true if ENV['SMTP_ENCRYPTION'] == 'ssl'
+    config.action_mailer.default_options = { from: ENV['ACTION_MAILER_DEFAULT_FROM'] }
+    config.action_mailer.default_url_options = { host: ENV['ACTION_MAILER_HOST'] }
 
-  redis_store_options = { host: ENV['CACHE_HOST'],
-                          port: ENV['CACHE_PORT'].to_i,
-                          db: ENV['CACHE_DATABASE'].to_i,
-                          namespace: '#{app_name}::cache'
-                        }
+    redis_store_options = { host: ENV['CACHE_HOST'],
+                            port: ENV['CACHE_PORT'].to_i,
+                            db: ENV['CACHE_DATABASE'].to_i,
+                            namespace: '#{app_name}::cache'
+                          }
 
-  redis_store_options[:password] = ENV['CACHE_PASSWORD'] if ENV['CACHE_PASSWORD'].present?
-  config.cache_store = :redis_store, redis_store_options
+    redis_store_options[:password] = ENV['CACHE_PASSWORD'] if ENV['CACHE_PASSWORD'].present?
+    config.cache_store = :redis_store, redis_store_options
   S
   end
 
@@ -411,9 +411,9 @@ def update_routes
   git_commit 'Add the sidekiq web interface'
 
   inject_into_file 'config/routes.rb', after: "draw do\n" do <<-S
-concern :pageable do
-  get 'page/:page', action: :index, on: :collection
-end
+  concern :pageable do
+    get 'page/:page', action: :index, on: :collection
+  end
   S
   end
   git_commit 'Add a concern for pagination'
