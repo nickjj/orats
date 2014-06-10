@@ -87,12 +87,12 @@ module Orats
         end
       end
 
-      def exit_if_cannot_access(name, process, tip_message)
-        log_task "Check for #{name}"
+      def exit_if_cannot_access(process, tip_message)
+        log_task "Check for #{process}"
 
         which_output = run("which #{process}", capture: true)
 
-        log_error 'error', 'Cannot access rails', 'question', "Are you sure you have #{name} setup correctly?", true do
+        log_error 'error', "Cannot find #{process}", 'question', "Are you sure you have #{process} on your path?", true do
           log_status_bottom 'tip', tip_message, :white
         end if which_output.empty?
 
