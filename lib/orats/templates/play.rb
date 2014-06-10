@@ -1,13 +1,35 @@
 # =====================================================================================================
-# Template for generating an ansible playbook
+# Template for generating an orats ansible 1.6.x playbook
 # =====================================================================================================
-
-# ----- Helper functions and variables ----------------------------------------------------------------
 
 require 'securerandom'
 
 def generate_token
   SecureRandom.hex(64)
+end
+
+def log_task(message)
+  puts
+  say_status  'task', "#{message}...", :yellow
+  puts        '-'*80, ''; sleep 0.25
+end
+
+def log_complete
+  puts
+  say_status  'success', "\e[1m\Everything has been setup successfully\e[0m", :cyan
+  puts
+  say_status  'question', 'Are most of your apps similar?', :yellow
+  say_status  'answer', 'You only need to generate one playbook and you just did', :white
+  say_status  'answer', 'Use the inventory in each project to customize certain things', :white
+  puts
+  say_status  'question', 'Are you new to ansible?', :yellow
+  say_status  'answer', 'http://docs.ansible.com/intro_getting_started.html', :white
+  puts        '-'*80
+end
+
+def git_commit(message)
+  git add: '-A'
+  git commit: "-m '#{message}'"
 end
 
 def git_config(field)
@@ -21,50 +43,20 @@ end
 author_name = git_config 'name'
 author_email = git_config 'email'
 
-# ----- Nuke all of the rails code --------------------------------------------------------------------
-
-puts
-say_status  'shell', 'Removing all of the generated rails code...', :yellow
-puts        '-'*80, ''; sleep 0.25
-
+log_task 'Remove all of the generated rails code'
 run 'rm -rf * .git .gitignore'
 
-# ----- Create playbook -------------------------------------------------------------------------------
-
-puts
-say_status  'init', 'Creating playbook...', :yellow
-puts        '-'*80, ''; sleep 0.25
-
+log_task 'Add playbook directory'
 run "mkdir -p #{app_name}"
-
-# ----- Move playbook back one directory --------------------------------------------------------------
-
-puts
-say_status  'shell', 'Moving playbook back one directory...', :yellow
-puts        '-'*80, ''; sleep 0.25
-
 run "mv #{app_name}/* ."
 run "rm -rf #{app_name}"
-
-# ----- Create the git repo ---------------------------------------------------------------------------
-
-puts
-say_status  'git', 'Creating initial commit...', :yellow
-puts        '-'*80, ''; sleep 0.25
-
 git :init
-git add: '-A'
-git commit: "-m 'Initial commit'"
+git_commit 'Initial commit'
 
-# ----- Create the license ----------------------------------------------------------------------------
-
-puts
-say_status  'root', 'Creating the license', :yellow
-puts        '-'*80, ''; sleep 0.25
-
+log_task 'Add a licence'
 run 'rm -rf LICENSE'
 
-file 'LICENSE' do <<-TEXT
+file 'LICENSE' do <<-S
 The MIT License (MIT)
 
 Copyright (c) #{Time.now.year} #{author_name} <#{author_email}>
@@ -87,19 +79,12 @@ IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
 CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
 TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-TEXT
+S
 end
+git_commit 'Add MIT license'
 
-git add: '-A'
-git commit: "-m 'Add MIT license'"
-
-# ----- Create the site file --------------------------------------------------------------------------
-
-puts
-say_status  'root', 'Creating the site yaml file', :yellow
-puts        '-'*80, ''; sleep 0.25
-
-file 'site.yml' do <<-TEXT
+log_task 'Add the main playbook'
+file 'site.yml' do <<-S
 ---
 - name: ensure all servers are commonly configured
   hosts: all
@@ -153,21 +138,12 @@ file 'site.yml' do <<-TEXT
     - { role: nickjj.pumacorn, tags: [app, rails] }
     - { role: nickjj.sidekiq, tags: [app, rails] }
     - { role: nickjj.monit, tags: [app, monit] }
-TEXT
+S
 end
+git_commit 'Add the main playbook'
 
-git add: '-A'
-git commit: "-m 'Add site.yml file'"
+log_task 'Remove unused files from git'
+git add: '-u'
+git_commit 'Remove unused files'
 
-# ----- Installation complete message -----------------------------------------------------------------
-
-puts
-say_status  'success', "\e[1m\Everything has been setup successfully\e[0m", :cyan
-puts
-say_status  'question', 'Are most of your apps similar?', :yellow
-say_status  'answer', 'You only need to generate one playbook and you just did', :white
-say_status  'answer', 'Use the inventory in each project to customize certain things', :white
-puts
-say_status  'question', 'Are you new to ansible?', :yellow
-say_status  'answer', 'http://docs.ansible.com/intro_getting_started.html', :white
-puts        '-'*80
+log_complete
