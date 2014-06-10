@@ -19,7 +19,7 @@ module Orats
       private
 
       def can_play?
-        log_thor_task 'shell', 'Checking for the ansible binary'
+        log_task 'Checking for the ansible binary'
 
         has_ansible = run('which ansible', capture: true)
 

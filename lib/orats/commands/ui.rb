@@ -3,9 +3,9 @@ module Orats
     module UI
       include Thor::Shell
 
-      def log_thor_task(type, message)
+      def log_task(message)
         puts
-        say_status  type, "#{message}...", :yellow
+        say_status  'task', "#{message}...", :yellow
         puts        '-'*80, ''; sleep 0.25
       end
 

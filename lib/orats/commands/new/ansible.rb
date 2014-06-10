@@ -10,21 +10,21 @@ module Orats
           secrets_path = "#{@target_path}/secrets"
           create_secrets secrets_path
 
-          log_thor_task 'shell', 'Modifying secrets path in group_vars/all.yml'
+          log_task 'Modifying secrets path in group_vars/all.yml'
           gsub_file "#{@target_path}/#{fix_path_for_user(Commands::Common::RELATIVE_PATHS[:inventory])}",
                     '~/tmp/testproj/secrets/', File.expand_path(secrets_path)
 
-          log_thor_task 'shell', 'Modifying the place holder app name in group_vars/all.yml'
+          log_task 'Modifying the place holder app name in group_vars/all.yml'
           gsub_file "#{@target_path}/#{fix_path_for_user(Commands::Common::RELATIVE_PATHS[:inventory])}",
                     'testproj', File.basename(@target_path)
 
-          log_thor_task 'shell', 'Creating ssh keypair'
+          log_task 'Creating ssh keypair'
           run "ssh-keygen -t rsa -P '' -f #{secrets_path}/id_rsa"
 
-          log_thor_task 'shell', 'Creating self signed ssl certificates'
+          log_task 'Creating self signed ssl certificates'
           run create_rsa_certificate(secrets_path, 'sslkey.key', 'sslcert.crt')
 
-          log_thor_task 'shell', 'Creating monit pem file'
+          log_task 'Creating monit pem file'
           run "#{create_rsa_certificate(secrets_path,
                                         'monit.pem', 'monit.pem')} && openssl gendh 512 >> #{secrets_path}/monit.pem"
 
@@ -34,7 +34,7 @@ module Orats
         private
 
         def create_inventory
-          log_thor_task 'shell', 'Creating ansible inventory'
+          log_task 'Creating ansible inventory'
           run "mkdir -p #{@target_path}/inventory/group_vars"
 
           local_to_user Commands::Common::RELATIVE_PATHS[:hosts]
@@ -44,12 +44,12 @@ module Orats
         def local_to_user(file)
           fixed_file = fix_path_for_user(file)
 
-          log_thor_task 'shell', "Creating #{fixed_file}"
+          log_task "Creating #{fixed_file}"
           run "cp #{base_path}/#{file} #{@target_path}/#{fixed_file}"
         end
 
         def create_secrets(secrets_path)
-          log_thor_task 'shell', 'Creating ansible secrets'
+          log_task 'Creating ansible secrets'
           run "mkdir #{secrets_path}"
 
           save_secret_string "#{secrets_path}/postgres_password"
@@ -69,7 +69,7 @@ module Orats
         end
 
         def install_role_dependencies
-          log_thor_task 'shell', 'Updating ansible roles from the galaxy'
+          log_task 'Updating ansible roles from the galaxy'
 
           galaxy_install =
               "ansible-galaxy install -r #{base_path}/#{Commands::Common::RELATIVE_PATHS[:galaxyfile]} --force"
