@@ -3,7 +3,7 @@ module Orats
     module Outdated
       module Compare
         def remote_to_local_gem_versions
-          log_remote_info 'gem', 'Comparing this version of orats to the latest orats version',
+          log_remote_info 'gem', 'Compare this version of orats to the latest orats version',
                           'version', "Latest: #{@remote_gem_version}, Yours: v#{VERSION}"
         end
 
@@ -13,7 +13,7 @@ module Orats
           local_galaxyfile_roles = @local_galaxyfile.size
           roles_diff_count = galaxyfile_diff.size
 
-          log_status_top 'roles', "Comparing this version of orats' roles to the latest version:", :green
+          log_status_top 'roles', "Compare this version of orats' roles to the latest version:", :green
 
           if roles_diff_count == 0
             log_status_bottom 'message', "All #{local_galaxyfile_roles} roles are up to date", :yellow
@@ -41,7 +41,7 @@ module Orats
           item_diff = remote - local
           item_diff_count = item_diff.size
 
-          log_remote_info label, "Comparing this version of orats' #{label} to the latest version",
+          log_remote_info label, "Compare this version of orats' #{label} to the latest version",
                           'file', label == 'playbook' ? 'site.yml' : 'all.yml'
 
           item_diff.each do |line|
@@ -59,7 +59,7 @@ module Orats
         def local_to_user(label, keyword, flag_path, local)
           user = yield
 
-          log_local_info label, "Comparing this version of orats' #{label} to #{File.basename(flag_path)}",
+          log_local_info label, "Compare this version of orats' #{label} to #{File.basename(flag_path)}",
                          'path', flag_path
 
           missing_count = log_unmatched(local, user, 'missing', :red)
