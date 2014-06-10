@@ -1,8 +1,6 @@
 # =====================================================================================================
-# Template for generating an opinionated base Rails 4.1.0 project using Ruby 2.1.2
+# Template for generating an orats base project for Rails 4.1.x project
 # =====================================================================================================
-
-# ----- Helper functions and variables ----------------------------------------------------------------
 
 require 'securerandom'
 
@@ -10,40 +8,31 @@ def generate_token
   SecureRandom.hex(64)
 end
 
-def from_gem(source, destination = nil)
-  base_path = "#{File.expand_path File.dirname(__FILE__)}/includes"
-  file_name = source.split('/').last
-
-  if destination.present? && file_name != destination
-    if destination.include? '/'
-      run "mkdir -p #{destination}"
-    end
-  end
-
-  run "cp #{base_path}/#{file_name} #{destination}"
+def log_task(message)
+  puts
+  say_status  'task', "#{message}...", :yellow
+  puts        '-'*80, ''; sleep 0.25
 end
 
-app_name_class = app_name.humanize
+def git_commit(message)
+  git add: '-A'
+  git commit: "-m '#{message}'"
+end
 
-# ----- Create the git repo ----------------------------------------------------------------------------
+def copy_from_local_gem(source, dest)
+  base_path = "#{File.expand_path File.dirname(__FILE__)}/includes"
+  file_name_of_source = File.basename(source)
 
-puts
-say_status  'git', 'Creating a new local git repo...', :yellow
-puts        '-'*80, ''; sleep 0.25
+  run "mkdir -p #{File.dirname(dest)}" if dest.present? && file_name_of_source != dest
+  run "cp #{base_path}/#{source} #{dest}"
+end
 
+log_task 'Add a new git repo'
 git :init
-git add: '-A'
-git commit: "-m 'Initial commit'"
-
-# ----- Modify the .gitignore file --------------------------------------------------------------------
-
-puts
-say_status  'root', 'Modifying the .gitignore file...', :yellow
-puts        '-'*80, ''; sleep 0.25
-
-append_to_file '.gitignore' do <<-TEXT
-
-# Ignore OS and editor files.
+git_commit 'Initial commit'
+log_task 'Add paths to the .gitignore file'
+append_to_file '.gitignore' do <<-S
+# OS and editor files
 .DS_Store
 */**.DS_Store
 ._*
@@ -51,41 +40,18 @@ append_to_file '.gitignore' do <<-TEXT
 *~
 .idea/
 
-# Ignore the dotenv file.
+# the dotenv file
 .env
 
-# Ignore app specific folders.
+# app specific folders
 /vendor/bundle
 /public/assets/*
-TEXT
+S
 end
+git_commit 'Add common OS files, editor files and other paths'
 
-git add: '-A'
-git commit: "-m 'Add common OS and editor files to the .gitignore file'"
-
-# ----- Add a bundler config --------------------------------------------------------------------
-
-# puts
-# say_status  'bundle', 'Creating bundle config...', :yellow
-# puts        '-'*80, ''; sleep 0.25
-#
-# file '.bundle/config' do <<-CODE
-# ---
-# BUNDLE_WITHOUT: production:staging
-# CODE
-# end
-#
-# git add: '-A'
-# git commit: "-m 'Add .bundle/config to ignore production:staging in development mode'"
-
-
-# ----- Create a development environment file ---------------------------------------------------
-
-puts
-say_status  'root', 'Creating development environment file...', :yellow
-puts        '-'*80, ''; sleep 0.25
-
-file '.env' do <<-CODE
+log_task 'Add development environment file'
+file '.env' do <<-S
 RAILS_ENV: development
 
 PROJECT_PATH: /full/path/to/your/project
@@ -127,44 +93,22 @@ PUMA_THREADS_MAX: 1
 PUMA_WORKERS: 0
 
 SIDEKIQ_CONCURRENCY: 25
-CODE
+S
 end
+git_commit 'Add development environment file'
 
-git add: '-A'
-git commit: "-m 'Add development environment file'"
-
-# ----- Create the foreman Procfile ------------------------------------------------------------------------
-
-puts
-say_status  'start', 'Creating the Procfile for foreman...', :yellow
-puts        '-'*80, ''; sleep 0.25
-
-file 'Procfile' do <<-CODE
+log_task 'Add a Procfile'
+file 'Procfile' do <<-S
 web: puma -C config/puma.rb
 worker: sidekiq -C config/sidekiq.yml
 log: tail -f log/development.log
-CODE
+S
 end
+git_commit 'Add a Procfile'
 
-git add:    '-A'
-git commit: "-m 'Add a basic Procfile to start the puma and sidekiq processes'"
-
-# ----- Modify the secrets yaml file -----------------------------------------------------------------------
-
+log_task 'Update the secrets.yml file'
 gsub_file 'config/secrets.yml', /.*\n/, ''
-append_file 'config/secrets.yml' do <<-FILE
-# Be sure to restart your server when you modify this file.
-
-# Your secret key is used for verifying the integrity of signed cookies.
-# If you change this key, all old signed cookies will become invalid!
-
-# Make sure the secret is at least 30 characters and all random,
-# no regular words or you'll be exposed to dictionary attacks.
-# You can use `rake secret` to generate a secure secret key.
-
-# Make sure the secrets in this file are kept private
-# if you're sharing your code publicly.
-
+append_file 'config/secrets.yml' do <<-S
 development: &default
   secret_key_base: <%= ENV['TOKEN_RAILS_SECRET'] %>
 
@@ -176,19 +120,12 @@ staging:
 
 production:
   <<: *default
-FILE
+S
 end
+git_commit 'DRY out the yaml'
 
-git add:    '-A'
-git commit: "-m 'Dry up the secrets settings'"
-
-# ----- Modify the application file -------------------------------------------------------------------
-
-puts
-say_status  'config', 'Modifying the application file...', :yellow
-puts        '-'*80, ''; sleep 0.25
-
-inject_into_file 'config/application.rb', after: "automatically loaded.\n" do <<-CODE
+log_task 'Update the application file'
+inject_into_file 'config/application.rb', after: "automatically loaded.\n" do <<-S
     config.action_mailer.delivery_method = :smtp
     config.action_mailer.smtp_settings = {
       :address              => ENV['SMTP_ADDRESS'],
@@ -198,9 +135,9 @@ inject_into_file 'config/application.rb', after: "automatically loaded.\n" do <<
       :password             => ENV['SMTP_PASSWORD'],
       :authentication       => ENV['SMTP_AUTH']
     }
+
     config.action_mailer.smtp_settings[:enable_starttls_auto] = true if ENV['SMTP_ENCRYPTION'] == 'starttls'
     config.action_mailer.smtp_settings[:ssl] = true if ENV['SMTP_ENCRYPTION'] == 'ssl'
-
     config.action_mailer.default_options = { from: ENV['ACTION_MAILER_DEFAULT_FROM'] }
     config.action_mailer.default_url_options = { host: ENV['ACTION_MAILER_HOST'] }
 
@@ -209,15 +146,13 @@ inject_into_file 'config/application.rb', after: "automatically loaded.\n" do <<
                             db: ENV['CACHE_DATABASE'].to_i,
                             namespace: '#{app_name}::cache'
                           }
+
     redis_store_options[:password] = ENV['CACHE_PASSWORD'] if ENV['CACHE_PASSWORD'].present?
-
     config.cache_store = :redis_store, redis_store_options
-CODE
+S
 end
-
 gsub_file 'config/application.rb', "# config.time_zone = 'Central Time (US & Canada)'", "config.time_zone = 'Eastern Time (US & Canada)'"
-
-append_file 'config/application.rb' do <<-'FILE'
+append_file 'config/application.rb' do <<-'S'
 
 ActionView::Base.field_error_proc = Proc.new do |html_tag, instance|
   if html_tag =~ /\<label/
@@ -227,20 +162,13 @@ ActionView::Base.field_error_proc = Proc.new do |html_tag, instance|
     %(#{html_tag}<p class="validation-error"> #{errors}</p>).html_safe
   end
 end
-FILE
+S
 end
+git_commit 'Configure the mailer/redis, update the timezone and adjust the validation output'
 
-git add:    '-A'
-git commit: "-m 'Add tweakable settings, update the timezone and change the way validation errors are shown'"
-
-# ----- Modify the config files -----------------------------------------------------------------------
-
-puts
-say_status  'config', 'Modifying the config files...', :yellow
-puts        '-'*80, ''; sleep 0.25
-
+log_task 'Update the database.yml file'
 gsub_file 'config/database.yml', /.*\n/, ''
-append_file 'config/database.yml' do <<-FILE
+append_file 'config/database.yml' do <<-S
 development: &default
   adapter: postgresql
   database: <%= ENV['DATABASE_NAME'] %>
@@ -259,13 +187,12 @@ staging:
 
 production:
   <<: *default
-FILE
+S
 end
+git_commit 'DRY out the yaml'
 
-git add:    '-A'
-git commit: "-m 'Dry up the database settings'"
-
-file 'config/puma.rb', <<-'CODE'
+log_task 'Add the puma config'
+file 'config/puma.rb', <<-'S'
 environment ENV['RAILS_ENV']
 
 threads ENV['PUMA_THREADS_MIN'].to_i,ENV['PUMA_THREADS_MAX'].to_i
@@ -286,28 +213,26 @@ restart_command 'bundle exec bin/puma'
 
 on_worker_boot do
   require 'active_record'
-  config_path = File.expand_path('../database.yml', __FILE__)
 
+  config_path = File.expand_path('../database.yml', __FILE__)
   ActiveRecord::Base.connection.disconnect! rescue ActiveRecord::ConnectionNotEstablished
   ActiveRecord::Base.establish_connection(ENV['DATABASE_URL'] || YAML.load_file(config_path)[ENV['RAILS_ENV']])
 end
-CODE
+S
+git_commit 'Add the puma config'
 
-git add:    '-A'
-git commit: "-m 'Add the puma config'"
-
-file 'config/sidekiq.yml', <<-CODE
+log_task 'Add the sidekiq config'
+file 'config/sidekiq.yml', <<-S
 ---
 :pidfile: <%= ENV['PROJECT_PATH'] %>/tmp/sidekiq.pid
 :concurrency: <%= ENV['SIDEKIQ_CONCURRENCY'].to_i %>
 :queues:
   - default
-CODE
+S
+git_commit 'Add the sidekiq config'
 
-git add:    '-A'
-git commit: "-m 'Add the sidekiq config'"
-
-file 'config/sitemap.rb', <<-'CODE'
+log_task 'Add the sitemap config'
+file 'config/sitemap.rb', <<-'S'
 # Set the host name for URL creation
 SitemapGenerator::Sitemap.default_host = "http://www.app_name.com"
 
@@ -328,14 +253,12 @@ SitemapGenerator::Sitemap.create do
   #   add article_path("#{article.id}-#{article.permalink}"), priority: 0.9, lastmod: article.updated_at
   # end
 end
-CODE
-
+S
 gsub_file 'config/sitemap.rb', 'app_name', app_name
+git_commit 'Add the sitemap config'
 
-git add:    '-A'
-git commit: "-m 'Add the sitemap config'"
-
-file 'config/schedule.rb', <<-CODE
+log_task 'Add the whenever config'
+file 'config/schedule.rb', <<-S
 every 1.day, at: '3:00 am' do
   rake 'orats:backup'
 end
@@ -343,52 +266,38 @@ end
 every 1.day, at: '4:00 am' do
   rake 'sitemap:refresh'
 end
-CODE
+S
+git_commit 'Add the whenever config'
 
-git add:    '-A'
-git commit: "-m 'Add a sitemap rake task that occurs at 4am'"
-
-# ----- Modify the environment files ------------------------------------------------------------------
-
-puts
-say_status  'Config', 'Modifying the environment files...', :yellow
-puts        '-'*80, ''; sleep 0.25
-
-file 'config/environments/staging.rb', <<-CODE
+log_task 'Add a staging environment'
+file 'config/environments/staging.rb', <<-S
 require_relative 'production.rb'
 
-#{app_name_class}::Application.configure do
+#{app_name.humanize}::Application.configure do
   # Overwrite any production settings here, or if you want to start from scratch then remove line 1.
 end
-CODE
+S
+git_commit 'Add a staging environment'
 
-git add:    '-A'
-git commit: "-m 'Add add staging environment'"
-
-inject_into_file 'config/environments/production.rb', after: "config.log_level = :info\n" do <<-"CODE"
+log_task 'Update the production environment'
+inject_into_file 'config/environments/production.rb', after: "config.log_level = :info\n" do <<-'S'
   config.logger = Logger.new(config.paths['log'].first, 'daily')
-CODE
+S
 end
+git_commit 'Update the logger to rotate daily'
 
-inject_into_file 'config/environments/production.rb', after: "%w( search.js )\n" do <<-"CODE"
+inject_into_file 'config/environments/production.rb', after: "%w( search.js )\n" do <<-'S'
   config.assets.precompile << Proc.new { |path|
     if path =~ /\.(eot|svg|ttf|woff|png)\z/
       true
     end
   }
-CODE
+S
 end
+git_commit 'Update the assets precompiler to include common file types'
 
-git add:    '-A'
-git commit: "-m 'Change production config options'"
-
-# ----- Modify the initializer files ------------------------------------------------------------------
-
-puts
-say_status  'config', 'Modifying the initializer files...', :yellow
-puts        '-'*80, ''; sleep 0.25
-
-file 'config/initializers/sidekiq.rb', <<-'CODE'
+log_task 'Add the sidekiq initializer'
+file 'config/initializers/sidekiq.rb', <<-'S'
 ENV['CACHE_PASSWORD'].present? ? pass_string = ":#{ENV['CACHE_PASSWORD']}@" :  pass_string = ''
 
 redis_host = "#{pass_string}#{ENV['CACHE_HOST']}"
@@ -405,51 +314,32 @@ end
 Sidekiq.configure_client do |config|
   config.redis = sidekiq_config
 end
-CODE
-
+S
 gsub_file 'config/initializers/sidekiq.rb', 'ns_app', app_name
+git_commit 'Add the sidekiq initializer'
 
-git add:    '-A'
-git commit: "-m 'Add the sidekiq initializer'"
-
-file 'config/initializers/mini_profiler.rb', <<-CODE
+log_task 'Add the mini profiler initializer'
+file 'config/initializers/mini_profiler.rb', <<-S
 if defined? Rack::MiniProfiler
   # Toggle with ALT+p
   Rack::MiniProfiler.config.start_hidden = true
 end
-CODE
+S
+git_commit 'Add the mini profiler initializer'
 
-git add:    '-A'
-git commit: "-m 'Add the rack mini profiler initializer'"
-
-# ----- Modify the routes file ------------------------------------------------------------------------
-
-puts
-say_status  'config', 'Modifying the routes file...', :yellow
-puts        '-'*80, ''; sleep 0.25
-
+log_task 'Update the routes file'
 prepend_file 'config/routes.rb', "require 'sidekiq/web'\n\n"
-
-git add:    '-A'
-git commit: "-m 'Add sidekiq to the routes file'"
-
-inject_into_file 'config/routes.rb', after: "draw do\n" do <<-CODE
+git_commit 'Add the sidekiq web interface'
+inject_into_file 'config/routes.rb', after: "draw do\n" do <<-S
   concern :pageable do
     get 'page/:page', action: :index, on: :collection
   end
-CODE
+S
 end
+git_commit 'Add a concern for pagination'
 
-git add:    '-A'
-git commit: "-m 'Add a route concern for pagination'"
-
-# ----- Creating application tasks --------------------------------------------------------------------
-
-puts
-say_status  'tasks', 'Creating application tasks...', :yellow
-puts        '-'*80, ''; sleep 0.25
-
-file 'lib/tasks/orats/favicon.rake', <<-'CODE'
+log_task 'Create favicon generator task'
+file 'lib/tasks/orats/favicon.rake', <<-'S'
 namespace :orats do
   desc 'Create favicons from a single base png'
   task :favicons do
@@ -498,19 +388,17 @@ namespace :orats do
     end
   end
 end
-CODE
+S
+git_commit 'Add a favicon generator task'
 
-git add:    '-A'
-git commit: "-m 'Add a favicon generator task'"
-
-file 'lib/tasks/orats/backup.rake', <<-'CODE'
+log_task 'Add an application backup task'
+file 'lib/tasks/orats/backup.rake', <<-'S'
 namespace :orats do
   desc 'Create a backup of your application for a specific environment'
   task :backup do
     if File.exist?('.env') && File.file?('.env')
       require 'dotenv'
       Dotenv.load
-
       source_external_env = ''
     else
       source_external_env = '. /etc/default/app_name &&'
@@ -523,27 +411,18 @@ namespace :orats do
     system "#{source_external_env} backup perform -t backup -c '#{File.join('lib', 'backup', 'config.rb')}' --log-path='#{File.join('log')}'"
   end
 end
-CODE
-
+S
 gsub_file 'lib/tasks/orats/backup.rake', 'app_name', app_name
 
-git add:    '-A'
-git commit: "-m 'Add a backup task'"
-
-# ----- Creating application backup --------------------------------------------------------------------
-
-puts
-say_status  'backup', 'Creating application backup script...', :yellow
-puts        '-'*80, ''; sleep 0.25
-
-file 'lib/backup/config.rb', <<-'CODE'
+git_commit 'Add an application backup task'
+log_task 'Add application backup config'
+file 'lib/backup/config.rb', <<-'S'
 ##
 # Backup v4.x Configuration
 #
 # Documentation: http://meskyanichi.github.io/backup
 # Issue Tracker: https://github.com/meskyanichi/backup/issues
 
-##
 # Config Options
 #
 # The options here may be overridden on the command line, but the result
@@ -565,27 +444,21 @@ file 'lib/backup/config.rb', <<-'CODE'
 #
 # Sets the root path for all relative paths, including default paths.
 # May be an absolute path, or relative to the current working directory.
-#
 
 root_path 'lib/backup'
 
-#
 # Sets the path where backups are processed until they're stored.
 # This must have enough free space to hold apx. 2 backups.
 # May be an absolute path, or relative to the current directory or +root_path+.
-#
 
 tmp_path  '../../tmp'
 
-#
 # Sets the path where backup stores persistent information.
 # When Backup's Cycler is used, small YAML files are stored here.
 # May be an absolute path, or relative to the current directory or +root_path+.
-#
 
 data_path '../../tmp/backup/data'
 
-##
 # Utilities
 #
 # If you need to use a utility other than the one Backup detects,
@@ -596,7 +469,6 @@ data_path '../../tmp/backup/data'
 #     redis_cli '/opt/redis/redis-cli'
 #   end
 
-##
 # Logging
 #
 # Logging options may be set on the command line, but certain settings
@@ -614,7 +486,6 @@ data_path '../../tmp/backup/data'
 # to disable syslog and enable console output.
 #   backup perform --trigger my_backup --no-syslog --no-quiet
 
-##
 # Component Defaults
 #
 # Set default options to be applied to components in all models.
@@ -637,7 +508,6 @@ data_path '../../tmp/backup/data'
 #     mail.encryption           = :starttls
 #   end
 
-##
 # Preconfigured Models
 #
 # Create custom models with preconfigured components.
@@ -663,19 +533,17 @@ data_path '../../tmp/backup/data'
 #       mail.to = 'john.smith@email.com'
 #     end
 #   end
-CODE
+S
+git_commit 'Add application backup config'
 
-git add:    '-A'
-git commit: "-m 'Add backup config'"
-
-file 'lib/backup/models/backup.rb', <<-'CODE'
+log_task 'Add application backup rules'
+file 'lib/backup/models/backup.rb', <<-'S'
 Model.new(:backup, 'Backup for the current RAILS_ENV') do
   split_into_chunks_of 10
   compress_with Gzip
 
   database PostgreSQL do |db|
     db.sudo_user          = ENV['DATABASE_USERNAME']
-
     # To dump all databases, set `db.name = :all` (or leave blank)
     db.name               = ENV['DATABASE_NAME']
     db.username           = ENV['DATABASE_USERNAME']
@@ -714,7 +582,6 @@ Model.new(:backup, 'Backup for the current RAILS_ENV') do
     mail.on_success           = false
     #mail.on_warning           = true
     mail.on_failure           = true
-
     mail.from                 = ENV['ACTION_MAILER_DEFAULT_FROM']
     mail.to                   = ENV['ACTION_MAILER_DEFAULT_TO']
     mail.address              = ENV['SMTP_ADDRESS']
@@ -726,18 +593,11 @@ Model.new(:backup, 'Backup for the current RAILS_ENV') do
     mail.encryption           = mail_encryption.to_sym
   end
 end
-CODE
+S
+git_commit 'Add application backup rules'
 
-git add:    '-A'
-git commit: "-m 'Add backup model'"
-
-# ----- Creating application helpers ------------------------------------------------------------------
-
-puts
-say_status  'helpers', 'Creating application helpers...', :yellow
-puts        '-'*80, ''; sleep 0.25
-
-inject_into_file 'app/helpers/application_helper.rb', after: "ApplicationHelper\n" do <<-CODE
+log_task 'Add application helpers'
+inject_into_file 'app/helpers/application_helper.rb', after: "ApplicationHelper\n" do <<-S
   def title(page_title)
     content_for(:title) { page_title }
   end
@@ -774,7 +634,6 @@ inject_into_file 'app/helpers/application_helper.rb', after: "ApplicationHelper\
 
   def humanize_boolean(input)
     input ||= ''
-
     case input.to_s.downcase
     when 't', 'true'
       'Yes'
@@ -790,21 +649,13 @@ inject_into_file 'app/helpers/application_helper.rb', after: "ApplicationHelper\
       'danger'
     end
   end
-CODE
+S
 end
+git_commit 'Add various helper functions'
 
-git add:    '-A'
-git commit: "-m 'Add favicon and boolean view helpers'"
-
-# ----- Creating view files ---------------------------------------------------------------------------
-
-puts
-say_status  'views', 'Creating view files...', :yellow
-puts        '-'*80, ''; sleep 0.25
-
+log_task 'Add application layout'
 run 'rm -f app/views/layouts/application.html.erb'
-
-file 'app/views/layouts/application.html.erb', <<-HTML
+file 'app/views/layouts/application.html.erb', <<-S
 <!doctype html>
 <html lang="en">
   <head>
@@ -824,6 +675,7 @@ file 'app/views/layouts/application.html.erb', <<-HTML
   <![endif]-->
   <%= render 'layouts/google_analytics_snippet' %>
 </head>
+
 <body>
   <%= render 'layouts/google_analytics_tracker' %>
   <header>
@@ -868,12 +720,11 @@ file 'app/views/layouts/application.html.erb', <<-HTML
   <%= render 'layouts/disqus_count_snippet' %>
 </body>
 </html>
-HTML
+S
+git_commit 'Add application layout'
 
-git add:    '-A'
-git commit: "-m 'Add new layout view'"
-
-file 'app/views/layouts/_flash.html.erb', <<-'HTML'
+log_task 'Add layout partials'
+file 'app/views/layouts/_flash.html.erb', <<-'S'
 <% flash.each do |key, msg| %>
   <% unless key == :timedout %>
     <%= content_tag :div, class: "alert alert-dismissable alert-#{key}" do -%>
@@ -884,12 +735,9 @@ file 'app/views/layouts/_flash.html.erb', <<-'HTML'
     <% end %>
   <% end %>
 <% end %>
-HTML
+S
 
-git add:    '-A'
-git commit: "-m 'Add flash message partial'"
-
-file 'app/views/layouts/_navigation.html.erb', <<-HTML
+file 'app/views/layouts/_navigation.html.erb', <<-S
 <nav class="navbar navbar-default">
   <div class="container">
     <div class="navbar-header">
@@ -908,33 +756,23 @@ file 'app/views/layouts/_navigation.html.erb', <<-HTML
     </div>
   </div>
 </nav>
-HTML
+S
 
-git add:    '-A'
-git commit: "-m 'Add navigation partial'"
-
-file 'app/views/layouts/_navigation_links.html.erb', <<-HTML
+file 'app/views/layouts/_navigation_links.html.erb', <<-S
 <li class="active">
-  <%= link_to 'Bar', '#' %>
+  <%= link_to 'Example link', '#' %>
 </li>
-HTML
+S
 
-git add:    '-A'
-git commit: "-m 'Add navigation links partial'"
-
-file 'app/views/layouts/_footer.html.erb', <<-HTML
+file 'app/views/layouts/_footer.html.erb', <<-S
 <p class="text-muted">&copy; #{Time.now.year.to_s} #{app_name} - All rights reserved</p>
-HTML
+S
 
-git add:    '-A'
-git commit: "-m 'Add footer partial'"
-
-file 'app/views/layouts/_google_analytics_snippet.html.erb', <<-HTML
+file 'app/views/layouts/_google_analytics_snippet.html.erb', <<-S
 <script type="text/javascript">
   var _gaq = _gaq || [];
 <% if ENV['GOOGLE_ANALYTICS_UA'].present? %>
   _gaq.push(['_setAccount', '<%= ENV["GOOGLE_ANALYTICS_UA"] %>']);
-
   (function() {
     var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
     ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
@@ -942,24 +780,20 @@ file 'app/views/layouts/_google_analytics_snippet.html.erb', <<-HTML
   })();
 <% end %>
 </script>
-HTML
+S
 
-file 'app/views/layouts/_google_analytics_tracker.html.erb', <<-HTML
+file 'app/views/layouts/_google_analytics_tracker.html.erb', <<-S
 <script type="text/javascript">
   // This is added in the body to track both turbolinks and regular hits.
   _gaq.push(['_trackPageview']);
 </script>
-HTML
+S
 
-git add:    '-A'
-git commit: "-m 'Add google analytics partials'"
-
-file 'app/views/layouts/_disqus_comments_snippet.html.erb', <<-HTML
+file 'app/views/layouts/_disqus_comments_snippet.html.erb', <<-S
 <% if ENV['DISQUS_SHORT_NAME'].present? %>
 <div id="disqus_thread"></div>
 <script type="text/javascript">
     var disqus_shortname = '<%= ENV["DISQUS_SHORT_NAME"] %>';
-
     (function() {
         var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
         dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
@@ -969,14 +803,13 @@ file 'app/views/layouts/_disqus_comments_snippet.html.erb', <<-HTML
 <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
 <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
 <% end %>
-HTML
+S
 
-file 'app/views/layouts/_disqus_count_snippet.html.erb', <<-HTML
+file 'app/views/layouts/_disqus_count_snippet.html.erb', <<-S
 <% if ENV['DISQUS_SHORT_NAME'].present? %>
 <div id="disqus_thread"></div>
 <script type="text/javascript">
     var disqus_shortname = '<%= ENV["DISQUS_SHORT_NAME"] %>';
-
     (function () {
         var s = document.createElement('script'); s.async = true;
         s.type = 'text/javascript';
@@ -984,22 +817,14 @@ file 'app/views/layouts/_disqus_count_snippet.html.erb', <<-HTML
         (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
     }());
 <% end %>
-HTML
+S
+git_commit 'Add layout partials'
 
-git add:    '-A'
-git commit: "-m 'Add disqus partials'"
-
-# ----- Creating public files -------------------------------------------------------------------------
-
-puts
-say_status  'public', 'Creating public files...', :yellow
-puts        '-'*80, ''; sleep 0.25
-
+log_task 'Add public http status code pages'
 run 'rm -f public/404.html'
 run 'rm -f public/422.html'
 run 'rm -f public/500.html'
-
-file 'public/404.html', <<-HTML
+file 'public/404.html', <<-S
 <!DOCTYPE html>
 <html>
 <head>
@@ -1013,9 +838,8 @@ file 'public/404.html', <<-HTML
   <h1>Error 404</h1>
 </body>
 </html>
-HTML
-
-file 'public/422.html', <<-HTML
+S
+file 'public/422.html', <<-S
 <!DOCTYPE html>
 <html>
 <head>
@@ -1029,9 +853,8 @@ file 'public/422.html', <<-HTML
   <h1>Error 422</h1>
 </body>
 </html>
-HTML
-
-file 'public/500.html', <<-HTML
+S
+file 'public/500.html', <<-S
 <!DOCTYPE html>
 <html>
 <head>
@@ -1045,47 +868,30 @@ file 'public/500.html', <<-HTML
   <h1>Error 500</h1>
 </body>
 </html>
-HTML
-
-file 'public/502.html', <<-HTML
+S
+file 'public/502.html', <<-S
 <!DOCTYPE html>
 <html>
 <head>
+
   <title>Error 502</title>
   <meta charset="utf-8" />
   <style>
   </style>
 </head>
-
 <body>
   <h1>Error 502</h1>
 </body>
 </html>
-HTML
+S
+git_commit 'Add public http status code pages'
 
-git add:    '-A'
-git commit: "-m 'Add public 404, 422, 500 and 502 error pages'"
-
-# ----- Modifying sass files --------------------------------------------------------------------------
-
-puts
-say_status  'assets', 'Modifying sass files...', :yellow
-puts        '-'*80, ''; sleep 0.25
-
+log_task 'Update application sass'
 run 'mv app/assets/stylesheets/application.css app/assets/stylesheets/application.css.scss'
-
-git add:    '-A'
-git commit: "-m 'Rename application.css to application.scss'"
-git add:    '-u'
-
 inject_into_file 'app/assets/stylesheets/application.css.scss',
                  " *= require font-awesome\n",
                  before: " *= require_self\n"
-
-git add:    '-A'
-git commit: "-m 'Add font-awesome to the application.scss file'"
-
-append_file 'app/assets/stylesheets/application.css.scss' do <<-SCSS
+append_file 'app/assets/stylesheets/application.css.scss' do <<-S
 
 // Core variables and mixins
 @import "bootstrap/variables";
@@ -1155,28 +961,17 @@ img {
   color: $brand-danger;
   font-size: $font-size-small;
 }
-SCSS
+S
 end
+git_commit 'Add font-awesome, bootstrap and a few default styles'
 
-# ----- Modifying javascript and coffeescript files ------------------------------------------------------------------
-
-puts
-say_status  'assets', 'Modifying javascript and coffeescript files...', :yellow
-puts        '-'*80, ''; sleep 0.25
-
+log_task 'Update application coffeescript'
 gsub_file 'app/assets/javascripts/application.js', "//= require jquery\n", ''
-
-git add:    '-A'
-git commit: "-m 'Remove jquery from the application.js file because it is loaded from a CDN'"
-
+git_commit 'Remove jquery because it is loaded from a CDN'
 inject_into_file 'app/assets/javascripts/application.js',
                  "//= require jquery.turbolinks\n",
                  before: "//= require_tree .\n"
-
-git add:    '-A'
-git commit: "-m 'Add jquery-turbolinks to the application.js file'"
-
-inject_into_file 'app/assets/javascripts/application.js', before: "//= require_tree .\n" do <<-CODE
+inject_into_file 'app/assets/javascripts/application.js', before: "//= require_tree .\n" do <<-S
 //= require bootstrap/affix
 //= require bootstrap/alert
 //= require bootstrap/button
@@ -1189,33 +984,18 @@ inject_into_file 'app/assets/javascripts/application.js', before: "//= require_t
 //= require bootstrap/tab
 //= require bootstrap/tooltip
 //= require bootstrap/transition
-CODE
+S
 end
+git_commit 'Add jquery.turbolinks and bootstrap'
 
-git add:    '-A'
-git commit: "-m 'Add bootstrap to the application.js file'"
-
-# ----- Modifying gem file ----------------------------------------------------------------------------
-
-puts
-say_status  'root', 'Copying Gemfile...', :yellow
-puts        '-'*80, ''; sleep 0.25
-
+log_task 'Copy the Gemfile'
 run 'rm -f Gemfile'
-from_gem 'Gemfile', 'Gemfile'
+copy_from_local_gem 'Gemfile', 'Gemfile'
+git_commit 'Add Gemfile'
 
-git add:    '-A'
-git commit: "-m 'Add basic gems to the Gemfile'"
+log_task 'Copy the default base favicon'
+copy_from_local_gem 'app/assets/favicon/favicon_base.png', 'app/assets/favicon/favicon_base.png'
 
-# ----- Adding default favicon-------------------------------------------------------------------------
-
-puts
-say_status  'assets', 'Copying default favicon...', :yellow
-puts        '-'*80, ''; sleep 0.25
-
-base_path = "#{File.expand_path File.dirname(__FILE__)}/includes"
-run 'mkdir -p app/assets/favicon'
-run "cp #{base_path}/app/assets/favicon/favicon_base.png app/assets/favicon/favicon_base.png"
-
-git add:    '-A'
-git commit: "-m 'Add default 256x256 favicon'"
+log_task 'Remove unused files from git'
+git add: '-u'
+git_commit 'Remove unused files'
