@@ -51,7 +51,7 @@ module Orats
 
       def nuke_data
         valid_rails_directories.each do |directory|
-          log_task 'Removing postgres databases'
+          log_task 'Remove postgres databases'
           run_from directory, 'bundle exec rake db:drop:all'
 
           nuke_redis File.basename(directory)
@@ -59,7 +59,7 @@ module Orats
       end
 
       def nuke_redis(namespace)
-        log_task 'Removing redis keys'
+        log_task 'Remove redis keys'
 
         while not_able_to_nuke_redis?(@options[:redis_password], namespace)
           log_status_top 'error', "The redis password you supplied was incorrect\n", :red
@@ -78,7 +78,7 @@ module Orats
       end
 
       def nuke_directory
-        log_task 'Deleting directory'
+        log_task 'Delete directory'
         run "rm -rf #{@active_path}"
       end
     end
