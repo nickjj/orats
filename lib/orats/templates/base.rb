@@ -621,7 +621,7 @@ namespace :orats do
       unless File.exist?(favicon_base_path)
         puts
         puts 'A base favicon could not be found, make sure one exists at:'
-        puts base_favicon
+        puts favicon_base_path
         puts
         exit 1
       end
@@ -648,7 +648,7 @@ namespace :orats do
       end
 
       each_icon do |filepath|
-        puts "Creating favicon for: #{File.basename filepath}"
+        puts "Creating favicon @ #{filepath}"
       end
     end
   end
