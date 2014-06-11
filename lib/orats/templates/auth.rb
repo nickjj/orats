@@ -156,7 +156,7 @@ end
 def update_routes
   log_task __method__
 
-  gsub_file 'config/routes.rb', "\nmount Sidekiq::Web => '/sidekiq'\n", ''
+  gsub_file 'config/routes.rb', "mount Sidekiq::Web => '/sidekiq'\n", ''
   inject_into_file 'config/routes.rb', after: "collection\n  end\n" do <<-S
 
   # disable users from being able to register by uncommenting the lines below
