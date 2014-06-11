@@ -35,7 +35,7 @@ pessimistic operator `~>` to ensure your installation works over time as long as
         - [FAQ](#play-faq)
             - [Provisioning a server?](#how-do-i-provision-a-server)
 - [Wiki](https://github.com/nickjj/orats/wiki)
-    - [Create a project and provision a server](#create-a-project-and-provision-a-server)
+    - [Create a project and provision a server](https://github.com/nickjj/orats/wiki/Create-a-project-and-provision-a-server)
 
 ## System dependencies
 
