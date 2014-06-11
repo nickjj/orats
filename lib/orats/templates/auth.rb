@@ -751,8 +751,8 @@ def add_devise_views
   git_commit 'Add devise views'
 end
 
-def add_authentication_links_to_the_navbar
-  log_task add_authentication_links_to_the_navbar
+def add_auth_links_to_the_navbar
+  log_task __method__
 
   file 'app/views/layouts/_navigation_auth.html.erb', <<-S
 <% if current_account %>
@@ -819,5 +819,5 @@ add_account_unit_tests
 add_current_user_alias
 add_devise_controller_override
 add_devise_views
-add_authentication_links_to_the_navbar
+add_auth_links_to_the_navbar
 remove_unused_files_from_git
