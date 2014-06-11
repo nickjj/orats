@@ -4,250 +4,314 @@
 
 It stands for opinionated rails application templates. The templates include solving tedious tasks that you would do for most
 projects. It handles creating a rails application with a bunch of opinions and optionally an ansible playbook so you can
-deploy your apps quickly.
-
-You can also optionally include custom rails templates to append to any template you create with orats.
-
-Everything is accessed through the [orats gem](#installation).
+and provision your servers and deploy your apps effortlessly.
 
 ## What version of Rails and Ruby are you targeting?
 
 #### Rails 4.1.x and Ruby 2.1.x
 
-I will be updating them as new versions come out and when the gems used are proven to work. All important gems in the Gemfile
-are locked using the pessimistic operator `~>` so you can be sure that everything plays nice as long as rubygems.org is up!
-
-## System dependencies that must be on your dev box
-
-- [The orats gem](#installation)
-    - To download each rails template and automate running certain tasks.
-- Ruby 2.1.x
-    - Yep, you really need Ruby to run Ruby modules.
-- Rails 4.1.x
-    - You need Rails installed so that you can run the project generator.
-- Git
-    - The weapon of choice for version control.
-- Postgres
-    - All of the templates use postgres as a primary persistent database.
-- Redis
-    - Used as a sidekiq background worker and as the rails cache back end.
-
-### Additional system dependencies for ansible
-
-`orats` is smart enough to skip trying to create ansible related files if it cannot find the necessary dependencies to successfully
-use them. To successfully create ansible content you must fulfill the requirements below:
-
-- Ansible is installed and setup in such a way that `ansible` is on your system path.
+Gems will also be updated once they are proven to work on the target rails/ruby versions. The gems are locked using the
+pessimistic operator `~>` to ensure your installation works over time as long as rubygems.org's API is working.
 
 ## Contents
-
-- orats
-    - [Installation](#installation)
-    - [Commands](#commands)
-- Templates
+- [System dependencies](#system-dependencies)
+- [Installation](#installation)
+- [Commands](#commands)
+- [Templates](#templates)
     - [Base](#base)
-    - [Authentication and authorization](#authentication-and-authorization)
-    - [Playbook](#playbook)
-        - [Overview](#the-playbook-comes-with-the-following-features)
-- Sections
-    - [Production tweaks](#production-tweaks)
+        - [Try it](#try-the-base-template)
+        - [FAQ](#base-faq)
+            - [What's with the directory structure?](#whats-with-the-directory-structure)
+            - [Development configuration?](#base-what-do-i-need-to-configure-for-development)
+            - [Production configuration?](#base-what-do-i-need-to-configure-for-production)
+    - [Auth](#auth)
+        - [Try it](#try-the-auth-template)
+        - [FAQ](#auth-faq)
+            - [Development configuration?](#auth-what-do-i-need-to-configure-for-development)
+            - [Production configuration?](#auth-what-do-i-need-to-configure-for-production)
+    - [Play](#play)
+        - [Try it](#try-the-play-template)
 
-## orats
+## System dependencies
 
-### Installation
+Before running orats...
+
+#### You **must** install
+
+- [Git](http://git-scm.com/book/en/Getting-Started-Installing-Git)
+- [Postgres](https://wiki.postgresql.org/wiki/Detailed_installation_guides)
+- [Redis](http://redis.io/topics/quickstart)
+- Ruby 2.1.x - [chruby](https://github.com/postmodern/chruby) | [rbenv](https://github.com/sstephenson/rbenv) | [rvm](https://rvm.io/)
+- Rails 4.1.x - `gem install rails -v '~> 4.1.1'`
+
+#### You **should** install
+
+- [Ansible](http://docs.ansible.com/intro_installation.html)
+    - If you plan to use the ansible features (optional)
+- [Imagemagick](https://www.google.com/search?q=install+imagemagick)
+    - If you want favicons to be automatically created (optional)
+    
+#### You **need** these processes to be running
+
+- Postgres
+- Redis
+
+## Installation
 
 `gem install orats`
 
-### Commands
+Or if you already have orats then run `gem update orats` to upgrade to the latest version.
 
-Here is an overview of the available commands. You can find out more information about each command and flag by simply
-running `orats <command name> help` from your terminal. You can also type `orats` on its own to see a list of all commands.
+## Commands
 
-- Create a new orats project
-    - `orats new <TARGET_PATH> --pg-password <development postgres db password>`
+Here is an overview of the available commands. You can find out more information about each command and flag by running 
+`orats help <command name>` from your terminal. You can also type `orats` on its own to see a list of all commands.
+
+- **Create a new orats project**
+    - `orats new <TARGET_PATH> --pg-password=foo`
     - Configuration:
         - Optionally takes: `--pg-location [localhost]`
         - Optionally takes: `--pg-username [postgres]`
         - Optionally takes: `--redis-location [localhost]`
         - Optionally takes: `--redis-password []`
-    - Template features:
+    - Template:
         - Optionally takes: `--auth [false]`
         - Optionally takes: `--template []`
-    - Project features:
+    - Project:
         - Optionally takes: `--skip-extras [false]`
         - Optionally takes: `--skip-server-start [false]`
-    - Ansible features:
+    - Ansible:
         - Optionally takes: `--sudo-password []`
         - Optionally takes: `--skip-galaxy [false]`
 
-- Create an ansible playbook
+- **Create an ansible playbook**
     - `orats play <TARGET_PATH>`
-    - Template features:
+    - Template:
         - Optionally takes: `--template []`
 
-- Delete the directory and optionally all data associated to it
+- **Delete a directory and optionally all data associated to it**
     - `orats nuke <TARGET_PATH>`
     - Optionally takes: `--skip-data [false]`
 
-- Detect whether or not orats, the playbook or inventory is outdated
+- **Detect whether or not orats, the playbook or inventory is outdated**
     - `orats outdated [options]`
     - Optionally takes: `--playbook []`
     - Optionally takes: `--inventory []`
 
-#### Why is it asking me for my development postgres password?
+## Templates
 
-In order to automate certain tasks such as running database migrations the script must be able to talk to your database.
-It cannot talk to your database without knowing the location, username and password for postgres. In most cases the
-location will be `localhost` and the username will be `postgres` so these values are provided by default.
-
-Remember, this is only your development postgres password. It will **never** ask for your production passwords.
-
-#### Is the outdated detection guaranteed to be accurate?
-
-The version comparisons can be fully trusted but when comparing a specific playbook or inventory file it's not really
-possible to guarantee a valid comparison.
-
-When passing in `--playbook` or `--inventory` it will look for certain keywords in the file. If it finds the
-keyword then it will assume that keyword is working and up to date. Since you can edit these files freely there may be
-cases where it reports a false positive.
-
-It's better than nothing and it also doubles as an upgrade guide too if you wanted to add in new role lines to your
-playbook file or paste in a few new variables in your inventory that exist in a newer version of orats that you planned
-to update.
-
-It will detect missing, outdated and extra keywords between your version of orats, your user generated files and the
-latest version on github. Execute `orats help outdated` if you get confused.
-
-## Base
+### Base
 
 This is the starter template that every other template will append to. I feel like when I make a new project, 95% of the time
 it includes these features and when I do not want a specific thing it is much quicker to remove it than add it.
 
-### Features that are included in the base template
+#### Changes vs the standard rails installation
 
-- Add a few popular OS and editor files to the .gitignore file.
-- Create development, staging and production environments.
-- Use environment variables for things that are likely to change per environment.
-- Use environment variables for anything that is sensitive and should not be included into version control.
-- Add environment variables for google analytics UI, disqus short name and S3 in addition to a bunch of typical rails values.
-- Use redis as the cache backend.
-- Use sidekiq as a background worker.
-- Use puma as the server with settings capable of doing phased restarts.
-- Use foreman in development mode to manage starting both the rails server using puma and sidekiq.
-- Add a rake task to handle backups using the `backup` gem.
-- Set the production asset precompiler to include fonts and png files.
-- Set the production logger to rotate the logs daily.
-- Set the timezone to EST.
-- Change how validation errors are reported by having them be displayed inline for each element.
-- Dry out the `database.yml` and use postgres.
-- Setup a sitemap that updates itself once a day using a cronjob managed through the `whenever` gem.
-- Add a route level concern for pagination and use kaminari for pagination.
-- Add a rake task which generates favicons for every popular device and a view helper to include them in your layout.
-- Add 2 view helpers, `humanize_boolean` and `css_for_boolean` to nicely output true/false values and they can be changed easily.
-- Add 3 view helpers to easily set a page's title, meta description and page heading. All of which are optional.
-- Bootstrap ~3 layout file with conditionally loaded `html5shiv`, `json3` and `respondjs` libs for IE < 9 support.
-- Separate the navigation, navigation links, flash messages and footer partials.
-- Add partials for both google analytics and disqus.
-- Public 404, 422, 500 and 502 pages so they can be served directly from your web server.
-- Use sass and coffeescript.
-- jquery 1.10.x loaded through a CDN.
-- Use bootstrap ~3 and font awesome using the standard community gems.
-- Rack mini profiler, bullet and meta_request support for development mode profiling and analysis.
+All of the changes have git commits to go with them. After generating a project you can type `git reflog` to get a
+list of changes.
 
-Everything has been added with proper git commits so you have a trail of changes.
+- **Core changes**:
+    - Use `postgres` as the primary SQL database
+    - Use `redis` as the cache backend
+    - Use `puma` as the web server
+    - Use `sidekiq` as a background worker
+- **Features**:
+    - Configure scheduled jobs and tasks using `whenever`
+    - Pagination and a route concern mapped to `/page` using `kaminari`
+    - Keep a sitemap up to date using `sitemap_generator`
+- **Rake tasks**:
+    - Daily backups using `backup` and `whenever`
+    - Generate favicons for many devices based off a single source png
+- **Config**:
+    - Extract a bunch of configuration to environment variables
+    - Rewrite the database.yml and secrets.yml files to be more dry
+    - Add a staging environment
+    - **Development mode only**:
+        - Use the `dotenv` gem to manage environment variables
+        - Use `foreman` to manage the app's processes
+        - Use `bullet`, `rack mini profiler` and `meta_request` for profiling/analysis
+    - **Production mode only**:
+        - Setup log rotation
+        - Add popular file types to the assets precompile list
+    - Change validation errors to output inline on each element instead of a big list
+- **Helpers**:
+    - `title`, `meta_description`, `heading` to easily set those values per view
+    - `humanize_boolean` to convert true/false into Yes/No
+    - `css_for_boolean` to convert true/false into a css class success/danger
+- **Views**:
+    - Use `sass` and `coffeescript`
+    - Use `bootstrap 3.x` and `font-awesome`
+    - Add a minimal and modern layout file
+    - Load `jquery` 1.10.x through a CDN
+    - Conditionally load `html5shiv`, `json3` and `respondjs` for IE < 9 support
+    - **Partials**:
+        - Add navigation and navigation links
+        - Add flash message
+        - Add footer
+        - Add google analytics
+        - Add disqus
+- **Public**:
+    - Add 404, 422, 500 and 502 pages so they can be served directly from your reverse proxy
+    - Add all of the favicons output by the favicon generator
 
-### Try it
+#### Try the base template
 
-`orats new myapp --pg-password <development postgres db password>`
+`orats new myapp --pg-password=foo --skip-galaxy`
 
-Towards the end of the run you might get prompted for a sudo password if you have not skipped installing the ansible
-roles from the galaxy. It will only try to use sudo if it fails with a permission error first.
+##### What is `--pg-password`?
 
-You can also provide a `--sudo-password=foo` flag to set your password so orats can finish without any user input.
+Orats will automatically start your server (you can turn this off with a flag) and also run database migrations or
+generators depending on what you're doing.
 
-#### What's with the services directory?
+In order to do this it must know your postgres location, username and password. By default it will use localhost for the
+*location* and *postgres* as the username but if you need to supply those values because yours are different you can use
+`--pg-location=foo` and `--pg-username=bar`.
 
-It is just a naming convention that I like to apply, you can name it whatever you want later or remove it with a flag. My thought
-process was you might have multiple services which when put together create your web application. In many cases your web
-application might just be a single rails app, but maybe not.
+##### What is `--skip-galaxy`?
 
-What if you introduced a Go service to do something which your rails application talks to for a certain area of your site?
-Perhaps you have 2 rails applications too. One of them for your admin app and the other for the public facing app.
+By default the new command will generate ansible related files for you so that you can manage this app's "inventory". It
+also automatically downloads the ansible roles from the [ansible galaxy](https://galaxy.ansible.com/).
 
-Long story short the extra directory is probably worth it in the long run and it's simple to remove if you don't like it.
+This was done to ensure each app you create has the correct ansible role version to go with it. However, if you installed
+ansible through apt or somewhere outside of your home directory then you will get permissions errors when it tries to
+download the roles.
 
-### All I see is the default rails page
+You can fix this by supplying `--sudo-password=foo` to the above command if you know ansible is installed outside of your
+home directory or you can just wait while the command runs and it will prompt you for your sudo password when it gets
+to that point because orats will attempt to use sudo only after it fails trying to install the roles without sudo.
 
-Yes, this has been done by choice. I have no idea what your rails project is supposed to do. Rather than write in a million
-questions into the template generator it expects you to dive in and start implementing your shiny new rails application.
+If you don't care about the ansible stuff at all you could always add `--skip-extras` to not generate any ansible files.
 
-### Production tweaks
+##### Does your redis server use a password?
 
-There are a few settings you need to be aware of for when you deploy your application into production. You also need to be
-aware that the `.env` file is not loaded in production, in fact it is not even sent to your server because it is in .gitignore.
+If your redis server is configured to use a password then you must also pass in `--redis-password=foo`.
 
-You can use the `.env` file as a guide so you know which values you need to write out as true ENV variables on your server
-using whatever server provisioning tools you use.
+#### Base FAQ
 
-#### Project path
+##### What's with the directory structure?
 
-Make sure you have the project path set properly on your server. It is used by both puma and sidekiq to determine where
-they should write out their pid, socket and log files. If this is not set correctly then you will not be able to start
-your application properly in non-development mode.
+Let's say you were to generate a new project at *~/tmp/myapp*, then you would get the following paths:
 
-#### Puma
+```
+~/tmp/myapp/inventory
+~/tmp/myapp/secrets
+~/tmp/myapp/services
+```
 
-You should set your puma min/max threads to 0 and 16 and use at least 2 workers if you want to do phased restarts. From
-there you can load test your deploy and tinker as necessary.
+The **inventory** path contains the ansible inventory files for this project. This would be where your host addresses go
+along with configuration settings for this project.
 
-In production mode it is expected that you will be placing your rails app behind a web server such as nginx or apache. If
-you do not do this then you must open `config/puma.rb` and check out the `RAILS_ENV` conditional because by default it will
-not listen on a port in production. Instead it will use a unix socket.
+The **secrets** path contains the passwords for various things as well as ssh keypairs and ssl certificates. This path
+should be kept out of version control. You could also go 1 extra step and encrypt this directory locally.
 
-#### Sidekiq
+The **services** path contains your rails application. I like to call it services because you might have multiple services
+in 1 project.
 
-Sidekiq's concurrency value is 25 by default, again experiment with what works best for you because there is no reasonable
-default magic value that works for everyone.
+If you run the command with `--skip-extras` you will not get the inventory, secrets or services directory. It will just
+generate `myapp` at the path you specify.
 
-#### Postgres
+<a name="base-what-do-i-need-to-configure-for-development"></a>
+##### What do I need to configure for development?
 
-You should set the pool size to be the maximum between your puma max threads and sidekiq concurrency value but it does not
-have to be exact. Feel free to experiment.
+Pretty much everything is contained within environment variables. They are stored in the `.env` file located in the root
+directory of the rails application. It should be self explanatory. This file was also added to `.gitignore`.
 
-## Authentication and authorization
+<a name="base-what-do-i-need-to-configure-for-production"></a>
+##### What do I need to configure for production?
 
-Authentication is extremely common but the use cases of authentication vary by a lot. You might want 3 user profile
-models that have foreign keys back to a devise model while someone else might only want to add 1 field directly on the devise model.
-The authentication template was designed just to give you enough to get the ball rolling on your upcoming project.
+If you are using ansible then you should open `inventory/group_vars/all.yml` and take a peek. Everything there has
+comments. Assuming you have everything hosted on 1 server then at minimum you will only need to change 
+`rails_deploy_git_url` to get going.
 
-### Additional features added to the base template
+The above variable is the repo where your code is contained. Ansible will clone that repo in an idempotent way.
 
-- Devise for authentication.
-- Devise async so that all of devise's e-mails are sent using sidekiq.
-- Pundit for authorization. It seems to be gaining popularity over CanCan since ryan is MIA?
-- Sensible defaults for the devise initializer file by placing all of the secrets into the `.env` file.
-- Enable session timeouts and unlock strategies in the devise initializer.
-- Bootstrap flavored view templates.
-- A devise model called `Account` which contains a standard devise model with a `role` field added.
-- `admin` and `guest` roles have been added to the `Account` model and the guest role is the default at the database level.
-- An `.is?` method to determine if an account's role is equal to the role you pass in.
-- The `Account` model has been enhanced to cache the `current_account` in redis so you do not have to perform a db lookup on every request.
-- A basic pundit application policy has been generated.
-- Alias `current_account` to `current_user` so that pundit and other potential gems will work as intended.
-- Create a seed account in `db/seeds.rb` which acts as an admin, you should change these details asap.
-- Toggle whether or not users can publicly register on the site and/or delete their account very easily.
-- Expose a `/sidekiq` end-point which requires an admin account to access so you can view the queue details.
+You will also need to put the correct server IP(s) in `/inventory/hosts`. At this point that's all you need to change to 
+successfully provision a server. 
 
-### Preventing users from being able to register
+There are many other variables that you would likely change too such as adding your google analytics UA, S3 keys and
+all of the mail settings.
 
-You can disable users from registering by taking a look at `config/routes.rb` and inspecting the comments near the top.
-I feel like this is the cleanest way to disable registrations while still allowing users to edit and/or delete their account.
+You may also want to tinker with the following values for performance reasons based on the power of your server(s).
 
-### Try it
+```
+  DATABASE_POOL: 25
 
-`orats new myauthapp --pg-password <development postgres db password> --auth`
+  PUMA_THREADS_MIN: 0
+  PUMA_THREADS_MAX: 16
 
-## Playbook
+  # ensure there are always at least 2 workers so puma can properly do phased restarts
+  PUMA_WORKERS: "{{ ansible_processor_cores if ansible_processor_cores > 1 else 2 }}"
+
+  SIDEKIQ_CONCURRENCY: 25
+```
+
+### Auth
+
+This is the auth template which gets merged into the base template. It contains a basic authentication setup using
+devise and pundit.
+
+#### Changes vs the base template
+
+All of the changes have git commits to go with them. After generating a project you can type `git reflog` to get a
+list of changes.
+
+- **Core**:
+    - Handle authentication with `devise`
+    - Handle devise e-mails with `devise-async`
+    - Handle authorization with `pundit`
+    - Add `app/policies` with a basic pundit policy included
+- **Config**:
+    - Add devise related environment variables
+    - Set the session timeout to 2 hours
+    - Expire the auth token on timeout
+    - Enable account locking based on failed attempts (7 tries)
+    - Allow unlocking by e-mail or after 2 hours
+    - Inform users of their last login attempt when failing to login
+    - Add en-locale strings for authorization messages
+    - Add devise queue to the sidekiq config
+    - Add pundit related code to the application controller
+- **Routes**:
+    - Protect the `/sidekiq` end point so only logged in admins can see it
+    - Enable/Disable users from publicly registering by commenting out a few lines
+- **Database**:
+    - Add a seed user that you should change the details of ASAP once you deploy
+- **Models**:
+    - Add `Account` devise model with an extra `role` field
+        - Add `admin` and `guest` roles
+        - Add `.is?` method to compare roles
+        - Add `generate_password` method
+        - Add a way to cache the `current_account`
+- **Controllers**:
+    - Alias `current_user` to `current_account`
+    - Allow you to override devise's default sign in URL by uncommenting a few lines
+- **Views**:
+    - Use bootstrap for all of the devise views
+    - Add authentication links to the navbar
+- **Tests**:
+    - Add `Account` fixtures
+    - Add model tests for `Account`
+
+#### Try the auth template
+
+`orats new myauthapp --auth --pg-password=foo --skip-galaxy`
+
+##### What do those flags do?
+
+You should read the [try the base template](#try-the-base-template) section to get an idea of what they do.
+
+#### Auth FAQ
+
+<a name="auth-what-do-i-need-to-configure-for-development"></a>
+##### What do I need to configure for development?
+
+You may want to change `ACTION_MAILER_DEVISE_DEFAULT_FROM` in `.env`.
+
+<a name="auth-what-do-i-need-to-configure-for-production"></a>
+##### What do I need to configure for production?
+
+You will want to change `ACTION_MAILER_DEVISE_DEFAULT_FROM` in `inventory/group_vars/all.yml`.
+
+### Play
 
 Building your application is only one piece of the puzzle. If you want to ship your application you have to host it somewhere.
 You have a few options when it comes to managed hosts like Heroku but they tend to be very expensive if you fall out of
@@ -256,27 +320,33 @@ their free tier.
 The playbook template creates an ansible playbook that will provision a **ubuntu 12.04 LTS server**. It can be hosted anywhere
 as there are no hard requirements on any specific host.
 
-### The playbook comes with the following features
+#### Server breakdown
 
-- Security
-    - Logging into the server is only possible with an SSH key.
-    - fail2ban is setup.
-    - ufw (firewall) is setup to block any ports not exposed by you.
-    - All stack specific processes are running with less privileges than root.
-- Stack specific processes that are installed and configured
-    - Nginx
+Everything is broken up into ansible roles so you can quickly scale out horizontally or by splitting up your server groups
+such that your database is on a separate server than your application.
+
+- **Security**:
+    - Logging into the server is only possible with an SSH key
+    - Root login is disable
+    - fail2ban is setup
+    - ufw (firewall) is setup to block any ports not exposed by you
+    - All stack specific processes are running with less privileges than root
+- **User**:
+    - A single deploy user is created
+- **Services and runtimes**:
     - Postgres
     - Redis
-- Runtimes
-    - Ruby 2.1.x managed via rvm
-    - Nodejs 0.10.x
-- Git
-    - Pull in app code from a remote repo of your choice.
-- Monit and init.d
-    - Both the app and sidekiq have init.d scripts and are actively monitored by monit
+    - NodeJS
+    - Ruby
+- **Process management**:
+    - Your rails app and sidekiq have `init.d` scripts
+    - Your rails app and sidekiq are monitored using `monit`
 
-All of this is provided by a series of ansible roles. You may also use these roles without orats. If you want to
-check out each role then here's a link to their repos:
+#### Try the play template
+
+`orats play myplaybook`
+
+#### Ansible roles used
 
 - `nickjj.user` https://github.com/nickjj/ansible-user
 - `nickjj.security` https://github.com/nickjj/ansible-security
@@ -291,28 +361,4 @@ check out each role then here's a link to their repos:
 - `nickjj.nginx` https://github.com/nickjj/ansible-nginx
 - `DavidWittman.redis` https://github.com/DavidWittman/ansible-redis
 
-All of the above roles will get installed and updated whenever you generate a `new` orats application.
-
-### Try it
-
-`orats play myrailsapp`
-
-Ansible is very powerful and flexible when it comes to managing infrastructure. If most of your rails apps have a similar stack
-then you can use a single playbook to run all of your apps. You can customize the details for each one by adjusting the inventory
-that gets generated for each app.
-
-### The `inventory` and `secrets` directories
-
-When you create a new orats app you'll get both of these directories added for you automatically unless you `--skip-extras`.
-
-**The inventory directory** contains the files to setup your host addresses as well as configure your application using
-the parameters exposed by the various ansible roles.
-
-**The secrets directory** holds all of the passwords and sensitive information such as ssh keypairs or ssl certificates. They
-are not added to version control and these files will be copied to your server when you run the playbook.
-
-#### First things first
-
-Once you have an app generated make sure you check out the `inventory/group_vars/all.yml` file. You will want to make all
-of your configuration changes there. After that is up to you. If you want to learn more about ansible then check out the
-[getting started with ansible guide](http://docs.ansible.com/intro_getting_started.html).
+All of the above roles will get installed and updated whenever you generate a new orats project.
