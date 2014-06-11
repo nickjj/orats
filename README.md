@@ -34,7 +34,7 @@ pessimistic operator `~>` to ensure your installation works over time as long as
         - [Ansible roles](#ansible-roles-used)
 - [Wiki](https://github.com/nickjj/orats/wiki)
     - [What to look at after making a new project](https://github.com/nickjj/orats/wiki/What-to-look-at-after-making-a-new-project)
-    - [Create a project and provision a server](https://github.com/nickjj/orats/wiki/Create-a-project-and-provision-a-server)
+    - [Get your application on a server](https://github.com/nickjj/orats/wiki/Get-your-application-on-a-server)
 
 ## System dependencies
 
