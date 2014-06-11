@@ -30,6 +30,7 @@ module Orats
             spring_binstub
 
             create_and_migrate_database
+            generate_home_page
             run_rake 'orats:favicons'
           end
 

@@ -75,6 +75,96 @@ module Orats
           run_from @active_path, "bundle exec rake #{command}"
         end
 
+        def generate_home_page
+          log_task 'Add pages controller with static page'
+          run_from @active_path, 'bundle exec rails g controller Pages home'
+
+          gsub_file "#{@active_path}/config/routes.rb", "  # root 'welcome#index'" do <<-S
+  root 'pages#home'
+          S
+          end
+          gsub_file "#{@active_path}/config/routes.rb", "  get 'pages/home'\n\n", ''
+
+          gsub_file "#{@active_path}/test/controllers/pages_controller_test.rb",
+                    '"should get home"', "'expect home page'"
+          gsub_file "#{@active_path}/app/views/pages/home.html.erb", /.*\n/, ''
+          append_file "#{@active_path}/app/views/pages/home.html.erb" do <<-S
+<%
+  title 'Welcome to Ruby on Rails'
+  meta_description '...'
+  heading 'Welcome to Ruby on Rails'
+%>
+
+<div class="row">
+  <div class="col-sm-9">
+    <p class="lead">
+      You have successfully generated a project with <%= link_to 'orats', 'https://github.com/nickjj/orats' %> v#{VERSION}.
+    </p>
+
+    <hr />
+
+    <p>
+      <%= image_tag 'https://badge.fury.io/rb/orats.png', alt: 'Gem badge' %> is the latest version of orats.
+    </p>
+
+    <hr />
+
+    <h3>Custom rake tasks</h3>
+    <pre>
+      <code>
+      # backup the database to S3 or any other location
+      bundle exec rake orats:backup
+
+      # generate a new set of favicons to the public directory
+      bundle exec rake orats:favicons
+      </code>
+    </pre>
+
+    <hr />
+
+    <h3>Trying to figure out what to do next?</h3>
+    <p>
+      Visit the wiki guide for <%= link_to 'what to look at after making a new project', 'https://github.com/nickjj/orats/wiki/What-to-look-at-after-making-a-new-project' %>.
+    </p>
+
+    <hr />
+
+    <h3>Looking to deploy your application?</h3>
+    <p>
+      Visit the wiki guide for <%= link_to 'get your application on a server ', 'https://github.com/nickjj/orats/wiki/Get-your-application-on-a-server' %>.
+    </p>
+
+    <hr />
+
+    <h3>Want to get rid of the pages controller?</h3>
+    <p>
+      No problem, just follow these steps:
+      <ul>
+        <li>
+          Run <code>bundle exec rails d controller Pages</code>
+        </li>
+        <li>
+          Remove the root route from <code>config/routes.rb</code>
+        </li>
+        <li>
+          Remove the link in the navigation partial at <code>app/views/layouts/_navigation_links.html.erb</code>
+        </li>
+        <li>
+          Restart the server
+        </li>
+      </ul>
+    </p>
+  </div>
+
+  <div class="col-sm-3">
+    <%= image_tag '/apple-touch-icon-228x228-precomposed.png', size: '228x228', alt: 'A ruby image I found on Google' %>
+  </div>
+</div>
+          S
+          end
+          git_commit 'Add pages controller with home page'
+        end
+
         def create_and_migrate_database
           run_rake 'db:create:all db:migrate'
           git_commit 'Add the database schema file'

@@ -33,6 +33,7 @@ pessimistic operator `~>` to ensure your installation works over time as long as
         - [Try it](#try-the-play-template)
         - [Ansible roles](#ansible-roles-used)
 - [Wiki](https://github.com/nickjj/orats/wiki)
+    - [What to look at after making a new project](https://github.com/nickjj/orats/wiki/What-to-look-at-after-making-a-new-project)
     - [Create a project and provision a server](https://github.com/nickjj/orats/wiki/Create-a-project-and-provision-a-server)
 
 ## System dependencies
@@ -122,6 +123,7 @@ list of changes.
     - Configure scheduled jobs and tasks using `whenever`
     - Pagination and a route concern mapped to `/page` using `kaminari`
     - Keep a sitemap up to date using `sitemap_generator`
+    - Add a `pages` controller with `home` action that has points of interest
 - **Rake tasks**:
     - Daily backups using `backup` and `whenever`
     - Generate favicons for many devices based off a single source png
