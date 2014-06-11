@@ -1037,22 +1037,21 @@ def update_sass
 @import "bootstrap/responsive-utilities";
 
 .alert-notice {
-@extend .alert-success;
+  @extend .alert-success;
 }
 
 .alert-alert {
-@extend .alert-danger;
+  @extend .alert-danger;
 }
 
 img {
-@extend .img-responsive;
-margin: 0 auto;
+  @extend .img-responsive;
 }
 
 .validation-error {
-margin-top: 2px;
-color: $brand-danger;
-font-size: $font-size-small;
+  margin-top: 2px;
+  color: $brand-danger;
+  font-size: $font-size-small;
 }
   S
   end
@@ -1076,10 +1075,10 @@ def update_coffeescript
 //= require bootstrap/collapse
 //= require bootstrap/dropdown
 //= require bootstrap/modal
+//= require bootstrap/tooltip
 //= require bootstrap/popover
 //= require bootstrap/scrollspy
 //= require bootstrap/tab
-//= require bootstrap/tooltip
 //= require bootstrap/transition
   S
   end
