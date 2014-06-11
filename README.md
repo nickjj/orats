@@ -3,7 +3,7 @@
 ## What is orats and what problem does it solve?
 
 It stands for opinionated rails application templates. The templates include solving tedious tasks that you would do for most
-projects. It handles creating a rails application with a bunch of opinions and optionally an ansible playbook so you can
+projects. It handles creating a rails application with a bunch of opinions and optionally an ansible inventory/playbook so you can
 and provision your servers and deploy your apps effortlessly.
 
 ## What version of Rails and Ruby are you targeting?
@@ -67,7 +67,7 @@ Or if you already have orats then run `gem update orats` to upgrade to the lates
 Here is an overview of the available commands. You can find out more information about each command and flag by running 
 `orats help <command name>` from your terminal. You can also type `orats` on its own to see a list of all commands.
 
-- **Create a new orats project**
+- **Create a new orats project**:
     - `orats new <TARGET_PATH> --pg-password=foo`
     - Configuration:
         - Optionally takes: `--pg-location [localhost]`
@@ -84,16 +84,16 @@ Here is an overview of the available commands. You can find out more information
         - Optionally takes: `--sudo-password []`
         - Optionally takes: `--skip-galaxy [false]`
 
-- **Create an ansible playbook**
+- **Create an ansible playbook**:
     - `orats play <TARGET_PATH>`
     - Template:
         - Optionally takes: `--template []`
 
-- **Delete a directory and optionally all data associated to it**
+- **Delete a directory and optionally all data associated to it**:
     - `orats nuke <TARGET_PATH>`
     - Optionally takes: `--skip-data [false]`
 
-- **Detect whether or not orats, the playbook or inventory is outdated**
+- **Detect whether or not orats, the playbook or inventory is outdated**:
     - `orats outdated [options]`
     - Optionally takes: `--playbook []`
     - Optionally takes: `--inventory []`
@@ -105,7 +105,7 @@ Here is an overview of the available commands. You can find out more information
 This is the starter template that every other template will append to. I feel like when I make a new project, 95% of the time
 it includes these features and when I do not want a specific thing it is much quicker to remove it than add it.
 
-#### Changes vs the standard rails installation
+#### Changes vs the standard rails project
 
 All of the changes have git commits to go with them. After generating a project you can type `git reflog` to get a
 list of changes.
@@ -180,7 +180,7 @@ You can fix this by supplying `--sudo-password=foo` to the above command if you 
 home directory or you can just wait while the command runs and it will prompt you for your sudo password when it gets
 to that point because orats will attempt to use sudo only after it fails trying to install the roles without sudo.
 
-If you don't care about the ansible stuff at all you could always add `--skip-extras` to not generate any ansible files.
+If you don't care about the ansible at all you could add `--skip-extras` to not generate any ansible files.
 
 ##### Does your redis server use a password?
 
@@ -214,7 +214,7 @@ generate `myapp` at the path you specify.
 ##### What do I need to configure for development?
 
 Pretty much everything is contained within environment variables. They are stored in the `.env` file located in the root
-directory of the rails application. It should be self explanatory. This file was also added to `.gitignore`.
+directory of the rails application. It should be self explanatory. This file is also added to `.gitignore`.
 
 <a name="base-what-do-i-need-to-configure-for-production"></a>
 ##### What do I need to configure for production?
@@ -225,13 +225,13 @@ comments. Assuming you have everything hosted on 1 server then at minimum you wi
 
 The above variable is the repo where your code is contained. Ansible will clone that repo in an idempotent way.
 
-You will also need to put the correct server IP(s) in `/inventory/hosts`. At this point that's all you need to change to 
+You will also need to put the correct server IP(s) in `inventory/hosts`. At this point that's all you need to change to 
 successfully provision a server. 
 
 There are many other variables that you would likely change too such as adding your google analytics UA, S3 keys and
 all of the mail settings.
 
-You may also want to tinker with the following values for performance reasons based on the power of your server(s).
+You may also want to tinker with the following values for performance reasons based on your server(s).
 
 ```
   DATABASE_POOL: 25
@@ -326,7 +326,7 @@ Everything is broken up into ansible roles so you can quickly scale out horizont
 such that your database is on a separate server than your application.
 
 - **Security**:
-    - Logging into the server is only possible with an SSH key
+    - Logging into the server is only possible with an ssh key
     - Root login is disable
     - fail2ban is setup
     - ufw (firewall) is setup to block any ports not exposed by you
