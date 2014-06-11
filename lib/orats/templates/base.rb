@@ -839,9 +839,6 @@ def add_layout_partials
 
   file 'app/views/layouts/_navigation_links.html.erb', <<-S
 <li>
-  <%= link_to 'About', about_path %>
-</li>
-<li>
   <%= link_to 'Sidekiq dashboard', '/sidekiq' %>
 </li>
   S
