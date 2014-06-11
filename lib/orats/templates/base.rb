@@ -408,15 +408,17 @@ def update_routes
   log_task __method__
 
   prepend_file 'config/routes.rb', "require 'sidekiq/web'\n\n"
-  git_commit 'Add the sidekiq web interface'
 
   inject_into_file 'config/routes.rb', after: "draw do\n" do <<-S
   concern :pageable do
     get 'page/:page', action: :index, on: :collection
   end
+
+  # you may want to protect this behind authentication
+  mount Sidekiq::Web => '/sidekiq'
   S
   end
-  git_commit 'Add a concern for pagination'
+  git_commit 'Add a concern for pagination and mount sidekiq'
 end
 
 def add_backup_lib
@@ -824,7 +826,7 @@ def add_layout_partials
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <%= link_to '#{app_name}', '#root_path_would_go_here', class: 'navbar-brand' %>
+      <%= link_to '#{app_name}', root_path, class: 'navbar-brand' %>
     </div>
     <div class="collapse navbar-collapse">
       <ul class="nav navbar-nav">
@@ -836,8 +838,11 @@ def add_layout_partials
   S
 
   file 'app/views/layouts/_navigation_links.html.erb', <<-S
-<li class="active">
-  <%= link_to 'Example link', '#' %>
+<li>
+  <%= link_to 'About', about_path %>
+</li>
+<li>
+  <%= link_to 'Sidekiq dashboard', '/sidekiq' %>
 </li>
   S
 

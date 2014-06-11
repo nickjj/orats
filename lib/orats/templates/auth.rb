@@ -156,6 +156,7 @@ end
 def update_routes
   log_task __method__
 
+  gsub_file 'config/routes.rb', "\nmount Sidekiq::Web => '/sidekiq'\n", ''
   inject_into_file 'config/routes.rb', after: "collection\n  end\n" do <<-S
 
   # disable users from being able to register by uncommenting the lines below
@@ -173,7 +174,7 @@ def update_routes
 
   S
   end
-  git_commit 'Add the devise route'
+  git_commit 'Add the devise route and protect sidekiq with authentication'
 end
 
 def add_en_locale_for_authorization
