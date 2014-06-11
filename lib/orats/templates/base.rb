@@ -780,26 +780,6 @@ def add_layout
     <div class="page-header">
       <h1><%= yield :heading %></h1>
     </div>
-    <h4>Using disqus</h4>
-    <p>Disqus related html and javascript will only be loaded when the short name is not empty.</p>
-    <ul>
-      <li>Set the <code>DISQUS_SHORT_NAME</code> env variable in <code>.env</code> and restart the server</li>
-      <li>
-        To output the main comments (place this where you want it):
-        <ul><li>&lt;%= render 'layouts/disqus_comments_snippet' %&gt;</li></ul>
-      </li>
-      <li>
-        <strong>(optional)</strong> The count snippet is already right before &lt;/body&gt;
-        <ul>
-          <li>
-            <strong>(optional)</strong> Append #disqus_thread to the href attribute in your links.<br />
-            This will tell Disqus which links to look up and return the comment count.<br />
-            For example: <a href="http://foo.com/bar.html#disqus_thread">Link</a>.
-          </li>
-        </ul>
-      </li>
-    </ul>
-
     <%= render 'layouts/flash' %>
     <%= yield %>
   </main>
