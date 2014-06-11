@@ -36,7 +36,7 @@ pessimistic operator `~>` to ensure your installation works over time as long as
 
 Before running orats...
 
-#### You **must** install
+#### You must install
 
 - [Git](http://git-scm.com/book/en/Getting-Started-Installing-Git)
 - [Postgres](https://wiki.postgresql.org/wiki/Detailed_installation_guides)
@@ -44,14 +44,14 @@ Before running orats...
 - Ruby 2.1.x - [chruby](https://github.com/postmodern/chruby) | [rbenv](https://github.com/sstephenson/rbenv) | [rvm](https://rvm.io/)
 - Rails 4.1.x - `gem install rails -v '~> 4.1.1'`
 
-#### You **should** install
+#### You should install
 
 - [Ansible](http://docs.ansible.com/intro_installation.html)
     - If you plan to use the ansible features (optional)
 - [Imagemagick](https://www.google.com/search?q=install+imagemagick)
     - If you want favicons to be automatically created (optional)
     
-#### You **need** these processes to be running
+#### You need these processes to be running
 
 - Postgres
 - Redis
