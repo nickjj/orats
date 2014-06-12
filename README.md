@@ -163,6 +163,8 @@ list of changes.
 
 `orats new myapp --pg-password=foo --skip-galaxy`
 
+#### Base FAQ
+
 ##### What is `--pg-password`?
 
 Orats will automatically start your server (you can turn this off with a flag) and also run database migrations or
@@ -190,8 +192,6 @@ If you don't care about the ansible at all you could add `--skip-extras` to not 
 ##### Does your redis server use a password?
 
 If your redis server is configured to use a password then you must also pass in `--redis-password=foo`.
-
-#### Base FAQ
 
 ##### What's with the directory structure?
 
@@ -300,11 +300,11 @@ list of changes.
 
 `orats new myauthapp --auth --pg-password=foo --skip-galaxy`
 
+#### Auth FAQ
+
 ##### What do those flags do?
 
 You should read the [try the base template](#try-the-base-template) section to get an idea of what they do.
-
-#### Auth FAQ
 
 <a name="auth-what-do-i-need-to-configure-for-development"></a>
 ##### What do I need to configure for development?
