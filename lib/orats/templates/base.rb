@@ -93,6 +93,8 @@ def add_dotenv
 RAILS_ENV: development
 
 PROJECT_PATH: /full/path/to/your/project
+TIME_ZONE: Eastern Time (US & Canada)
+DEFAULT_LOCALE: en
 
 GOOGLE_ANALYTICS_UA: ""
 DISQUS_SHORT_NAME: ""
@@ -196,11 +198,15 @@ def update_app_config
 
     redis_store_options[:password] = ENV['CACHE_PASSWORD'] if ENV['CACHE_PASSWORD'].present?
     config.cache_store = :redis_store, redis_store_options
+
+    # run `bundle exec rake time:zones:all` to get a complete list of valid time zone names
+    config.time_zone = ENV['TIME_ZONE'] unless ENV['TIME_ZONE'] == 'UTC'
+
+    # http://www.loc.gov/standards/iso639-2/php/English_list.php
+    config.i18n.default_locale = ENV['DEFAULT_LOCALE'] unless ENV['DEFAULT_LOCALE'] == 'en'
   S
   end
 
-  gsub_file 'config/application.rb',
-            "# config.time_zone = 'Central Time (US & Canada)'","config.time_zone = 'Eastern Time (US & Canada)'"
   append_file 'config/application.rb' do <<-'S'
 
 ActionView::Base.field_error_proc = Proc.new do |html_tag, instance|

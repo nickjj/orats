@@ -48,9 +48,11 @@ rails_deploy_migrate_master_host: "{{ groups['app'][0] }}"
 # edit this list to account for any variables your app needs
 rails_deploy_env:
   RAILS_ENV: production
+  SOURCE_ENV_PATH: "/etc/default/{{ rails_deploy_app_name }}"
 
   PROJECT_PATH: "{{ rails_deploy_path }}"
-  SOURCE_ENV_PATH: "/etc/default/{{ rails_deploy_app_name }}"
+  TIME_ZONE: Eastern Time (US & Canada)
+  DEFAULT_LOCALE: en
 
   GOOGLE_ANALYTICS_UA: ""
   DISQUS_SHORT_NAME: ""
