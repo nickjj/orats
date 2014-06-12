@@ -388,17 +388,17 @@ def update_production_environment
   log_task __method__
 
   inject_into_file 'config/environments/production.rb', after: "config.log_level = :info\n" do <<-'S'
-config.logger = Logger.new(config.paths['log'].first, 'daily')
+  config.logger = Logger.new(config.paths['log'].first, 'daily')
   S
   end
   git_commit 'Update the logger to rotate daily'
 
   inject_into_file 'config/environments/production.rb', after: "%w( search.js )\n" do <<-'S'
-config.assets.precompile << Proc.new { |path|
-  if path =~ /\.(eot|svg|ttf|woff|png)\z/
-    true
-  end
-}
+  config.assets.precompile << Proc.new { |path|
+    if path =~ /\.(eot|svg|ttf|woff|png)\z/
+      true
+    end
+  }
   S
   end
   git_commit 'Update the assets precompiler to include common file types'
