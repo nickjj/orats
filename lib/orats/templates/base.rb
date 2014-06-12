@@ -140,9 +140,9 @@ def add_procfile
   log_task __method__
 
   file 'Procfile' do <<-S
-web: puma -C config/puma.rb
+web: puma -C config/puma.rb | grep -v --line-buffered ' 304 -'
 worker: sidekiq -C config/sidekiq.yml
-log: tail -f log/development.log
+log: tail -f log/development.log | grep -xv --line-buffered '^[[:space:]]*' | grep -v --line-buffered '/assets/'
   S
   end
   git_commit 'Add a Procfile'
