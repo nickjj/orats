@@ -1,11 +1,9 @@
 ---
-# the user name used to make a connection to the server
-ansible_ssh_user: deploy
-
-# the user created on the system
-user_name: "{{ ansible_ssh_user }}"
-
+# -----------------------------------------------------------------------------
+# secrets
 # load all passwords from a local location outside of version control
+# -----------------------------------------------------------------------------
+
 # do not add a trailing slash to the path
 secrets_load_path: /home/yourname/dev/testproj/secrets
 
@@ -16,19 +14,54 @@ secrets_rails_token: "{{ lookup('password', secrets_load_path + '/rails_token') 
 secrets_devise_token: "{{ lookup('password', secrets_load_path + '/devise_token') }}"
 secrets_devise_pepper_token: "{{ lookup('password', secrets_load_path + '/devise_pepper_token') }}"
 
-# postgres login credentials
+# -----------------------------------------------------------------------------
+# ansible
+# -----------------------------------------------------------------------------
+# default values you can overwrite with documentation:
+# http://docs.ansible.com/intro_inventory.html#list-of-behavioral-inventory-parameters
+# -----------------------------------------------------------------------------
+
+ansible_ssh_user: deploy
+
+# -----------------------------------------------------------------------------
+# user
+# -----------------------------------------------------------------------------
+# default values you can overwrite with documentation:
+# https://github.com/nickjj/ansible-user/#role-variables
+# -----------------------------------------------------------------------------
+
+user_name: "{{ ansible_ssh_user }}"
+
+# -----------------------------------------------------------------------------
+# postgres
+# -----------------------------------------------------------------------------
+# default values you can overwrite with documentation:
+# https://github.com/nickjj/ansible-postgres/#role-variables
+# -----------------------------------------------------------------------------
+
 postgres_user: "{{ user_name }}"
 postgres_password: "{{ secrets_postgres_password }}"
 
-# redis configuration
+# -----------------------------------------------------------------------------
+# redis
+# -----------------------------------------------------------------------------
+# default values you can overwrite with documentation:
+# https://github.com/DavidWittman/ansible-redis/blob/master/defaults/main.yml
+# -----------------------------------------------------------------------------
+
 redis_bind: 0.0.0.0
 redis_port: 6379
-redis_version: 2.8.9
 redis_install_dir: /usr/local
 redis_dir: /usr/local/redis
 redis_password: "{{ secrets_redis_password }}"
 
-# rails application configuration
+# -----------------------------------------------------------------------------
+# rails
+# -----------------------------------------------------------------------------
+# default values you can overwrite with documentation:
+# https://github.com/nickjj/ansible-rails/#role-variables
+# -----------------------------------------------------------------------------
+
 rails_deploy_app_name: testproj
 rails_deploy_user: "{{ user_name }}"
 
@@ -36,16 +69,8 @@ rails_deploy_ssh_keypair_local_path: "{{ secrets_load_path }}"
 
 rails_deploy_git_url: "git@bitbucket.org:yourname/testproj.git"
 
-# you may have 1 or 100 app servers but you only want the migration
-# to be ran on a single app server. The server you specify as the
-# rails_deploy_migrate_master_host will be the server that the
-# migration gets ran on
-
-# the default value is the first server listed under your [app] group
 rails_deploy_migrate_master_host: "{{ groups['app'][0] }}"
 
-# environment variables for the rails application
-# edit this list to account for any variables your app needs
 rails_deploy_env:
   RAILS_ENV: production
   SOURCE_ENV_PATH: "/etc/default/{{ rails_deploy_app_name }}"
@@ -92,22 +117,53 @@ rails_deploy_env:
   PUMA_THREADS_MIN: 0
   PUMA_THREADS_MAX: 16
 
-  # ensure there are always at least 2 workers so puma can properly do phased restarts
   PUMA_WORKERS: "{{ ansible_processor_cores if ansible_processor_cores > 1 else 2 }}"
 
   SIDEKIQ_CONCURRENCY: 25
 
-# whenever configuration
+# -----------------------------------------------------------------------------
+# whenever
+# -----------------------------------------------------------------------------
+# default values you can overwrite with documentation:
+# https://github.com/nickjj/ansible-whenever/#role-variables
+# -----------------------------------------------------------------------------
+
 whenever_update: rails_deploy_app_name
 
-# nginx configuration
-nginx_base_domain: localhost
+# -----------------------------------------------------------------------------
+# pumacorn
+# -----------------------------------------------------------------------------
+# default values you can overwrite with documentation:
+# https://github.com/nickjj/ansible-pumacorn/#role-variables
+# -----------------------------------------------------------------------------
+
+# -----------------------------------------------------------------------------
+# sidekiq
+# -----------------------------------------------------------------------------
+# default values you can overwrite with documentation:
+# https://github.com/nickjj/ansible-sidekiq/#role-variables
+# -----------------------------------------------------------------------------
+
+# -----------------------------------------------------------------------------
+# nginx
+# -----------------------------------------------------------------------------
+# default values you can overwrite with documentation:
+# https://github.com/nickjj/ansible-nginx/#role-variables
+# -----------------------------------------------------------------------------
+
+nginx_base_domain: localhost # change this to yourdomain.com
 nginx_upstream_name: "{{ rails_deploy_app_name }}"
 nginx_upstream_server: unix://{{ rails_deploy_path }}/tmp/puma.sock
 nginx_root_path: "{{ rails_deploy_path }}/public"
 nginx_ssl_local_path: "{{ secrets_load_path }}"
 
-# monit configuration
+# -----------------------------------------------------------------------------
+# monit
+# -----------------------------------------------------------------------------
+# default values you can overwrite with documentation:
+# https://github.com/nickjj/ansible-monit/#role-variables
+# -----------------------------------------------------------------------------
+
 monit_process_list: |
   check process {{ rails_deploy_app_name }} with pidfile {{ rails_deploy_path }}/tmp/{{ pumacorn_server }}.pid
     start program = "/etc/init.d/{{ rails_deploy_app_name }} start"
