@@ -4,6 +4,7 @@ gem 'rails', '~> 4.1.1'
 gem 'turbolinks', '~> 2.2.2'
 gem 'jquery-rails', '~> 3.1.0'
 gem 'jquery-turbolinks', '~> 2.0.2'
+#gem 'jbuilder'
 
 gem 'bootstrap-sass', '~> 3.1.1'
 gem 'font-awesome-rails', '~> 4.1.0'
@@ -14,8 +15,6 @@ gem 'redis-rails', '~> 4.0.0'
 gem 'puma', '~> 2.8.2'
 gem 'sidekiq', '~> 3.1.2'
 gem 'sinatra', '>= 1.4.5', require: false
-
-#gem 'jbuilder'
 
 gem 'whenever', '~> 0.9.2', require: false
 gem 'backup', '~> 4.0.1', require: false
