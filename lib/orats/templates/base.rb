@@ -147,7 +147,20 @@ worker: sidekiq -C config/sidekiq.yml
 log: tail -f log/development.log | grep -xv --line-buffered '^[[:space:]]*' | grep -v --line-buffered '/assets/'
   S
   end
-  git_commit 'Add a Procfile'
+  git_commit 'Add Procfile'
+end
+
+def add_markdown_readme
+  log_task __method__
+
+  run 'rm README.rdoc'
+  file 'README.md' do <<-S
+## Project information
+
+This project was generated with [orats](https://github.com/nickjj/orats) vVERSION.
+  S
+  end
+  git_commit 'Add markdown readme'
 end
 
 def update_app_secrets
@@ -1103,6 +1116,7 @@ copy_gemfile
 copy_base_favicon
 add_dotenv
 add_procfile
+add_markdown_readme
 update_app_secrets
 update_app_config
 update_database_config

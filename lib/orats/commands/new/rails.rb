@@ -48,6 +48,13 @@ module Orats
           git_commit 'Update the project path'
         end
 
+        def gsub_readme
+          log_task 'Update the readme'
+          gsub_file "#{@active_path}/README.md", 'VERSION', VERSION
+
+          git_commit 'Update the version'
+        end
+
         def bundle_install
           log_task 'Run bundle install, this may take a while'
           run_from @active_path, 'bundle install'
