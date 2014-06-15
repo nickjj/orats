@@ -5,8 +5,8 @@ module Orats
 
       def log_task(message)
         puts
-        say_status  'task', "#{message}:", :yellow
-        puts        '-'*80, ''; sleep 0.25
+        say_status 'task', "#{message}:", :yellow
+        puts '-'*80, ''; sleep 0.25
       end
 
       def log_status_top(type, message, color)
@@ -26,7 +26,7 @@ module Orats
 
       def log_error(top_label, top_message, bottom_label, bottom_message, strip_newline = false)
         log_status_top top_label, "#{top_message}:", :red
-        log_status_bottom bottom_label, bottom_message , :yellow, strip_newline
+        log_status_bottom bottom_label, bottom_message, :yellow, strip_newline
         yield if block_given?
       end
 

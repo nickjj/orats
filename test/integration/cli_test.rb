@@ -19,7 +19,7 @@ class TestCLI < Minitest::Test
   end
 
   def test_new_app_with_auth
-    app_name = generate_app_name
+    app_name     = generate_app_name
     gemfile_path = "#{TEST_PATH}/#{app_name}/services/#{app_name}/Gemfile"
 
     out, err = capture_subprocess_io do
@@ -127,7 +127,7 @@ class TestCLI < Minitest::Test
   def kill_server(stdout_text)
     pid_lines = stdout_text.scan(/started with pid \d+/)
 
-    puma = pid_lines[0].split(' ').last
+    puma    = pid_lines[0].split(' ').last
     sidekiq = pid_lines[1].split(' ').last
 
     system "kill -9 #{puma} && kill -9 #{sidekiq}"

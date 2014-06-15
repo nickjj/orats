@@ -11,27 +11,27 @@ module Orats
       include Outdated::Parse
 
       RELATIVE_PATHS = {
-        galaxyfile: 'templates/includes/Galaxyfile',
-        hosts: 'templates/includes/inventory/hosts',
-        inventory: 'templates/includes/inventory/group_vars/all.yml',
-        playbook: 'templates/play.rb',
-        version: 'version.rb'
+          galaxyfile: 'templates/includes/Galaxyfile',
+          hosts:      'templates/includes/inventory/hosts',
+          inventory:  'templates/includes/inventory/group_vars/all.yml',
+          playbook:   'templates/play.rb',
+          version:    'version.rb'
       }
 
       attr_accessor :remote_gem_version, :remote_paths, :local_paths
 
       def initialize(target_path = '', options = {})
         @target_path = target_path
-        @options = options
+        @options     = options
         @active_path = @target_path
 
-        @local_paths = {}
+        @local_paths  = {}
         @remote_paths = {}
 
         build_common_paths
 
         self.destination_root = Dir.pwd
-        @behavior = :invoke
+        @behavior             = :invoke
       end
 
       private
@@ -50,10 +50,10 @@ module Orats
 
       def build_common_paths
         @remote_paths[:version] = select_branch 'master', RELATIVE_PATHS[:version]
-        @remote_gem_version = gem_version
+        @remote_gem_version     = gem_version
 
         RELATIVE_PATHS.each_pair do |key, value|
-          @local_paths[key] = "#{base_path}/#{value}"
+          @local_paths[key]  = "#{base_path}/#{value}"
           @remote_paths[key] = select_branch @remote_gem_version, value
         end
       end
@@ -91,13 +91,13 @@ module Orats
         case check_for
           when :not_found
             command = 'which'
-            phrase = 'on your system path'
+            phrase  = 'on your system path'
           when :not_running
             command = 'ps cax | grep'
-            phrase = 'running'
+            phrase  = 'running'
           else
             command = ''
-            phrase = ''
+            phrase  = ''
         end
 
         processes.each do |process|

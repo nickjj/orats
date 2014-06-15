@@ -14,12 +14,12 @@ module Orats
           super
 
           @remote_galaxyfile = galaxyfile url_to_string(@remote_paths[:galaxyfile])
-          @remote_inventory = inventory url_to_string(@remote_paths[:inventory])
-          @remote_playbook = playbook url_to_string(@remote_paths[:playbook])
+          @remote_inventory  = inventory url_to_string(@remote_paths[:inventory])
+          @remote_playbook   = playbook url_to_string(@remote_paths[:playbook])
 
           @local_galaxyfile = galaxyfile file_to_string(@local_paths[:galaxyfile])
-          @local_inventory = inventory file_to_string(@local_paths[:inventory])
-          @local_playbook = playbook file_to_string(@local_paths[:playbook])
+          @local_inventory  = inventory file_to_string(@local_paths[:inventory])
+          @local_playbook   = playbook file_to_string(@local_paths[:playbook])
         end
 
         def init

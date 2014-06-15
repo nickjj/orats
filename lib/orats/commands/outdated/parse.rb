@@ -45,7 +45,7 @@ module Orats
             role_parts = line.split('role:')
 
             # start at the actual role name
-            line = role_parts[1]
+            line       = role_parts[1]
 
             if line.include?(',')
               line = line.split(',').first

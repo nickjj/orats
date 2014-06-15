@@ -8,10 +8,10 @@ module Orats
         end
 
         def remote_to_local_galaxyfiles
-          galaxyfile_diff = @remote_galaxyfile - @local_galaxyfile
+          galaxyfile_diff            = @remote_galaxyfile - @local_galaxyfile
           local_galaxyfile_as_string = @local_galaxyfile.join
-          local_galaxyfile_roles = @local_galaxyfile.size
-          roles_diff_count = galaxyfile_diff.size
+          local_galaxyfile_roles     = @local_galaxyfile.size
+          roles_diff_count           = galaxyfile_diff.size
 
           log_status_top 'roles', "Compare this version of orats' roles to the latest version:", :green
 
@@ -21,13 +21,13 @@ module Orats
             log_status_bottom 'message', "There are #{roles_diff_count} differences", :yellow
 
             galaxyfile_diff.each do |line|
-              name = line.split(',').first
+              name   = line.split(',').first
               status = 'outdated'
-              color = :yellow
+              color  = :yellow
 
               unless local_galaxyfile_as_string.include?(name)
                 status = 'missing'
-                color = :red
+                color  = :red
               end
 
               log_status_bottom status, name, color, true
@@ -38,7 +38,7 @@ module Orats
         end
 
         def remote_to_local(label, keyword, remote, local)
-          item_diff = remote - local
+          item_diff       = remote - local
           item_diff_count = item_diff.size
 
           log_remote_info label, "Compare this version of orats' #{label} to the latest version",
@@ -63,7 +63,7 @@ module Orats
                          'path', flag_path
 
           missing_count = log_unmatched(local, user, 'missing', :red)
-          extra_count = log_unmatched(user, local, 'extra', :yellow)
+          extra_count   = log_unmatched(user, local, 'extra', :yellow)
 
           if missing_count > 0
             log_results "#{missing_count} #{keyword} are missing",

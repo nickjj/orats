@@ -53,6 +53,7 @@ module Orats
 
       `--skip-galaxy` skip automatically installing roles from the galaxy [false]
     D
+
     def new(target_path)
       Commands::New::Exec.new(target_path, options).init
     end
@@ -66,6 +67,7 @@ module Orats
 
       `--template` will let you supply a custom template, a url or file is ok but urls must start with http or https []
     D
+
     def play(target_path)
       Commands::Play.new(target_path, options).init
     end
@@ -82,6 +84,7 @@ module Orats
 
       `--redis-password` to supply your development redis password []
     D
+
     def nuke(target_path)
       Commands::Nuke.new(target_path, options).init
     end
@@ -104,6 +107,7 @@ module Orats
 
       `--inventory` to supply an inventory file for comparison []
     D
+
     def outdated
       Commands::Outdated::Exec.new(nil, options).init
     end
@@ -112,15 +116,17 @@ module Orats
     long_desc <<-D
       `orats version` will print the current version.
     D
+
     def version
       puts "Orats version #{VERSION}"
     end
+
     map %w(-v --version) => :version
 
     private
 
-      def invoked?
-        caller_locations(0).any? { |backtrace| backtrace.label == 'invoke' }
-      end
+    def invoked?
+      caller_locations(0).any? { |backtrace| backtrace.label == 'invoke' }
+    end
   end
 end

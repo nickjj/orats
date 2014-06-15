@@ -19,7 +19,7 @@ module Orats
           log_task 'Run custom rails template'
 
           @options[:template].include?('://') ? url_to_string(@options[:template])
-                                               : file_to_string(@options[:template])
+          : file_to_string(@options[:template])
 
           rails_template '', "--skip --template #{@options[:template]}"
         end
@@ -86,16 +86,18 @@ module Orats
           log_task 'Add pages controller with static page'
           run_from @active_path, 'bundle exec rails g controller Pages home'
 
-          gsub_file "#{@active_path}/config/routes.rb", "  # root 'welcome#index'" do <<-S
+          gsub_file "#{@active_path}/config/routes.rb", "  # root 'welcome#index'" do
+            <<-S
   root 'pages#home'
-          S
+            S
           end
           gsub_file "#{@active_path}/config/routes.rb", "  get 'pages/home'\n\n", ''
 
           gsub_file "#{@active_path}/test/controllers/pages_controller_test.rb",
                     '"should get home"', "'expect home page'"
           gsub_file "#{@active_path}/app/views/pages/home.html.erb", /.*\n/, ''
-          append_file "#{@active_path}/app/views/pages/home.html.erb" do <<-S
+          append_file "#{@active_path}/app/views/pages/home.html.erb" do
+            <<-S
 <%
   title 'Welcome to Ruby on Rails'
   meta_description '...'
@@ -167,7 +169,7 @@ module Orats
     <%= image_tag '/apple-touch-icon-228x228-precomposed.png', size: '228x228', alt: 'A ruby image I found on Google' %>
   </div>
 </div>
-          S
+            S
           end
           git_commit 'Add pages controller with home page'
         end

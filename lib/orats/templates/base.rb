@@ -21,8 +21,8 @@ end
 
 def log_task(message)
   puts
-  say_status  'task', "#{method_to_sentence(message.to_s)}:", :yellow
-  puts        '-'*80, ''; sleep 0.25
+  say_status 'task', "#{method_to_sentence(message.to_s)}:", :yellow
+  puts '-'*80, ''; sleep 0.25
 end
 
 def git_commit(message)
@@ -31,7 +31,7 @@ def git_commit(message)
 end
 
 def copy_from_local_gem(source, dest)
-  base_path = "#{File.expand_path File.dirname(__FILE__)}/includes"
+  base_path           = "#{File.expand_path File.dirname(__FILE__)}/includes"
   file_name_of_source = File.basename(source)
 
   run "mkdir -p #{File.dirname(dest)}" if dest.present? && file_name_of_source != dest
@@ -50,7 +50,8 @@ end
 def update_gitignore
   log_task __method__
 
-  append_to_file '.gitignore' do <<-S
+  append_to_file '.gitignore' do
+    <<-S
 # OS and editor files
 .DS_Store
 */**.DS_Store
@@ -65,7 +66,7 @@ def update_gitignore
 # app specific folders
 /vendor/bundle
 /public/assets/*
-  S
+    S
   end
   git_commit 'Add common OS files, editor files and other paths'
 end
@@ -89,7 +90,8 @@ end
 def add_dotenv
   log_task 'add_dotenv'
 
-  file '.env' do <<-S
+  file '.env' do
+    <<-S
 RAILS_ENV: development
 
 PROJECT_PATH: /full/path/to/your/project
@@ -133,7 +135,7 @@ PUMA_THREADS_MAX: 1
 PUMA_WORKERS: 0
 
 SIDEKIQ_CONCURRENCY: 25
-  S
+    S
   end
   git_commit 'Add development environment file'
 end
@@ -141,11 +143,12 @@ end
 def add_procfile
   log_task __method__
 
-  file 'Procfile' do <<-S
+  file 'Procfile' do
+    <<-S
 web: puma -C config/puma.rb | grep -v --line-buffered ' 304 -'
 worker: sidekiq -C config/sidekiq.yml
 log: tail -f log/development.log | grep -xv --line-buffered '^[[:space:]]*' | grep -v --line-buffered '/assets/'
-  S
+    S
   end
   git_commit 'Add Procfile'
 end
@@ -154,11 +157,12 @@ def add_markdown_readme
   log_task __method__
 
   run 'rm README.rdoc'
-  file 'README.md' do <<-S
+  file 'README.md' do
+    <<-S
 ## Project information
 
 This project was generated with [orats](https://github.com/nickjj/orats) vVERSION.
-  S
+    S
   end
   git_commit 'Add markdown readme'
 end
@@ -167,7 +171,8 @@ def update_app_secrets
   log_task __method__
 
   gsub_file 'config/secrets.yml', /.*\n/, ''
-  append_file 'config/secrets.yml' do <<-S
+  append_file 'config/secrets.yml' do
+    <<-S
 development: &default
   secret_key_base: <%= ENV['TOKEN_RAILS_SECRET'] %>
 
@@ -179,7 +184,7 @@ staging:
 
 production:
   <<: *default
-  S
+    S
   end
   git_commit 'DRY out the yaml'
 end
@@ -187,7 +192,8 @@ end
 def update_app_config
   log_task __method__
 
-  inject_into_file 'config/application.rb', after: "automatically loaded.\n" do <<-S
+  inject_into_file 'config/application.rb', after: "automatically loaded.\n" do
+    <<-S
     config.action_mailer.delivery_method = :smtp
     config.action_mailer.smtp_settings = {
       :address              => ENV['SMTP_ADDRESS'],
@@ -217,10 +223,11 @@ def update_app_config
 
     # http://www.loc.gov/standards/iso639-2/php/English_list.php
     config.i18n.default_locale = ENV['DEFAULT_LOCALE'] unless ENV['DEFAULT_LOCALE'] == 'en'
-  S
+    S
   end
 
-  append_file 'config/application.rb' do <<-'S'
+  append_file 'config/application.rb' do
+    <<-'S'
 
 ActionView::Base.field_error_proc = Proc.new do |html_tag, instance|
   if html_tag =~ /\<label/
@@ -230,7 +237,7 @@ ActionView::Base.field_error_proc = Proc.new do |html_tag, instance|
     %(#{html_tag}<p class="validation-error"> #{errors}</p>).html_safe
   end
 end
-  S
+    S
   end
   git_commit 'Configure the mailer/redis, update the timezone and adjust the validation output'
 end
@@ -239,7 +246,8 @@ def update_database_config
   log_task __method__
 
   gsub_file 'config/database.yml', /.*\n/, ''
-  append_file 'config/database.yml' do <<-S
+  append_file 'config/database.yml' do
+    <<-S
 development: &default
   adapter: postgresql
   database: <%= ENV['DATABASE_NAME'] %>
@@ -258,7 +266,7 @@ staging:
 
 production:
   <<: *default
-  S
+    S
   end
   git_commit 'DRY out the yaml'
 end
@@ -406,19 +414,21 @@ end
 def update_production_environment
   log_task __method__
 
-  inject_into_file 'config/environments/production.rb', after: "config.log_level = :info\n" do <<-'S'
+  inject_into_file 'config/environments/production.rb', after: "config.log_level = :info\n" do
+    <<-'S'
   config.logger = Logger.new(config.paths['log'].first, 'daily')
-  S
+    S
   end
   git_commit 'Update the logger to rotate daily'
 
-  inject_into_file 'config/environments/production.rb', after: "%w( search.js )\n" do <<-'S'
+  inject_into_file 'config/environments/production.rb', after: "%w( search.js )\n" do
+    <<-'S'
   config.assets.precompile << Proc.new { |path|
     if path =~ /\.(eot|svg|ttf|woff|png)\z/
       true
     end
   }
-  S
+    S
   end
   git_commit 'Update the assets precompiler to include common file types'
 end
@@ -428,14 +438,15 @@ def update_routes
 
   prepend_file 'config/routes.rb', "require 'sidekiq/web'\n\n"
 
-  inject_into_file 'config/routes.rb', after: "draw do\n" do <<-S
+  inject_into_file 'config/routes.rb', after: "draw do\n" do
+    <<-S
   concern :pageable do
     get 'page/:page', action: :index, on: :collection
   end
 
   # you may want to protect this behind authentication
   mount Sidekiq::Web => '/sidekiq'
-  S
+    S
   end
   git_commit 'Add a concern for pagination and mount sidekiq'
 end
@@ -708,7 +719,8 @@ end
 def add_helpers
   log_task __method__
 
-  inject_into_file 'app/helpers/application_helper.rb', after: "ApplicationHelper\n" do <<-S
+  inject_into_file 'app/helpers/application_helper.rb', after: "ApplicationHelper\n" do
+    <<-S
   def title(page_title)
     content_for(:title) { page_title }
   end
@@ -760,7 +772,7 @@ def add_helpers
       'danger'
     end
   end
-  S
+    S
   end
   git_commit 'Add various helpers'
 end
@@ -1000,7 +1012,8 @@ def update_sass
   inject_into_file 'app/assets/stylesheets/application.css.scss',
                    " *= require font-awesome\n",
                    before: " *= require_self\n"
-  append_file 'app/assets/stylesheets/application.css.scss' do <<-S
+  append_file 'app/assets/stylesheets/application.css.scss' do
+    <<-S
 
 // Core variables and mixins
 @import "bootstrap/variables";
@@ -1069,7 +1082,7 @@ img {
   color: $brand-danger;
   font-size: $font-size-small;
 }
-  S
+    S
   end
   git_commit 'Add font-awesome, bootstrap and a few default styles'
 end
@@ -1083,7 +1096,8 @@ def update_coffeescript
   inject_into_file 'app/assets/javascripts/application.js',
                    "//= require jquery.turbolinks\n",
                    before: "//= require_tree .\n"
-  inject_into_file 'app/assets/javascripts/application.js', before: "//= require_tree .\n" do <<-S
+  inject_into_file 'app/assets/javascripts/application.js', before: "//= require_tree .\n" do
+    <<-S
 //= require bootstrap/affix
 //= require bootstrap/alert
 //= require bootstrap/button
@@ -1096,7 +1110,7 @@ def update_coffeescript
 //= require bootstrap/scrollspy
 //= require bootstrap/tab
 //= require bootstrap/transition
-  S
+    S
   end
   git_commit 'Add jquery.turbolinks and bootstrap'
 end
