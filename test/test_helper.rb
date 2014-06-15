@@ -1,10 +1,10 @@
 require 'minitest/autorun'
 require 'securerandom'
-require_relative '../lib/orats/server'
+require_relative '../lib/orats/commands/new/server'
 
 module Orats
   module Test
-    include Server
+    include Commands::New::Server
 
     BINARY_PATH = File.absolute_path('../../bin/orats',__FILE__)
     TEST_PATH = '/tmp/orats/test'
@@ -27,8 +27,8 @@ module Orats
 
     private
 
-      def generate_app_name
-        "a_#{SecureRandom.hex(8)}"
-      end
+    def generate_app_name
+      "a_#{SecureRandom.hex(8)}"
+    end
   end
 end

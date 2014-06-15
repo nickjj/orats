@@ -58,7 +58,7 @@ class TestCLI < Minitest::Test
     app_name = generate_app_name
 
     out, err = capture_subprocess_io do
-     orats "play #{app_name}"
+      orats "play #{app_name}"
     end
 
     assert_match /success/, out
@@ -91,45 +91,45 @@ class TestCLI < Minitest::Test
 
   private
 
-    def assert_nuked(app_name, options = {})
-      out, err = capture_subprocess_io do
-        orats "nuke #{app_name}", flags: options[:flags], answer: 'y'
-      end
-
-      assert_match /#{app_name}/, out
-      system 'rm -rf /tmp/orats'
+  def assert_nuked(app_name, options = {})
+    out, err = capture_subprocess_io do
+      orats "nuke #{app_name}", flags: options[:flags], answer: 'y'
     end
 
-    def assert_server_started
-      assert port_taken?
+    assert_match /#{app_name}/, out
+    system 'rm -rf /tmp/orats'
+  end
+
+  def assert_server_started
+    assert port_taken?
+  end
+
+  def assert_path_exists(file_or_dir)
+    assert File.exists?(file_or_dir), "Expected path '#{file_or_dir}' to exist"
+  end
+
+  def refute_path_exists(file_or_dir)
+    refute File.exists?(file_or_dir), "Expected path '#{file_or_dir}' to exist"
+  end
+
+  def assert_in_file(file_path, regex)
+    out, err = capture_subprocess_io do
+      system "cat #{file_path}"
     end
 
-    def assert_path_exists(file_or_dir)
-      assert File.exists?(file_or_dir), "Expected path '#{file_or_dir}' to exist"
-    end
+    assert_match regex, out
+  end
 
-    def refute_path_exists(file_or_dir)
-      refute File.exists?(file_or_dir), "Expected path '#{file_or_dir}' to exist"
-    end
+  def ensure_port_is_free
+    skip 'Port 3000 is already in use, aborting test' if port_taken?
+  end
 
-    def assert_in_file(file_path, regex)
-      out, err = capture_subprocess_io do
-        system "cat #{file_path}"
-      end
+  def kill_server(stdout_text)
+    pid_lines = stdout_text.scan(/started with pid \d+/)
 
-      assert_match regex, out
-    end
+    puma = pid_lines[0].split(' ').last
+    sidekiq = pid_lines[1].split(' ').last
 
-    def ensure_port_is_free
-      skip 'Port 3000 is already in use, aborting test' if port_taken?
-    end
-
-    def kill_server(stdout_text)
-      pid_lines = stdout_text.scan(/started with pid \d+/)
-
-      puma = pid_lines[0].split(' ').last
-      sidekiq = pid_lines[1].split(' ').last
-
-      system "kill -9 #{puma} && kill -9 #{sidekiq}"
-    end
+    system "kill -9 #{puma} && kill -9 #{sidekiq}"
+  end
 end
