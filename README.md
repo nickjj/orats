@@ -2,16 +2,13 @@
 
 ## What is orats and what problem does it solve?
 
-It stands for opinionated rails application templates. The templates include solving tedious tasks that you would do for most
-projects. It handles creating a rails application with a bunch of opinions and optionally an ansible inventory/playbook so you can
-and provision your servers and deploy your apps effortlessly.
+It stands for opinionated rails application templates. The templates include solving tedious tasks that you would do for most projects. It handles creating a rails application with a bunch of opinions and optionally an ansible inventory/playbook so you can and provision your servers and deploy your apps effortlessly.
 
 ## What version of Rails and Ruby are you targeting?
 
 #### Rails 4.1.x and Ruby 2.1.x
 
-Gems will also be updated once they are proven to work on the target rails/ruby versions. The gems are locked using the
-pessimistic operator `~>` to ensure your installation works over time as long as rubygems.org's API is working.
+Gems will also be updated once they are proven to work on the target rails/ruby versions. The gems are locked using the pessimistic operator `~>` to ensure your installation works over time as long as rubygems.org's API is working.
 
 ## Contents
 - [System dependencies](#system-dependencies)
@@ -68,8 +65,7 @@ Or if you already have orats then run `gem update orats` to upgrade to the lates
 
 ## Commands
 
-Here is an overview of the available commands. You can find out more information about each command and flag by running 
-`orats help <command name>` from your terminal. You can also type `orats` on its own to see a list of all commands.
+Here is an overview of the available commands. You can find out more information about each command and flag by running  `orats help <command name>` from your terminal. You can also type `orats` on its own to see a list of all commands.
 
 - **Create a new orats project**:
     - `orats new <TARGET_PATH> --pg-password=foo`
@@ -106,13 +102,11 @@ Here is an overview of the available commands. You can find out more information
 
 ### Base
 
-This is the starter template that every other template will append to. I feel like when I make a new project, 95% of the time
-it includes these features and when I do not want a specific thing it is much quicker to remove it than add it.
+This is the starter template that every other template will append to. I feel like when I make a new project, 95% of the time it includes these features and when I do not want a specific thing it is much quicker to remove it than add it.
 
 #### Changes vs the standard rails project
 
-All of the changes have git commits to go with them. After generating a project you can type `git reflog` to get a
-list of changes.
+All of the changes have git commits to go with them. After generating a project you can type `git reflog` to get a list of changes.
 
 - **Core changes**:
     - Use `postgres` as the primary SQL database
@@ -167,25 +161,17 @@ list of changes.
 
 ##### What is `--pg-password`?
 
-Orats will automatically start your server (you can turn this off with a flag) and also run database migrations or
-generators depending on what you're doing.
+Orats will automatically start your server (you can turn this off with a flag) and also run database migrations or generators depending on what you're doing.
 
-In order to do this it must know your postgres location, username and password. By default it will use localhost for the
-*location* and *postgres* as the username but if you need to supply those values because yours are different you can use
-`--pg-location=foo` and `--pg-username=bar`.
+In order to do this it must know your postgres location, username and password. By default it will use localhost for the *location* and *postgres* as the username but if you need to supply those values because yours are different you can use `--pg-location=foo` and `--pg-username=bar`.
 
 ##### What is `--skip-galaxy`?
 
-By default the new command will generate ansible related files for you so that you can manage this app's "inventory". It
-also automatically downloads the ansible roles from the [ansible galaxy](https://galaxy.ansible.com/).
+By default the new command will generate ansible related files for you so that you can manage this app's "inventory". It also automatically downloads the ansible roles from the [ansible galaxy](https://galaxy.ansible.com/).
 
-This was done to ensure each app you create has the correct ansible role version to go with it. However, if you installed
-ansible through apt or somewhere outside of your home directory then you will get permissions errors when it tries to
-download the roles.
+This was done to ensure each app you create has the correct ansible role version to go with it. However, if you installed ansible through apt or somewhere outside of your home directory then you will get permissions errors when it tries to download the roles.
 
-You can fix this by supplying `--sudo-password=foo` to the above command if you know ansible is installed outside of your
-home directory or you can just wait while the command runs and it will prompt you for your sudo password when it gets
-to that point because orats will attempt to use sudo only after it fails trying to install the roles without sudo.
+You can fix this by supplying `--sudo-password=foo` to the above command if you know ansible is installed outside of your home directory or you can just wait while the command runs and it will prompt you for your sudo password when it gets to that point because orats will attempt to use sudo only after it fails trying to install the roles without sudo.
 
 If you don't care about the ansible at all you could add `--skip-extras` to not generate any ansible files.
 
@@ -203,38 +189,29 @@ Let's say you were to generate a new project at *~/tmp/myapp*, then you would ge
 ~/tmp/myapp/services
 ```
 
-The **inventory** path contains the ansible inventory files for this project. This would be where your host addresses go
-along with configuration settings for this project.
+The **inventory** path contains the ansible inventory files for this project. This would be where your host addresses go along with configuration settings for this project.
 
-The **secrets** path contains the passwords for various things as well as ssh keypairs and ssl certificates. This path
-should be kept out of version control. You could also go 1 extra step and encrypt this directory locally.
+The **secrets** path contains the passwords for various things as well as ssh keypairs and ssl certificates. This path should be kept out of version control. You could also go 1 extra step and encrypt this directory locally.
 
-The **services** path contains your rails application. I like to call it services because you might have multiple services
-in 1 project.
+The **services** path contains your rails application. I like to call it services because you might have multiple services in 1 project.
 
-If you run the command with `--skip-extras` you will not get the inventory, secrets or services directory. It will just
-generate `myapp` at the path you specify.
+If you run the command with `--skip-extras` you will not get the inventory, secrets or services directory. It will just generate `myapp` at the path you specify.
 
 <a name="base-what-do-i-need-to-configure-for-development"></a>
 ##### What do I need to configure for development?
 
-Pretty much everything is contained within environment variables. They are stored in the `.env` file located in the root
-directory of the rails application. It should be self explanatory. This file is also added to `.gitignore`.
+Pretty much everything is contained within environment variables. They are stored in the `.env` file located in the root directory of the rails application. It should be self explanatory. This file is also added to `.gitignore`.
 
 <a name="base-what-do-i-need-to-configure-for-production"></a>
 ##### What do I need to configure for production?
 
-If you are using ansible then you should open `inventory/group_vars/all.yml` and take a peek. Everything there has
-comments. Assuming you have everything hosted on 1 server then at minimum you will only need to change 
-`rails_deploy_git_url` to get going.
+If you are using ansible then you should open `inventory/group_vars/all.yml` and take a peek. Everything there has comments. Assuming you have everything hosted on 1 server then at minimum you will only need to change `rails_deploy_git_url` to get going.
 
 The above variable is the repo where your code is contained. Ansible will clone that repo in an idempotent way.
 
-You will also need to put the correct server IP(s) in `inventory/hosts`. At this point that's all you need to change to 
-successfully provision a server. 
+You will also need to put the correct server IP(s) in `inventory/hosts`. At this point that's all you need to change to successfully provision a server. 
 
-There are many other variables that you would likely change too such as adding your google analytics UA, S3 keys and
-all of the mail settings.
+There are many other variables that you would likely change too such as adding your google analytics UA, S3 keys and all of the mail settings.
 
 You may also want to tinker with the following values for performance reasons based on your server(s).
 
@@ -252,13 +229,11 @@ You may also want to tinker with the following values for performance reasons ba
 
 ### Auth
 
-This is the auth template which gets merged into the base template. It contains a basic authentication setup using
-devise and pundit.
+This is the auth template which gets merged into the base template. It contains a basic authentication setup using devise and pundit.
 
 #### Changes vs the base template
 
-All of the changes have git commits to go with them. After generating a project you can type `git reflog` to get a
-list of changes.
+All of the changes have git commits to go with them. After generating a project you can type `git reflog` to get a list of changes.
 
 - **Core**:
     - Handle authentication with `devise`
@@ -318,17 +293,13 @@ You will want to change `ACTION_MAILER_DEVISE_DEFAULT_FROM` in `inventory/group_
 
 ### Play
 
-Building your application is only one piece of the puzzle. If you want to ship your application you have to host it somewhere.
-You have a few options when it comes to managed hosts like Heroku but they tend to be very expensive if you fall out of
-their free tier.
+Building your application is only one piece of the puzzle. If you want to ship your application you have to host it somewhere. You have a few options when it comes to managed hosts like Heroku but they tend to be very expensive if you fall out of their free tier.
 
-The playbook template creates an ansible playbook that will provision a **ubuntu 12.04 LTS server**. It can be hosted anywhere
-as there are no hard requirements on any specific host.
+The playbook template creates an ansible playbook that will provision a **ubuntu 12.04 LTS server**. It can be hosted anywhere as there are no hard requirements on any specific host.
 
 #### Server breakdown
 
-Everything is broken up into ansible roles so you can quickly scale out horizontally or by splitting up your server groups
-such that your database is on a separate server than your application.
+Everything is broken up into ansible roles so you can quickly scale out horizontally or by splitting up your server groups such that your database is on a separate server than your application.
 
 - **Security**:
     - Logging into the server is only possible with an ssh key
