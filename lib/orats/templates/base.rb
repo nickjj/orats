@@ -445,6 +445,10 @@ def update_production_environment
     S
   end
   git_commit 'Update the assets precompiler to include common file types'
+
+  gsub_file 'config/environments/production.rb',
+            '# config.assets.css_compressor', 'config.assets.css_compressor'
+  git_commit 'Add sass asset compression'
 end
 
 def update_routes
