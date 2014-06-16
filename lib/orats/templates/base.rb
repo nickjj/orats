@@ -411,6 +411,20 @@ end
   git_commit 'Add a staging environment'
 end
 
+def update_development_environment
+  log_task __method__
+
+  inject_into_file 'config/environments/development.rb',
+                   before: "\nend" do
+    <<-'S'
+  # Set the default generator asset engines
+  config.generators.stylesheet_engine = :scss
+  config.generators.javascript_engine = :coffee
+    S
+  end
+  git_commit 'Update the default generator asset engines'
+end
+
 def update_production_environment
   log_task __method__
 
@@ -1141,6 +1155,7 @@ add_whenever_config
 add_sidekiq_initializer
 add_mini_profiler_initializer
 add_staging_environment
+update_development_environment
 update_production_environment
 update_routes
 add_backup_lib
