@@ -133,7 +133,7 @@ All of the changes have git commits to go with them. After generating a project 
     - **Production mode only**:
         - Setup log rotation
         - Add popular file types to the assets precompile list
-        - Compress `css`/`js` when running `rake asset:precompile`
+        - Compress `css`/`js` when running `rake assets:precompile`
     - Change validation errors to output inline on each element instead of a big list
 - **Helpers**:
     - `title`, `meta_description`, `heading` to easily set those values per view
