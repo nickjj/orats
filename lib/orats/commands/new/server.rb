@@ -14,7 +14,7 @@ module Orats
           log_status_bottom 'command', 'bundle exec foreman start', :magenta
           puts '='*80, ''
 
-          attempt_to_start
+          attempt_to_start unless @options[:skip_server_start]
         end
 
         private

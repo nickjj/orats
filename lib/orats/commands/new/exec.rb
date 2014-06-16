@@ -45,7 +45,7 @@ module Orats
 
           custom_rails_template unless @options[:template].empty?
 
-          server_start unless @options[:skip_server_start]
+          server_start
         end
 
         private
