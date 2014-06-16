@@ -129,9 +129,11 @@ All of the changes have git commits to go with them. After generating a project 
         - Use the `dotenv` gem to manage environment variables
         - Use `foreman` to manage the app's processes
         - Use `bullet`, `rack mini profiler` and `meta_request` for profiling/analysis
+        - Set `scss`/`coffee` as the default generator engines
     - **Production mode only**:
         - Setup log rotation
         - Add popular file types to the assets precompile list
+        - Compress `css`/`js` when running `rake asset:precompile`
     - Change validation errors to output inline on each element instead of a big list
 - **Helpers**:
     - `title`, `meta_description`, `heading` to easily set those values per view
