@@ -32,7 +32,7 @@ module Orats
 
             create_and_migrate_database
             generate_home_page
-            run_rake 'orats:favicons'
+            generate_favicons
           end
 
           if @options[:auth]

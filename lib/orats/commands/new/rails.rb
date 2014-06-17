@@ -174,6 +174,12 @@ module Orats
           git_commit 'Add pages controller with home page'
         end
 
+        def generate_favicons
+          log_task 'Add favicons'
+          run_rake 'orats:favicons'
+          git_commit 'Add favicons'
+        end
+
         def create_and_migrate_database
           run_rake 'db:create:all db:migrate'
           git_commit 'Add the database schema file'
