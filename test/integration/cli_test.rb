@@ -3,133 +3,127 @@ require_relative '../test_helper'
 class TestCLI < Minitest::Test
   include Orats::Test
 
+  attr_accessor :target_path, :extra_flags
+
+  def startup
+    @target_path = ''
+    @extra_flags = ''
+  end
+
+  def teardown
+    assert_nuked unless @target_path.nil?
+  end
+
   def test_new_app
-    app_name = generate_app_name
-
-    out, err = capture_subprocess_io do
-      orats "new #{app_name}", flags: ORATS_FLAGS
-    end
-
-    assert_match /Start your server/, out
-
-    assert_path_exists "#{TEST_PATH}/#{app_name}/inventory"
-    assert_path_exists "#{TEST_PATH}/#{app_name}/secrets"
-
-    assert_nuked app_name
+    assert_new_app extras: :assert
   end
 
   def test_new_app_with_auth
-    app_name     = generate_app_name
-    gemfile_path = "#{TEST_PATH}/#{app_name}/services/#{app_name}/Gemfile"
-
-    out, err = capture_subprocess_io do
-      orats "new #{app_name}", flags: "--auth #{ORATS_FLAGS}"
-    end
-
-    assert_match /Start your server/, out
-
-    assert_path_exists "#{TEST_PATH}/#{app_name}/inventory"
-    assert_path_exists "#{TEST_PATH}/#{app_name}/secrets"
-    assert_path_exists "#{TEST_PATH}/#{app_name}/services/#{app_name}"
-
-    assert_in_file gemfile_path, /devise/
-    assert_in_file gemfile_path, /devise-async/
-    assert_in_file gemfile_path, /pundit/
-
-    assert_nuked app_name
+    assert_new_app '--auth', extras: :assert
   end
 
   def test_new_app_without_extras
-    app_name = generate_app_name
-
-    out, err = capture_subprocess_io do
-      orats "new #{app_name}", flags: "--skip-extras #{ORATS_FLAGS}"
-    end
-
-    refute_path_exists "#{TEST_PATH}/#{app_name}/inventory"
-    refute_path_exists "#{TEST_PATH}/#{app_name}/secrets"
-    refute_path_exists "#{TEST_PATH}/#{app_name}/services/#{app_name}"
-    assert_path_exists "#{TEST_PATH}/#{app_name}"
-
-    assert_nuked app_name
+    assert_new_app '--skip-extras', extras: :refute
   end
 
   def test_play
-    app_name = generate_app_name
-
-    out, err = capture_subprocess_io do
-      orats "play #{app_name}"
-    end
-
-    assert_match /success/, out
-    assert_nuked app_name
+    @target_path = generate_app_name
+    assert_orats 'play', 'success'
   end
 
   def test_outdated
-    app_name = generate_app_name
+    @target_path = generate_app_name
+    assert_orats 'play', 'success'
 
-    out, err = capture_subprocess_io do
-      orats "play #{app_name}"
-    end
-    assert_match /success/, out
-
-    out, err = capture_subprocess_io do
-      orats 'outdated'
-    end
-    assert_match /Comparing this version of/, out
-
-    assert_nuked app_name
+    @target_path = ''
+    assert_orats 'outdated', 'Compare this version of'
   end
 
   def test_version
-    out, err = capture_subprocess_io do
-      orats 'version'
-    end
-
-    assert_match /Orats/, out
+    assert_orats 'version', 'Orats'
   end
 
   private
 
-  def assert_nuked(app_name, options = {})
+  def assert_new_app(flags = '', extras: nil)
+    @target_path = generate_app_name
+    @extra_flags = "#{ORATS_NEW_FLAGS} #{flags}"
+
+    assert_orats 'new', 'Start your server', extras: extras
+
+    @target_path << "/services/#{@target_path}" unless flags == '--skip-extras'
+    assert_app_tests_pass "#{TEST_PATH}/#{@target_path}"
+  end
+
+  def assert_orats(command, match_regex, extras: nil)
+    out, err = capture_orats(command)
+
+    assert_match /#{match_regex}/, out
+    assert_or_refute_extras(extras) if extras
+  end
+
+  def assert_app_tests_pass(target_path)
     out, err = capture_subprocess_io do
-      orats "nuke #{app_name}", flags: options[:flags], answer: 'y'
+      system "cd #{target_path} && bundle exec rake test"
     end
 
-    assert_match /#{app_name}/, out
-    system 'rm -rf /tmp/orats'
+    log_rails_test_results out
+    assert out.include?('0 failures') || out.include?('0 errors')
   end
 
-  def assert_server_started
-    assert port_taken?
+  def assert_nuked(options = {})
+    out, err = capture_subprocess_io do
+      orats "nuke #{@target_path}", flags: options[:flags], answer: 'y'
+    end
+
+    assert_match /#{@target_path}/, out
+    system "rm -rf #{TEST_PATH}"
   end
 
-  def assert_path_exists(file_or_dir)
+  def assert_in_file(file_path, match_regex)
+    file_contents = `cat #{file_path}`
+    assert_match /#{match_regex}/, file_contents
+  end
+
+  def assert_path(file_or_dir)
     assert File.exists?(file_or_dir), "Expected path '#{file_or_dir}' to exist"
   end
 
-  def refute_path_exists(file_or_dir)
+  def refute_path(file_or_dir)
     refute File.exists?(file_or_dir), "Expected path '#{file_or_dir}' to exist"
   end
 
-  def assert_in_file(file_path, regex)
+  def assert_or_refute_extras(assert_or_refute)
+    assert_path "#{TEST_PATH}/#{@target_path}"
+    send("#{assert_or_refute.to_s}_path",
+             "#{TEST_PATH}/#{@target_path}/inventory")
+    send("#{assert_or_refute.to_s}_path",
+             "#{TEST_PATH}/#{@target_path}/secrets")
+  end
+
+  def capture_orats(command)
     out, err = capture_subprocess_io do
-      system "cat #{file_path}"
+      orats "#{command} #{@target_path}", flags: @extra_flags
     end
 
-    assert_match regex, out
+    [out, err]
   end
 
-  def ensure_port_is_free
-    skip 'Port 3000 is already in use, aborting test' if port_taken?
-  end
+  def log_rails_test_results(out)
+    out_lines = out.split("\n")
 
-  def kill_server(stdout_text)
-    pid_lines = stdout_text.scan(/started with pid \d+/)
+    out_lines.delete_if do |line|
+      line.include?('Sidekiq') || line .start_with?('.') ||
+      line.include?('Running') || line.include?('Run options') ||
+      line.empty?
+    end
 
-    puma    = pid_lines[0].split(' ').last
-    sidekiq = pid_lines[1].split(' ').last
-
-    system "kill -9 #{puma} && kill -9 #{sidekiq}"
+    puts
+    puts '-'*80
+    puts 'Results of running `bundle exec rake test` on the generated test app:'
+    puts '-'*80
+    puts out_lines.join("\n\n").rstrip
+    puts '-'*80
+    puts
   end
 end
