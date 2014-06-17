@@ -5,13 +5,15 @@ module Orats
   module Commands
     module New
       module Server
+        START_COMMAND = 'bundle exec foreman start'
+
         def server_start
           @options[:skip_server_start] ? message = 'Start your' : message = 'Starting'
 
           puts '', '='*80
           log_status_top 'action', "#{message} server with the following commands", :cyan
           log_status_bottom 'command', "cd #{@active_path}", :magenta, true
-          log_status_bottom 'command', 'bundle exec foreman start', :magenta
+          log_status_bottom 'command', START_COMMAND, :magenta
           puts '='*80, ''
 
           attempt_to_start unless @options[:skip_server_start]
@@ -28,7 +30,7 @@ module Orats
 
           puts
 
-          run_from @active_path, 'bundle exec foreman start'
+          run_from @active_path, START_COMMAND
         end
 
         def port_taken?
