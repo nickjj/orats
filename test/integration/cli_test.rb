@@ -68,7 +68,7 @@ class TestCLI < Minitest::Test
     end
 
     log_rails_test_results out
-    assert out.include?('0 failures') || out.include?('0 errors')
+    assert out.include?('0 failures') && out.include?('0 errors')
   end
 
   def assert_nuked(options = {})
