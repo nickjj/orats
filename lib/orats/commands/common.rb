@@ -53,6 +53,8 @@ module Orats
 
       def url_to_string(url)
         begin
+          url = old_remote_file_paths(url)
+
           open(url).read
         rescue *[OpenURI::HTTPError, SocketError] => ex
           log_error 'error', "Error accessing URL #{url}",
@@ -110,6 +112,16 @@ module Orats
           @local_paths[key]  = "#{base_path}/#{value}"
           @remote_paths[key] = select_branch @remote_gem_version, value
         end
+      end
+
+      def old_remote_file_paths(url)
+        if VERSION < '0.6.6'
+          url.gsub!('play/', '')
+          url.gsub!('new/ansible/', '')
+          url.gsub!('includes/site.yml', 'play.rb')
+        end
+
+        url
       end
 
       def select_branch(branch, value)
