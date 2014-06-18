@@ -30,6 +30,14 @@ def git_commit(message)
   git commit: "-m '#{message}'"
 end
 
+def git_config(field)
+  command         = "git config --global user.#{field}"
+  git_field_value = run(command, capture: true).gsub("\n", '')
+  default_value   = "YOUR_#{field.upcase}"
+
+  git_field_value.to_s.empty? ? default_value : git_field_value
+end
+
 def copy_from_local_gem(source, dest = '')
   dest = source if dest.empty?
 
@@ -107,6 +115,19 @@ def add_markdown_readme
 
   copy_from_local_gem 'README.md'
   git_commit 'Add markdown readme'
+end
+
+def add_license
+  log_task __method__
+
+  author_name  = git_config 'name'
+  author_email = git_config 'email'
+
+  copy_from_local_gem '../../common/LICENSE', 'LICENSE'
+  gsub_file 'LICENSE', 'Time.now.year', Time.now.year.to_s
+  gsub_file 'LICENSE', 'author_name', author_name
+  gsub_file 'LICENSE', 'author_email', author_email
+  git_commit 'Add MIT license'
 end
 
 def update_app_secrets
@@ -485,6 +506,7 @@ copy_base_favicon
 add_dotenv
 add_procfile
 add_markdown_readme
+add_license
 update_app_secrets
 update_app_config
 update_database_config
