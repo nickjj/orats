@@ -93,8 +93,8 @@ Here is an overview of the available commands. You can find out more information
     - `orats nuke <TARGET_PATH>`
     - Optionally takes: `--skip-data [false]`
 
-- **Detect whether or not orats, the playbook or inventory is outdated**:
-    - `orats outdated [options]`
+- **Compare differences between orats versions**:
+    - `orats diff [options]`
     - Optionally takes: `--playbook []`
     - Optionally takes: `--inventory []`
 

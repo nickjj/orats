@@ -1,6 +1,6 @@
 module Orats
   module Commands
-    module Outdated
+    module Diff
       module Compare
         def remote_to_local_gem_versions
           log_remote_info 'gem', 'Compare this version of orats to the latest orats version',

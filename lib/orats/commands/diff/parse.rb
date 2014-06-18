@@ -1,6 +1,6 @@
 module Orats
   module Commands
-    module Outdated
+    module Diff
       module Parse
         def gem_version
           "v#{url_to_string(@remote_paths[:version]).match(/'(.*)'/)[1..-1].first}"

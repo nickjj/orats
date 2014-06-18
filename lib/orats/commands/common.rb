@@ -1,5 +1,5 @@
 require 'orats/commands/ui'
-require 'orats/commands/outdated/parse'
+require 'orats/commands/diff/parse'
 
 module Orats
   module Commands
@@ -8,7 +8,7 @@ module Orats
       include Thor::Shell
       include Thor::Actions
       include UI
-      include Outdated::Parse
+      include Diff::Parse
 
       RELATIVE_PATHS = {
           galaxyfile: 'templates/includes/play/Galaxyfile',

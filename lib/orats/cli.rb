@@ -1,8 +1,8 @@
 require 'thor'
 require 'orats/commands/new/exec'
-require 'orats/commands/outdated/exec'
 require 'orats/commands/play'
 require 'orats/commands/nuke'
+require 'orats/commands/diff/exec'
 
 module Orats
   class CLI < Thor
@@ -91,9 +91,9 @@ module Orats
 
     option :playbook, default: '', aliases: '-p'
     option :inventory, default: '', aliases: '-i'
-    desc 'outdated [options]', ''
+    desc 'diff [options]', ''
     long_desc <<-D
-      `orats outdated` will run various comparisons on orats and your ansible files.
+      `orats diff` will run various comparisons on orats and your ansible files.
 
       Help:
 
@@ -108,8 +108,8 @@ module Orats
       `--inventory` to supply an inventory file for comparison []
     D
 
-    def outdated
-      Commands::Outdated::Exec.new(nil, options).init
+    def diff
+      Commands::Diff::Exec.new(nil, options).init
     end
 
     desc 'version', ''

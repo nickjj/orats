@@ -36,7 +36,7 @@ class TestCLI < Minitest::Test
     assert_orats 'play', 'success'
 
     @target_path = ''
-    assert_orats 'outdated', 'Compare this version of'
+    assert_orats 'diff', 'Compare this version of'
   end
 
   def test_version

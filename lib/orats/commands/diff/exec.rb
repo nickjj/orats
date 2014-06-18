@@ -1,11 +1,11 @@
 require 'orats/commands/common'
+require 'orats/commands/diff/parse'
+require 'orats/commands/diff/compare'
 require 'orats/version'
-require 'orats/commands/outdated/parse'
-require 'orats/commands/outdated/compare'
 
 module Orats
   module Commands
-    module Outdated
+    module Diff
       class Exec < Commands::Common
         include Parse
         include Compare
