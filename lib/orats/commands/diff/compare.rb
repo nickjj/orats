@@ -42,7 +42,8 @@ module Orats
           item_diff_count = item_diff.size
 
           log_remote_info label, "Compare this version of orats' #{label} to the latest version",
-                          'file', label == 'playbook' ? 'site.yml' : 'all.yml'
+                          'file',
+                          File.basename(Common::RELATIVE_PATHS[label.to_sym])
 
           item_diff.each do |line|
             log_status_bottom 'missing', line, :red, true unless local.include?(line)
