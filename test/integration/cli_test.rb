@@ -31,7 +31,7 @@ class TestCLI < Minitest::Test
     assert_orats 'play', 'success'
   end
 
-  def test_outdated
+  def test_diff
     @target_path = generate_app_name
     assert_orats 'play', 'success'
 
