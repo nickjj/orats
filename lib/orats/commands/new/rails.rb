@@ -6,7 +6,6 @@ module Orats
           exit_if_process :not_found, 'rails', 'git'
           exit_if_process :not_running, 'postgres', 'redis'
           exit_if_path_exists
-          # exit_if_spring_is_running
         end
 
         def rails_template(command, flags = '')
@@ -85,6 +84,8 @@ module Orats
         end
 
         def generate_home_page
+          kill_spring_servers
+
           log_task 'Add pages controller with static page'
           run_from @active_path, 'bundle exec rails g controller Pages home'
 
@@ -116,6 +117,14 @@ module Orats
         def create_and_migrate_database
           run_rake 'db:create:all db:migrate'
           git_commit 'Add the database schema file'
+        end
+
+        private
+
+        def kill_spring_servers
+          # rails generators will lock up if a spring server is running,
+          # so kill them before continuing
+          system 'pkill -f spring'
         end
       end
     end
