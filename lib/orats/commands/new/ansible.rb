@@ -11,11 +11,11 @@ module Orats
           create_secrets secrets_path
 
           log_task 'Update secrets path in group_vars/all.yml'
-          gsub_file "#{@target_path}/#{fix_path_for_user(Commands::Common::RELATIVE_PATHS[:inventory])}",
+          gsub_file "#{@target_path}/#{fix_path_for_user(Common::RELATIVE_PATHS[:inventory])}",
                     '/home/yourname/dev/testproj/secrets', File.expand_path(secrets_path)
 
           log_task 'Update place holder app name in group_vars/all.yml'
-          gsub_file "#{@target_path}/#{fix_path_for_user(Commands::Common::RELATIVE_PATHS[:inventory])}",
+          gsub_file "#{@target_path}/#{fix_path_for_user(Common::RELATIVE_PATHS[:inventory])}",
                     'testproj', File.basename(@target_path)
 
           log_task 'Add ssh keypair'
@@ -37,8 +37,8 @@ module Orats
           log_task 'Add ansible inventory'
           run "mkdir -p #{@target_path}/inventory/group_vars"
 
-          local_to_user Commands::Common::RELATIVE_PATHS[:hosts]
-          local_to_user Commands::Common::RELATIVE_PATHS[:inventory]
+          local_to_user Common::RELATIVE_PATHS[:hosts]
+          local_to_user Common::RELATIVE_PATHS[:inventory]
         end
 
         def local_to_user(file)
@@ -72,7 +72,7 @@ module Orats
           log_task 'Update ansible roles from the galaxy'
 
           galaxy_install =
-              "ansible-galaxy install -r #{base_path}/#{Commands::Common::RELATIVE_PATHS[:galaxyfile]} --force"
+              "ansible-galaxy install -r #{base_path}/#{Common::RELATIVE_PATHS[:galaxyfile]} --force"
 
           galaxy_out = run(galaxy_install, capture: true)
 
@@ -90,7 +90,7 @@ module Orats
         private
 
         def fix_path_for_user(file)
-          file.sub('templates/includes/new/ansible', '')
+          file.sub('templates/includes/new/ansible/', '')
         end
       end
     end
