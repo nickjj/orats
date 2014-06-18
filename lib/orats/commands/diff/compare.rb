@@ -59,7 +59,7 @@ module Orats
         def local_to_user(label, keyword, flag_path, local)
           user = yield
 
-          log_local_info label, "Compare this version of orats' #{label} to #{File.basename(flag_path)}",
+          log_local_info label, "Compare this version of orats' #{label} to yours",
                          'path', flag_path
 
           missing_count = log_unmatched(local, user, 'missing', :red)
@@ -74,7 +74,7 @@ module Orats
 
           if extra_count > 0
             log_results "#{extra_count} extra #{keyword} were detected:",
-                        "No problem but remember to add them to future #{keyword}"
+                        "No problem but remember to add them to future #{label}"
           else
             log_results "No extra #{keyword} were found:", "Extra #{keyword} are fine but you have none"
           end
