@@ -38,6 +38,15 @@ def git_config(field)
   git_field_value.to_s.empty? ? default_value : git_field_value
 end
 
+def copy_from_local_gem(source, dest = '')
+  dest = source if dest.empty?
+
+  base_path = "#{File.expand_path File.dirname(__FILE__)}/includes/play"
+
+  run "mkdir -p #{File.dirname(dest)}" unless Dir.exist?(File.dirname(dest))
+  run "cp -f #{base_path}/#{source} #{dest}"
+end
+
 # ---
 
 def delete_generated_rails_code
@@ -62,96 +71,17 @@ def add_license
   author_name  = git_config 'name'
   author_email = git_config 'email'
 
-  run 'rm -rf LICENSE'
-  file 'LICENSE' do
-    <<-S
-The MIT License (MIT)
-
-Copyright (c) #{Time.now.year} #{author_name} <#{author_email}>
-
-Permission is hereby granted, free of charge, to any person obtaining
-a copy of this software and associated documentation files (the
-'Software'), to deal in the Software without restriction, including
-without limitation the rights to use, copy, modify, merge, publish,
-distribute, sublicense, and/or sell copies of the Software, and to
-permit persons to whom the Software is furnished to do so, subject to
-the following conditions:
-
-The above copyright notice and this permission notice shall be
-included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND,
-EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
-CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
-SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-    S
-  end
+  copy_from_local_gem '../common/LICENSE', 'LICENSE'
+  gsub_file 'LICENSE', 'Time.now.year', Time.now.year.to_s
+  gsub_file 'LICENSE', 'author_name', author_name
+  gsub_file 'LICENSE', 'author_email', author_email
   git_commit 'Add MIT license'
 end
 
 def add_main_playbook
   log_task __method__
 
-  file 'site.yml' do
-    <<-S
----
-- name: ensure all servers are commonly configured
-  hosts: all
-  sudo: true
-
-  roles:
-    - { role: nickjj.user, tags: [common, user] }
-
-- name: ensure database servers are configured
-  hosts: database
-  sudo: true
-
-  roles:
-    - role: nickjj.security
-      tags: [database, security]
-      security_ufw_ports:
-        - rule: deny
-          port: 80
-          proto: tcp
-    - { role: nickjj.postgres, tags: [database, postgres] }
-
-- name: ensure cache servers are configured
-  hosts: cache
-  sudo: true
-
-  roles:
-    - role: nickjj.security
-      tags: [cache, security]
-      security_ufw_ports:
-        - rule: deny
-          port: 80
-          proto: tcp
-    - { role: DavidWittman.redis, tags: [cache, redis] }
-
-- name: ensure app servers are configured
-  hosts: app
-  sudo: true
-
-  roles:
-    - role: nickjj.security
-      tags: [app, security]
-      security_ufw_ports:
-        - rule: allow
-          port: 80
-          proto: tcp
-    - { role: nickjj.ruby, tags: [app, ruby] }
-    - { role: nickjj.nodejs, tags: [app, nodejs] }
-    - { role: nickjj.nginx, tags: [app, nginx] }
-    - { role: nickjj.rails, tags: [app, rails] }
-    - { role: nickjj.whenever, tags: [app, rails] }
-    - { role: nickjj.pumacorn, tags: [app, rails] }
-    - { role: nickjj.sidekiq, tags: [app, rails] }
-    - { role: nickjj.monit, tags: [app, monit] }
-    S
-  end
+  copy_from_local_gem 'site.yml', 'site.yml'
   git_commit 'Add the main playbook'
 end
 

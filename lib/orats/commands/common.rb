@@ -11,10 +11,10 @@ module Orats
       include Outdated::Parse
 
       RELATIVE_PATHS = {
-          galaxyfile: 'templates/includes/Galaxyfile',
-          hosts:      'templates/includes/inventory/hosts',
-          inventory:  'templates/includes/inventory/group_vars/all.yml',
-          playbook:   'templates/play.rb',
+          galaxyfile: 'templates/includes/play/Galaxyfile',
+          hosts:      'templates/includes/new/ansible/inventory/hosts',
+          inventory:  'templates/includes/new/ansible/inventory/group_vars/all.yml',
+          playbook:   'templates/includes/play/site.yml',
           version:    'version.rb'
       }
 

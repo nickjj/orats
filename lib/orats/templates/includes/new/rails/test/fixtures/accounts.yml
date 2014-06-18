@@ -1,0 +1,27 @@
+---
+foo:
+  id: 1
+  email: foo@bar.com
+  encrypted_password: passwordisnotreallyencrypted
+  role: admin
+  created_at: 2012-01-01 01:45:17
+  current_sign_in_at: 2013-03-15 11:22:33
+
+no_role:
+  id: 2
+  email: joey@almostcool.com
+  encrypted_password: hackthegibson
+  created_at: 1995-09-15 08:10:12
+
+bad_role:
+  id: 3
+  email: hello@world.com
+  encrypted_password: reallysecure
+  role: ahhhh
+  created_at: 2011-09-20 10:10:10
+
+beep:
+  id: 4
+  email: beep@beep.com
+  encrypted_password: beepbeepbeep
+  created_at: 2010-03-6 05:15:45

@@ -44,7 +44,8 @@ module Orats
 
         def gsub_project_path
           log_task 'Update the project path'
-          gsub_file "#{@active_path}/.env", ': /full/path/to/your/project', ": #{File.expand_path(@active_path)}"
+          gsub_file "#{@active_path}/.env", ': /home/yourname/dev/testproj',
+                    ": #{File.expand_path(@active_path)}"
 
           git_commit 'Update the project path'
         end
@@ -98,7 +99,7 @@ module Orats
                     '"should get home"', "'expect home page'"
 
           run_from @active_path, "rm app/views/pages/home.html.erb"
-          Commands::Common.copy_from_local_gem 'app/views/pages/home.html.erb',
+          Commands::Common.copy_from_local_gem 'new/rails/app/views/pages/home.html.erb',
                                                "#{@active_path}/app/views/pages/home.html.erb"
           gsub_file "#{@active_path}/app/views/pages/home.html.erb",
                     'vVERSION', VERSION

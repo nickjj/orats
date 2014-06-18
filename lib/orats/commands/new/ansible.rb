@@ -90,7 +90,7 @@ module Orats
         private
 
         def fix_path_for_user(file)
-          file.sub('templates/includes/', '')
+          file.sub('templates/includes/new/ansible', '')
         end
       end
     end

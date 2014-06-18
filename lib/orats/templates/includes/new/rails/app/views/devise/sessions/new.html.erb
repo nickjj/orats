@@ -1,0 +1,39 @@
+<%
+   title 'Sign in'
+   meta_description '...'
+   heading 'Sign in'
+%>
+
+<div class="row">
+  <div class="col-sm-4">
+    <%= form_for resource, as: resource_name, url: session_path(resource_name) do |f| %>
+      <div class="form-group">
+        <%= f.label :email %>
+        <%= f.email_field :email, maxlength: 254, class: 'form-control', autofocus: true %>
+      </div>
+      <div class="form-group">
+        <%= f.label :password %>
+        <%= f.password_field :password, maxlength: 128, class: 'form-control',
+                             data: {
+                                 'rule-required' => 'true',
+                                 'rule-minlength' => '8',
+                                 'rule-maxlength' => '128'
+                             } %>
+      </div>
+      <% if devise_mapping.rememberable? -%>
+        <div class="checkbox">
+          <%= f.label :remember_me do %>
+            <%= f.check_box :remember_me %> Stay signed in
+          <% end %>
+        </div>
+      <% end -%>
+      <%= button_tag type: 'submit', class: 'btn btn-primary' do %>
+        Sign in
+      <% end %>
+    <% end %>
+  </div>
+  <div class="col-sm-6 col-sm-offset-2">
+    <h4 class="success-color">Having trouble accessing your account?</h4>
+    <%= render 'devise/shared/links' %>
+  </div>
+</div>

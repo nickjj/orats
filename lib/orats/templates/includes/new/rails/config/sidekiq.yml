@@ -1,0 +1,5 @@
+---
+:pidfile: <%= ENV['PROJECT_PATH'] %>/tmp/sidekiq.pid
+:concurrency: <%= ENV['SIDEKIQ_CONCURRENCY'].to_i %>
+:queues:
+  - default

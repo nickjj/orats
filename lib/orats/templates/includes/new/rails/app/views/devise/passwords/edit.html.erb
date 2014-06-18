@@ -1,0 +1,28 @@
+<%
+   title 'Change your password'
+   meta_description '...'
+   heading 'Change your password'
+%>
+
+<div class="row">
+  <div class="col-sm-4">
+    <%= form_for resource, as: resource_name, url: password_path(resource_name), html: { method: :put } do |f| %>
+      <%= f.hidden_field :reset_password_token %>
+      <div class="form-group">
+        <%= f.label :password, 'New password' %>
+        <%= f.password_field :password, maxlength: 128, class: 'form-control', autofocus: true,
+                             data: {
+                                 'rule-required' => 'true',
+                                 'rule-minlength' => '8',
+                                 'rule-maxlength' => '128'
+                             } %>
+      </div>
+      <%= button_tag type: 'submit', class: 'btn btn-primary' do %>
+        Send
+      <% end %>
+    <% end %>
+  </div>
+  <div class="col-sm-6 col-sm-offset-2">
+    <%= render 'devise/shared/links' %>
+  </div>
+</div>

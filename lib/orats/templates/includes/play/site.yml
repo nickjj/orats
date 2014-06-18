@@ -1,0 +1,53 @@
+---
+- name: ensure all servers are commonly configured
+  hosts: all
+  sudo: true
+
+  roles:
+    - { role: nickjj.user, tags: [common, user] }
+
+- name: ensure database servers are configured
+  hosts: database
+  sudo: true
+
+  roles:
+    - role: nickjj.security
+      tags: [database, security]
+      security_ufw_ports:
+        - rule: deny
+          port: 80
+          proto: tcp
+    - { role: nickjj.postgres, tags: [database, postgres] }
+
+- name: ensure cache servers are configured
+  hosts: cache
+  sudo: true
+
+  roles:
+    - role: nickjj.security
+      tags: [cache, security]
+      security_ufw_ports:
+        - rule: deny
+          port: 80
+          proto: tcp
+    - { role: DavidWittman.redis, tags: [cache, redis] }
+
+- name: ensure app servers are configured
+  hosts: app
+  sudo: true
+
+  roles:
+    - role: nickjj.security
+      tags: [app, security]
+      security_ufw_ports:
+        - rule: allow
+          port: 80
+          proto: tcp
+    - { role: nickjj.ruby, tags: [app, ruby] }
+    - { role: nickjj.nodejs, tags: [app, nodejs] }
+    - { role: nickjj.nginx, tags: [app, nginx] }
+    - { role: nickjj.rails, tags: [app, rails] }
+    - { role: nickjj.whenever, tags: [app, rails] }
+    - { role: nickjj.pumacorn, tags: [app, rails] }
+    - { role: nickjj.sidekiq, tags: [app, rails] }
+    - { role: nickjj.monit, tags: [app, monit] }
