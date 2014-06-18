@@ -90,8 +90,9 @@ module Orats
     end
 
     option :hosts, default: '', aliases: '-h'
-    option :playbook, default: '', aliases: '-p'
     option :inventory, default: '', aliases: '-i'
+    option :playbook, default: '', aliases: '-b'
+
     desc 'diff [options]', ''
     long_desc <<-D
       `orats diff` will run various comparisons on orats and your ansible files.
@@ -106,9 +107,9 @@ module Orats
 
       `--hosts` to supply a hosts file for comparison []
 
-      `--playbook` to supply a playbook file for comparison []
-
       `--inventory` to supply an inventory file for comparison []
+
+      `--playbook` to supply a playbook file for comparison []
     D
 
     def diff

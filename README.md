@@ -96,8 +96,8 @@ Here is an overview of the available commands. You can find out more information
 - **Compare differences between orats versions**:
     - `orats diff [options]`
     - Optionally takes: `--hosts []`
-    - Optionally takes: `--playbook []`
     - Optionally takes: `--inventory []`
+    - Optionally takes: `--playbook []`
 
 ## Templates
 
