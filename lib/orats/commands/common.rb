@@ -12,7 +12,7 @@ module Orats
 
       RELATIVE_PATHS = {
           galaxyfile: 'templates/includes/play/Galaxyfile',
-          hosts:      'templates/includes/new/ansible/inventory/hosts',
+          hosts:      'templates/includes/new/ansible/inventory/hosts.ini',
           inventory:  'templates/includes/new/ansible/inventory/group_vars/all.yml',
           playbook:   'templates/includes/play/site.yml',
           version:    'version.rb'

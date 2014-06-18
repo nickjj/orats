@@ -10,6 +10,10 @@ module Orats
           contents.split
         end
 
+        def hosts(contents)
+          contents.scan(/^\[.*\]/)
+        end
+
         def inventory(contents)
           # pluck out all of the values contained with {{ }}
           ansible_variables = contents.scan(/\{\{([^{{}}]*)\}\}/)

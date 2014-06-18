@@ -89,6 +89,7 @@ module Orats
       Commands::Nuke.new(target_path, options).init
     end
 
+    option :hosts, default: '', aliases: '-h'
     option :playbook, default: '', aliases: '-p'
     option :inventory, default: '', aliases: '-i'
     desc 'diff [options]', ''
@@ -102,6 +103,8 @@ module Orats
       `The blue/cyan labels` denote a local check between the files contained in your version of orats to the files you have generated such as your own playbook or inventories.
 
       Options:
+
+      `--hosts` to supply a hosts file for comparison []
 
       `--playbook` to supply a playbook file for comparison []
 
