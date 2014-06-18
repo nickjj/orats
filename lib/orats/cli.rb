@@ -92,7 +92,6 @@ module Orats
     option :hosts, default: '', aliases: '-h'
     option :inventory, default: '', aliases: '-i'
     option :playbook, default: '', aliases: '-b'
-
     desc 'diff [options]', ''
     long_desc <<-D
       `orats diff` will run various comparisons on orats and your ansible files.
@@ -110,6 +109,12 @@ module Orats
       `--inventory` to supply an inventory file for comparison []
 
       `--playbook` to supply a playbook file for comparison []
+
+      Quality of life features:
+
+      `--inventory` also accepts a path to your project's inventory folder,
+if you kept the default file names it will automatically compare both your
+hosts.ini and group_vars/all.yml files.
     D
 
     def diff

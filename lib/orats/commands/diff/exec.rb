@@ -19,7 +19,7 @@ module Orats
           @remote_playbook   = playbook url_to_string(@remote_paths[:playbook])
 
           @local_galaxyfile = galaxyfile file_to_string(@local_paths[:galaxyfile])
-          @local_hosts      = hosts url_to_string(@local_paths[:hosts])
+          @local_hosts      = hosts file_to_string(@local_paths[:hosts])
           @local_inventory  = inventory file_to_string(@local_paths[:inventory])
           @local_playbook   = playbook file_to_string(@local_paths[:playbook])
         end
@@ -31,22 +31,43 @@ module Orats
           remote_to_local 'inventory', 'variables', @remote_inventory, @local_inventory
           remote_to_local 'playbook', 'roles', @remote_playbook, @local_playbook
 
-          unless @options[:hosts].empty?
-            local_to_user('hosts', 'groups', @options[:hosts], @local_hosts) do
-              hosts file_to_string(@options[:hosts])
-            end
-          end
-
-          unless @options[:playbook].empty?
-            local_to_user('playbook', 'roles', @options[:playbook], @local_playbook) do
-              playbook file_to_string(@options[:playbook])
-            end
-          end
+          local_to_user_hosts @options[:hosts] unless @options[:hosts].empty?
 
           unless @options[:inventory].empty?
-            local_to_user('inventory', 'variables', @options[:inventory], @local_inventory) do
-              inventory file_to_string(@options[:inventory])
+            inventory_path = @options[:inventory]
+
+            if File.directory?(inventory_path)
+              hosts_path = File.join(inventory_path, 'inventory/hosts.ini')
+
+              inventory_path = File.join(inventory_path,
+                                         'inventory/group_vars/all.yml')
+
+              local_to_user_hosts hosts_path
             end
+
+            local_to_user_inventory inventory_path
+          end
+
+          local_to_user_playbook unless @options[:playbook].empty?
+        end
+
+        private
+
+        def local_to_user_hosts(path)
+          local_to_user('hosts', 'groups', path, @local_hosts) do
+            hosts file_to_string(path)
+          end
+        end
+
+        def local_to_user_inventory(path)
+          local_to_user('inventory', 'variables', path, @local_inventory) do
+            inventory file_to_string(path)
+          end
+        end
+
+        def local_to_user_playbook
+          local_to_user('playbook', 'roles', @options[:playbook], @local_playbook) do
+            playbook file_to_string(@options[:playbook])
           end
         end
       end
