@@ -8,7 +8,7 @@ module Orats
 
     BINARY_PATH     = File.absolute_path('../../bin/orats', __FILE__)
     TEST_PATH       = '/tmp/orats'
-    ORATS_NEW_FLAGS = '-p=pleasedonthackme --skip-server-start --skip-galaxy'
+    ORATS_NEW_FLAGS = '-p pleasedonthackme --skip-server-start --skip-galaxy'
 
     def orats(command, options = {})
       cmd, app_name   = command.split(' ')

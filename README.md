@@ -68,7 +68,7 @@ Or if you already have orats then run `gem update orats` to upgrade to the lates
 Here is an overview of the available commands. You can find out more information about each command and flag by running  `orats help <command name>` from your terminal. You can also type `orats` on its own to see a list of all commands.
 
 - **Create a new orats project**:
-    - `orats new <TARGET_PATH> --pg-password=foo`
+    - `orats new <TARGET_PATH> --pg-password foo`
     - Configuration:
         - Optionally takes: `--pg-location [localhost]`
         - Optionally takes: `--pg-username [postgres]`
@@ -158,7 +158,7 @@ All of the changes have git commits to go with them. After generating a project 
 
 #### Try the base template
 
-`orats new myapp --pg-password=foo --skip-galaxy`
+`orats new myapp --pg-password foo --skip-galaxy`
 
 #### Base FAQ
 
@@ -166,7 +166,7 @@ All of the changes have git commits to go with them. After generating a project 
 
 Orats will automatically start your server (you can turn this off with a flag) and also run database migrations or generators depending on what you're doing.
 
-In order to do this it must know your postgres location, username and password. By default it will use localhost for the *location* and *postgres* as the username but if you need to supply those values because yours are different you can use `--pg-location=foo` and `--pg-username=bar`.
+In order to do this it must know your postgres location, username and password. By default it will use localhost for the *location* and *postgres* as the username but if you need to supply those values because yours are different you can use `--pg-location foo` and `--pg-username bar`.
 
 ##### What is `--skip-galaxy`?
 
@@ -174,13 +174,13 @@ By default the new command will generate ansible related files for you so that y
 
 This was done to ensure each app you create has the correct ansible role version to go with it. However, if you installed ansible through apt or somewhere outside of your home directory then you will get permissions errors when it tries to download the roles.
 
-You can fix this by supplying `--sudo-password=foo` to the above command if you know ansible is installed outside of your home directory or you can just wait while the command runs and it will prompt you for your sudo password when it gets to that point because orats will attempt to use sudo only after it fails trying to install the roles without sudo.
+You can fix this by supplying `--sudo-password foo` to the above command if you know ansible is installed outside of your home directory or you can just wait while the command runs and it will prompt you for your sudo password when it gets to that point because orats will attempt to use sudo only after it fails trying to install the roles without sudo.
 
 If you don't care about the ansible at all you could add `--skip-extras` to not generate any ansible files.
 
 ##### Does your redis server use a password?
 
-If your redis server is configured to use a password then you must also pass in `--redis-password=foo`.
+If your redis server is configured to use a password then you must also pass in `--redis-password foo`.
 
 ##### What's with the directory structure?
 
@@ -276,7 +276,7 @@ All of the changes have git commits to go with them. After generating a project 
 
 #### Try the auth template
 
-`orats new myauthapp --auth --pg-password=foo --skip-galaxy`
+`orats new myauthapp --auth --pg-password foo --skip-galaxy`
 
 #### Auth FAQ
 
