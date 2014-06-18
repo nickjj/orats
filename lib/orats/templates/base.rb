@@ -31,10 +31,9 @@ def git_commit(message)
 end
 
 def copy_from_local_gem(source, dest)
-  base_path           = "#{File.expand_path File.dirname(__FILE__)}/includes"
-  file_name_of_source = File.basename(source)
+  base_path = "#{File.expand_path File.dirname(__FILE__)}/includes"
 
-  run "mkdir -p #{File.dirname(dest)}" if dest.present? && file_name_of_source != dest
+  run "mkdir -p #{File.dirname(dest)}" unless Dir.exist?(File.dirname(dest))
   run "cp #{base_path}/#{source} #{dest}"
 end
 
