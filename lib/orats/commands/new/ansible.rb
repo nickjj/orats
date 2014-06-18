@@ -12,7 +12,7 @@ module Orats
 
           log_task 'Update secrets path in group_vars/all.yml'
           gsub_file "#{@target_path}/#{fix_path_for_user(Commands::Common::RELATIVE_PATHS[:inventory])}",
-                    '~/tmp/testproj/secrets/', File.expand_path(secrets_path)
+                    '/home/yourname/dev/testproj/secrets', File.expand_path(secrets_path)
 
           log_task 'Update place holder app name in group_vars/all.yml'
           gsub_file "#{@target_path}/#{fix_path_for_user(Commands::Common::RELATIVE_PATHS[:inventory])}",
