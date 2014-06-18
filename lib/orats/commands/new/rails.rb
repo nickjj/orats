@@ -6,6 +6,7 @@ module Orats
           exit_if_process :not_found, 'rails', 'git'
           exit_if_process :not_running, 'postgres', 'redis'
           exit_if_path_exists
+          # exit_if_spring_is_running
         end
 
         def rails_template(command, flags = '')
@@ -95,82 +96,13 @@ module Orats
 
           gsub_file "#{@active_path}/test/controllers/pages_controller_test.rb",
                     '"should get home"', "'expect home page'"
-          gsub_file "#{@active_path}/app/views/pages/home.html.erb", /.*\n/, ''
-          append_file "#{@active_path}/app/views/pages/home.html.erb" do
-            <<-S
-<%
-  title 'Welcome to Ruby on Rails'
-  meta_description '...'
-  heading 'Welcome to Ruby on Rails'
-%>
 
-<div class="row">
-  <div class="col-sm-9">
-    <p class="lead">
-      You have successfully generated a project with <%= link_to 'orats', 'https://github.com/nickjj/orats' %> v#{VERSION}.
-    </p>
+          run_from @active_path, "rm app/views/pages/home.html.erb"
+          Commands::Common.copy_from_local_gem 'app/views/pages/home.html.erb',
+                                               "#{@active_path}/app/views/pages/home.html.erb"
+          gsub_file "#{@active_path}/app/views/pages/home.html.erb",
+                    'vVERSION', VERSION
 
-    <hr />
-
-    <p>
-      <%= image_tag 'https://badge.fury.io/rb/orats.png', alt: 'Gem badge' %> is the latest version of orats.
-    </p>
-
-    <hr />
-
-    <h3>Custom rake tasks</h3>
-    <pre>
-      <code>
-      # backup the database to S3 or any other location
-      bundle exec rake orats:backup
-
-      # generate a new set of favicons to the public directory
-      bundle exec rake orats:favicons
-      </code>
-    </pre>
-
-    <hr />
-
-    <h3>Trying to figure out what to do next?</h3>
-    <p>
-      Visit the wiki guide for <%= link_to 'what to look at after making a new project', 'https://github.com/nickjj/orats/wiki/What-to-look-at-after-making-a-new-project' %>.
-    </p>
-
-    <hr />
-
-    <h3>Looking to deploy your application?</h3>
-    <p>
-      Visit the wiki guide for <%= link_to 'get your application on a server ', 'https://github.com/nickjj/orats/wiki/Get-your-application-on-a-server' %>.
-    </p>
-
-    <hr />
-
-    <h3>Want to get rid of the pages controller?</h3>
-    <p>
-      No problem, just follow these steps:
-      <ul>
-        <li>
-          Run <code>bundle exec rails d controller Pages</code>
-        </li>
-        <li>
-          Remove the root route from <code>config/routes.rb</code>
-        </li>
-        <li>
-          Remove the link in the navigation partial at <code>app/views/layouts/_navigation_links.html.erb</code>
-        </li>
-        <li>
-          Restart the server
-        </li>
-      </ul>
-    </p>
-  </div>
-
-  <div class="col-sm-3">
-    <%= image_tag '/apple-touch-icon-228x228-precomposed.png', size: '228x228', alt: 'A ruby image I found on Google' %>
-  </div>
-</div>
-            S
-          end
           git_commit 'Add pages controller with home page'
         end
 

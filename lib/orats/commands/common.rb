@@ -34,7 +34,14 @@ module Orats
         @behavior             = :invoke
       end
 
-      private
+      def self.copy_from_local_gem(source, dest)
+        base_path           = File.join(File.expand_path(File.dirname(__FILE__)),
+                                      '..')
+        template_path       = "#{base_path}/templates/includes"
+
+        system "mkdir -p #{File.dirname(dest)}" unless Dir.exist?(File.dirname(dest))
+        system "cp #{template_path}/#{source} #{dest}"
+      end
 
       def base_path
         File.join(File.expand_path(File.dirname(__FILE__)), '..')
@@ -42,20 +49,6 @@ module Orats
 
       def repo_path
         %w(https://raw.githubusercontent.com/nickjj/orats lib/orats)
-      end
-
-      def select_branch(branch, value)
-        "#{repo_path[0]}/#{branch}/#{repo_path[1]}/#{value}"
-      end
-
-      def build_common_paths
-        @remote_paths[:version] = select_branch 'master', RELATIVE_PATHS[:version]
-        @remote_gem_version     = gem_version
-
-        RELATIVE_PATHS.each_pair do |key, value|
-          @local_paths[key]  = "#{base_path}/#{value}"
-          @remote_paths[key] = select_branch @remote_gem_version, value
-        end
       end
 
       def url_to_string(url)
@@ -105,6 +98,22 @@ module Orats
 
           exit 1 if process_unusable?("#{command} #{process}", process, phrase)
         end
+      end
+
+      private
+
+      def build_common_paths
+        @remote_paths[:version] = select_branch 'master', RELATIVE_PATHS[:version]
+        @remote_gem_version     = gem_version
+
+        RELATIVE_PATHS.each_pair do |key, value|
+          @local_paths[key]  = "#{base_path}/#{value}"
+          @remote_paths[key] = select_branch @remote_gem_version, value
+        end
+      end
+
+      def select_branch(branch, value)
+        "#{repo_path[0]}/#{branch}/#{repo_path[1]}/#{value}"
       end
 
       def process_unusable?(command, process, phrase)
