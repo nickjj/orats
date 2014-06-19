@@ -114,14 +114,16 @@ module Orats
       end
 
       def check_old_remote_file_paths(url)
-        if VERSION < '0.6.6'
-          url.gsub!('play/', '')
-          url.gsub!('/hosts.ini', '/hosts')
-          url.gsub!('new/ansible/', '')
-          url.gsub!('includes/site.yml', 'play.rb')
+        new_url = url.dup
+
+        if @remote_gem_version[1..-1] < '0.6.6'
+          new_url.gsub!('play/', '')
+          new_url.gsub!('/hosts.ini', '/hosts')
+          new_url.gsub!('new/ansible/', '')
+          new_url.gsub!('includes/site.yml', 'play.rb')
         end
 
-        url
+        new_url
       end
 
       def select_branch(branch, value)
