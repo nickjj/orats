@@ -35,9 +35,9 @@ module Orats
       end
 
       def self.copy_from_local_gem(source, dest)
-        base_path           = File.join(File.expand_path(File.dirname(__FILE__)),
-                                      '..')
-        template_path       = "#{base_path}/templates/includes"
+        base_path     = File.join(File.expand_path(File.dirname(__FILE__)),
+                                  '..')
+        template_path = "#{base_path}/templates/includes"
 
         system "mkdir -p #{File.dirname(dest)}" unless Dir.exist?(File.dirname(dest))
         system "cp #{template_path}/#{source} #{dest}"
