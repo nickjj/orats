@@ -206,7 +206,7 @@ The **secrets** path contains the passwords for various things as well as ssh ke
 
 The **services** path contains your rails application. I like to call it services because you might have multiple services in 1 project.
 
-If you run the command with `--skip-ansible` you will not get the inventory, secrets or services directory. It will just generate `myapp` at the path you specify.
+If you run the command with `--skip-ansible` you will not get the inventory and services.
 
 <a name="base-what-do-i-need-to-configure-for-development"></a>
 ##### What do I need to configure for development?

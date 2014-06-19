@@ -12,6 +12,8 @@ module Orats
       end
 
       def init
+        exit_if_path_exists('inventory')
+
         create_inventory
 
         secrets_path = "#{@target_path}/secrets"

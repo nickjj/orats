@@ -44,7 +44,7 @@ module Orats
 
       Project features:
 
-      `--skip-ansible` skip creating the services directory and ansible inventory/secrets [false]
+      `--skip-ansible` skip creating the ansible related directories [false]
 
       `--skip-server-start` skip automatically running puma and sidekiq [false]
 

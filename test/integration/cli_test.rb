@@ -120,7 +120,7 @@ class TestCLI < Minitest::Test
   def assert_or_refute_ansible(assert_or_refute)
     absolute_target_path = "#{TEST_PATH}/#{@target_path}"
 
-    assert_path absolute_target_path
+    assert_path "#{absolute_target_path}/services"
     send("#{assert_or_refute.to_s}_path",
          "#{absolute_target_path}/inventory")
     send("#{assert_or_refute.to_s}_path",

@@ -51,8 +51,7 @@ module Orats
         private
 
         def services_path
-          @options[:skip_ansible] ? @target_path
-          : "#{@target_path}/services/#{File.basename @target_path}"
+          "#{@target_path}/services/#{File.basename @target_path}"
         end
       end
     end

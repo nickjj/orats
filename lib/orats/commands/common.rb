@@ -71,11 +71,15 @@ module Orats
         end
       end
 
-      def exit_if_path_exists
+      def exit_if_path_exists(extend_path='')
         log_task 'Check if this path exists'
 
-        if Dir.exist?(@active_path) || File.exist?(@active_path)
-          log_error 'error', 'A file or directory already exists at this location', 'path', @active_path
+        extended_path = @active_path.dup
+        extended_path = File.join(extended_path, extend_path) unless extend_path
+        .empty?
+
+        if Dir.exist?(extended_path) || File.exist?(extended_path)
+          log_error 'error', 'A file or directory already exists at this location', 'path', extended_path
           exit 1
         end
       end
