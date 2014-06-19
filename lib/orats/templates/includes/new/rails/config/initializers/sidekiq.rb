@@ -3,7 +3,7 @@ ENV['CACHE_PASSWORD'].present? ? pass_string = ":#{ENV['CACHE_PASSWORD']}@" : pa
 redis_host = "#{pass_string}#{ENV['CACHE_HOST']}"
 
 sidekiq_config = {
-    url: "redis://#{redis_host}:#{ENV['CACHE_PORT']}/#{ENV['CACHE_DATABASE']}",
+    url:       "redis://#{redis_host}:#{ENV['CACHE_PORT']}/#{ENV['CACHE_DATABASE']}",
     namespace: "ns_app::sidekiq_#{Rails.env}"
 }
 

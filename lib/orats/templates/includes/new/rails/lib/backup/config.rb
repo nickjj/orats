@@ -32,7 +32,7 @@ root_path 'lib/backup'
 # This must have enough free space to hold apx. 2 backups.
 # May be an absolute path, or relative to the current directory or +root_path+.
 
-tmp_path  '../../tmp'
+tmp_path '../../tmp'
 
 # Sets the path where backup stores persistent information.
 # When Backup's Cycler is used, small YAML files are stored here.

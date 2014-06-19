@@ -8,7 +8,7 @@ class Account < ActiveRecord::Base
 
   after_save :invalidate_cache
 
-  validates :role, inclusion: { in: ROLES }
+  validates :role, inclusion: {in: ROLES}
 
   def self.serialize_from_session(key, salt)
     # store the current_account in the cache so we do not perform a db lookup on each authenticated page

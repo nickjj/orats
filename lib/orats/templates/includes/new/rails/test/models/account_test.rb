@@ -32,7 +32,7 @@ class AccountTest < ActiveSupport::TestCase
   end
 
   test 'expect random password if password is empty' do
-    @account.password = ''
+    @account.password           = ''
     @account.encrypted_password = ''
     @account.save
 

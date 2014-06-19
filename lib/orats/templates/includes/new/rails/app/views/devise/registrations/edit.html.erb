@@ -6,7 +6,7 @@
 
 <div class="row">
   <div class="col-sm-6">
-    <%= form_for resource, as: resource_name, url: registration_path(resource_name), html: { method: :patch } do |f| %>
+    <%= form_for resource, as: resource_name, url: registration_path(resource_name), html: {method: :patch} do |f| %>
       <div class="form-group">
         <%= f.label :current_password %>
         <span class="help-block form-help-adjust-margin">
@@ -15,8 +15,8 @@
           </small>
         </span>
         <%= f.password_field :current_password, maxlength: 128, class: 'form-control',
-                             data: {
-                                 'rule-required' => 'true',
+                             data:                         {
+                                 'rule-required'  => 'true',
                                  'rule-minlength' => '8',
                                  'rule-maxlength' => '128'
                              } %>
@@ -26,7 +26,8 @@
         <%= f.email_field :email, class: 'form-control', maxlength: 254, autofocus: true %>
       </div>
       <% if devise_mapping.confirmable? && resource.pending_reconfirmation? %>
-        <h3>Currently waiting confirmation for: <%= resource.unconfirmed_email %></h3>
+        <h3>Currently waiting confirmation
+          for: <%= resource.unconfirmed_email %></h3>
       <% end %>
       <div class="form-group">
         <%= f.label :password %>

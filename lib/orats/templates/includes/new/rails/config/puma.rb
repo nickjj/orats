@@ -1,6 +1,6 @@
 environment ENV['RAILS_ENV']
 
-threads ENV['PUMA_THREADS_MIN'].to_i,ENV['PUMA_THREADS_MAX'].to_i
+threads ENV['PUMA_THREADS_MIN'].to_i, ENV['PUMA_THREADS_MAX'].to_i
 workers ENV['PUMA_WORKERS'].to_i
 
 pidfile "#{ENV['PROJECT_PATH']}/tmp/puma.pid"
