@@ -37,10 +37,10 @@ module Orats
             inventory_path = @options[:inventory]
 
             if File.directory?(inventory_path)
-              hosts_path = File.join(inventory_path, 'inventory/hosts.ini')
+              hosts_path = File.join(inventory_path, 'hosts')
 
               inventory_path = File.join(inventory_path,
-                                         'inventory/group_vars/all.yml')
+                                         'group_vars/all.yml')
 
               local_to_user_hosts hosts_path
             end

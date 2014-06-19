@@ -12,7 +12,7 @@ module Orats
 
       RELATIVE_PATHS = {
           galaxyfile: 'templates/includes/play/Galaxyfile',
-          hosts:      'templates/includes/new/ansible/inventory/hosts.ini',
+          hosts:      'templates/includes/new/ansible/inventory/hosts',
           inventory:  'templates/includes/new/ansible/inventory/group_vars/all.yml',
           playbook:   'templates/includes/play/site.yml',
           version:    'version.rb'
@@ -118,7 +118,6 @@ module Orats
 
         if @remote_gem_version[1..-1] < '0.6.6'
           new_url.gsub!('play/', '')
-          new_url.gsub!('/hosts.ini', '/hosts')
           new_url.gsub!('new/ansible/', '')
           new_url.gsub!('includes/site.yml', 'play.rb')
         end
