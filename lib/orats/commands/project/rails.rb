@@ -1,6 +1,6 @@
 module Orats
   module Commands
-    module New
+    module Project
       module Rails
         def check_exit_conditions
           exit_if_process :not_found, 'rails', 'git'

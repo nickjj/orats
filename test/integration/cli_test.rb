@@ -15,24 +15,28 @@ class TestCLI < Minitest::Test
     assert_nuked unless @target_path.nil?
   end
 
-  def test_new_app
-    assert_new_app extras: :assert
+  def test_project
+    assert_project ansible: :assert
   end
 
-  def test_new_app_with_auth
-    assert_new_app '--auth', extras: :assert
+  def test_project_with_auth
+    assert_project '--auth', ansible: :assert
   end
 
-  def test_new_app_without_extras
-    assert_new_app '--skip-extras', extras: :refute
+  def test_project_without_ansible
+    assert_project '--skip-ansible', ansible: :refute
   end
 
-  def test_play
-    assert_play
+  def test_inventory
+    assert_inventory
+  end
+
+  def test_playbook
+    assert_playbook
   end
 
   def test_diff
-    assert_play
+    assert_playbook
 
     @target_path = ''
     assert_orats 'diff', 'Compare this version of'
@@ -44,30 +48,30 @@ class TestCLI < Minitest::Test
 
   private
 
-  def assert_orats(command, match_regex, extras: nil)
+  def assert_orats(command, match_regex, ansible: nil)
     out, err = capture_orats(command)
 
     assert_match /#{match_regex}/, out
 
-    assert_or_refute_extras extras if extras
+    assert_or_refute_ansible ansible if ansible
   end
 
-  def assert_new_app(flags = '', extras: nil)
+  def assert_project(flags = '', ansible: nil)
     @target_path         = generate_app_name
     absolute_target_path = "#{TEST_PATH}/#{@target_path}"
     @extra_flags         = "#{ORATS_NEW_FLAGS} #{flags}"
 
-    assert_orats 'new', 'Start your server', extras: extras
+    assert_orats 'project', 'Start your server', ansible: ansible
 
-    if extras == :assert
+    if ansible == :assert
       assert_ansible_yaml "#{absolute_target_path}/inventory/group_vars/all.yml"
       absolute_target_path << "/services/#{@target_path}"
     end
 
-    assert_app_tests_pass absolute_target_path
+    assert_project_tests_pass absolute_target_path
   end
 
-  def assert_app_tests_pass(target_path)
+  def assert_project_tests_pass(target_path)
     out, err = capture_subprocess_io do
       system "cd #{target_path} && bundle exec rake test"
     end
@@ -76,9 +80,18 @@ class TestCLI < Minitest::Test
     assert out.include?('0 failures') && out.include?('0 errors'), err
   end
 
-  def assert_play
+  def assert_inventory
     @target_path = generate_app_name
-    assert_orats 'play', 'success'
+    @extra_flags = '--skip-galaxy'
+
+    assert_orats 'inventory', 'success'
+    assert_ansible_yaml "#{TEST_PATH}/#{@target_path}/inventory/group_vars/all.yml"
+  end
+
+  def assert_playbook
+    @target_path = generate_app_name
+
+    assert_orats 'playbook', 'success'
     assert_ansible_yaml "#{TEST_PATH}/#{@target_path}/site.yml"
   end
 
@@ -104,7 +117,7 @@ class TestCLI < Minitest::Test
     refute File.exists?(file_or_dir), "Expected path '#{file_or_dir}' to exist"
   end
 
-  def assert_or_refute_extras(assert_or_refute)
+  def assert_or_refute_ansible(assert_or_refute)
     absolute_target_path = "#{TEST_PATH}/#{@target_path}"
 
     assert_path absolute_target_path

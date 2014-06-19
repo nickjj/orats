@@ -1,13 +1,12 @@
 require 'orats/commands/common'
-require 'orats/commands/new/ansible'
-require 'orats/commands/new/rails'
-require 'orats/commands/new/server'
+require 'orats/commands/inventory'
+require 'orats/commands/project/rails'
+require 'orats/commands/project/server'
 
 module Orats
   module Commands
-    module New
+    module Project
       class Exec < Commands::Common
-        include Ansible
         include Rails
         include Server
 
@@ -41,7 +40,8 @@ module Orats
             end
           end
 
-          ansible_extras unless @options[:skip_extras]
+          Commands::Inventory.new(@target_path,
+                                  @options).init unless @options[:skip_ansible]
 
           custom_rails_template unless @options[:template].empty?
 
@@ -51,7 +51,7 @@ module Orats
         private
 
         def services_path
-          @options[:skip_extras] ? @target_path
+          @options[:skip_ansible] ? @target_path
           : "#{@target_path}/services/#{File.basename @target_path}"
         end
       end

@@ -41,7 +41,7 @@ end
 def copy_from_local_gem(source, dest = '')
   dest = source if dest.empty?
 
-  base_path = "#{File.expand_path File.dirname(__FILE__)}/includes/play"
+  base_path = "#{File.expand_path File.dirname(__FILE__)}/includes/playbook"
 
   run "mkdir -p #{File.dirname(dest)}" unless Dir.exist?(File.dirname(dest))
   run "cp -f #{base_path}/#{source} #{dest}"
@@ -102,7 +102,7 @@ def log_complete
   puts
   say_status 'question', 'Are you new to ansible?', :yellow
   say_status 'answer', 'http://docs.ansible.com/intro_getting_started.html', :white
-  puts '-'*80
+  puts
 end
 
 # ---

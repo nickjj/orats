@@ -26,8 +26,8 @@ Gems will also be updated once they are proven to work on the target rails/ruby 
         - [FAQ](#auth-faq)
             - [Development configuration?](#auth-what-do-i-need-to-configure-for-development)
             - [Production configuration?](#auth-what-do-i-need-to-configure-for-production)
-    - [Play](#play)
-        - [Try it](#try-the-play-template)
+    - [Playbook](#playbook)
+        - [Try it](#try-the-playbook-template)
         - [Ansible roles](#ansible-roles-used)
 - [Wiki](https://github.com/nickjj/orats/wiki)
     - [What to look at after making a new project](https://github.com/nickjj/orats/wiki/What-to-look-at-after-making-a-new-project)
@@ -68,7 +68,7 @@ Or if you already have orats then run `gem update orats` to upgrade to the lates
 Here is an overview of the available commands. You can find out more information about each command and flag by running  `orats help <command name>` from your terminal. You can also type `orats` on its own to see a list of all commands.
 
 - **Create a new orats project**:
-    - `orats new <TARGET_PATH> --pg-password foo`
+    - `orats project <TARGET_PATH> --pg-password foo`
     - Configuration:
         - Optionally takes: `--pg-location [localhost]`
         - Optionally takes: `--pg-username [postgres]`
@@ -78,14 +78,22 @@ Here is an overview of the available commands. You can find out more information
         - Optionally takes: `--auth [false]`
         - Optionally takes: `--template []`
     - Project:
-        - Optionally takes: `--skip-extras [false]`
+        - Optionally takes: `--skip-ansible [false]`
         - Optionally takes: `--skip-server-start [false]`
     - Ansible:
         - Optionally takes: `--sudo-password []`
         - Optionally takes: `--skip-galaxy [false]`
 
+- **Create an ansible inventory**:
+    - `orats inventory <TARGET_PATH>`
+    - Configuration:
+        - Optionally takes: `--sudo-password []`
+        - Optionally takes: `--skip-galaxy [false]`
+    - Template:
+        - Optionally takes: `--template []`
+
 - **Create an ansible playbook**:
-    - `orats play <TARGET_PATH>`
+    - `orats playbook <TARGET_PATH>`
     - Template:
         - Optionally takes: `--template []`
 
@@ -176,7 +184,7 @@ This was done to ensure each app you create has the correct ansible role version
 
 You can fix this by supplying `--sudo-password foo` to the above command if you know ansible is installed outside of your home directory or you can just wait while the command runs and it will prompt you for your sudo password when it gets to that point because orats will attempt to use sudo only after it fails trying to install the roles without sudo.
 
-If you don't care about the ansible at all you could add `--skip-extras` to not generate any ansible files.
+If you don't care about the ansible at all you could add `--skip-ansible` to not generate any ansible files.
 
 ##### Does your redis server use a password?
 
@@ -191,14 +199,14 @@ Let's say you were to generate a new project at *~/tmp/myapp*, then you would ge
 ~/tmp/myapp/secrets
 ~/tmp/myapp/services
 ```
-
+f
 The **inventory** path contains the ansible inventory files for this project. This would be where your host addresses go along with configuration settings for this project.
 
 The **secrets** path contains the passwords for various things as well as ssh keypairs and ssl certificates. This path should be kept out of version control. You could also go 1 extra step and encrypt this directory locally.
 
 The **services** path contains your rails application. I like to call it services because you might have multiple services in 1 project.
 
-If you run the command with `--skip-extras` you will not get the inventory, secrets or services directory. It will just generate `myapp` at the path you specify.
+If you run the command with `--skip-ansible` you will not get the inventory, secrets or services directory. It will just generate `myapp` at the path you specify.
 
 <a name="base-what-do-i-need-to-configure-for-development"></a>
 ##### What do I need to configure for development?
@@ -294,7 +302,7 @@ You may want to change `ACTION_MAILER_DEVISE_DEFAULT_FROM` in `.env`.
 
 You will want to change `ACTION_MAILER_DEVISE_DEFAULT_FROM` in `inventory/group_vars/all.yml`.
 
-### Play
+### Playbook
 
 Building your application is only one piece of the puzzle. If you want to ship your application you have to host it somewhere. You have a few options when it comes to managed hosts like Heroku but they tend to be very expensive if you fall out of their free tier.
 
@@ -321,9 +329,9 @@ Everything is broken up into ansible roles so you can quickly scale out horizont
     - Your rails app and sidekiq have `init.d` scripts
     - Your rails app and sidekiq are monitored using `monit`
 
-#### Try the play template
+#### Try the playbook template
 
-`orats play myplaybook`
+`orats playbook myplaybook`
 
 #### Ansible roles used
 

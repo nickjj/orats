@@ -11,10 +11,10 @@ module Orats
       include Diff::Parse
 
       RELATIVE_PATHS = {
-          galaxyfile: 'templates/includes/play/Galaxyfile',
-          hosts:      'templates/includes/new/ansible/inventory/hosts',
-          inventory:  'templates/includes/new/ansible/inventory/group_vars/all.yml',
-          playbook:   'templates/includes/play/site.yml',
+          galaxyfile: 'templates/includes/playbook/Galaxyfile',
+          hosts:      'templates/includes/inventory/hosts',
+          inventory:  'templates/includes/inventory/group_vars/all.yml',
+          playbook:   'templates/includes/playbook/site.yml',
           version:    'version.rb'
       }
 
@@ -117,8 +117,7 @@ module Orats
         new_url = url.dup
 
         if @remote_gem_version[1..-1] < '0.6.6'
-          new_url.gsub!('play/', '')
-          new_url.gsub!('new/ansible/', '')
+          new_url.gsub!('playbook/', '')
           new_url.gsub!('includes/site.yml', 'play.rb')
         end
 

@@ -3,7 +3,7 @@ require 'timeout'
 
 module Orats
   module Commands
-    module New
+    module Project
       module Server
         START_COMMAND = 'bundle exec foreman start'
 

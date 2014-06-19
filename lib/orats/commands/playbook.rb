@@ -1,10 +1,10 @@
 require 'orats/commands/common'
-require 'orats/commands/new/rails'
+require 'orats/commands/project/rails'
 
 module Orats
   module Commands
-    class Play < Common
-      include New::Rails
+    class Playbook < Common
+      include Project::Rails
 
       def initialize(target_path = '', options = {})
         super
@@ -13,7 +13,7 @@ module Orats
       def init
         exit_if_path_exists
 
-        rails_template 'play'
+        rails_template 'playbook'
         custom_rails_template unless @options[:template].empty?
       end
     end

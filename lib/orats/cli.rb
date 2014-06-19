@@ -1,6 +1,7 @@
 require 'thor'
-require 'orats/commands/new/exec'
-require 'orats/commands/play'
+require 'orats/commands/project/exec'
+require 'orats/commands/inventory'
+require 'orats/commands/playbook'
 require 'orats/commands/nuke'
 require 'orats/commands/diff/exec'
 
@@ -13,13 +14,13 @@ module Orats
     option :redis_password, default: '', aliases: '-d'
     option :auth, type: :boolean, default: false, aliases: '-a'
     option :template, default: '', aliases: '-m'
-    option :skip_extras, type: :boolean, default: false, aliases: '-E'
+    option :skip_ansible, type: :boolean, default: false, aliases: '-A'
     option :skip_server_start, type: :boolean, default: false, aliases: '-F'
     option :sudo_password, default: '', aliases: '-s'
     option :skip_galaxy, type: :boolean, default: false, aliases: '-G'
     desc 'new TARGET_PATH [options]', ''
     long_desc <<-D
-      `orats new target_path --pg-password supersecret` will create a new rails project and it will also create an ansible inventory to go with it by default.
+      `orats project target_path --pg-password supersecret` will create a new rails project and it will also create an ansible inventory to go with it by default.
 
       You must supply at least this flag:
 
@@ -43,7 +44,7 @@ module Orats
 
       Project features:
 
-      `--skip-extras` skip creating the services directory and ansible inventory/secrets [false]
+      `--skip-ansible` skip creating the services directory and ansible inventory/secrets [false]
 
       `--skip-server-start` skip automatically running puma and sidekiq [false]
 
@@ -54,22 +55,44 @@ module Orats
       `--skip-galaxy` skip automatically installing roles from the galaxy [false]
     D
 
-    def new(target_path)
-      Commands::New::Exec.new(target_path, options).init
+    def project(target_path)
+      Commands::Project::Exec.new(target_path, options).init
     end
 
+    option :sudo_password, default: '', aliases: '-s'
+    option :skip_galaxy, type: :boolean, default: false, aliases: '-G'
     option :template, default: '', aliases: '-m'
-    desc 'play PATH [options]', ''
+    desc 'inventory TARGET_PATH [options]', ''
     long_desc <<-D
-      `orats play target_path` will create an ansible playbook.
+      `orats inventory target_path` will create an ansible inventory.
+
+      Configuration:
+
+      `--sudo-password` to install ansible roles from the galaxy to a path outside of your user privileges []
+
+      `--skip-galaxy` skip automatically installing roles from the galaxy [false]
 
       Template features:
 
       `--template` will let you supply a custom template, a url or file is ok but urls must start with http or https []
     D
 
-    def play(target_path)
-      Commands::Play.new(target_path, options).init
+    def inventory(target_path)
+      Commands::Inventory.new(target_path, options).init
+    end
+
+    option :template, default: '', aliases: '-m'
+    desc 'playbook TARGET_PATH [options]', ''
+    long_desc <<-D
+      `orats playbook target_path` will create an ansible playbook.
+
+      Template features:
+
+      `--template` will let you supply a custom template, a url or file is ok but urls must start with http or https []
+    D
+
+    def playbook(target_path)
+      Commands::Playbook.new(target_path, options).init
     end
 
     option :skip_data, type: :boolean, default: false, aliases: '-D'
