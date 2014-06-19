@@ -6,12 +6,12 @@ module Orats
   module Test
     include Commands::New::Server
 
-    TEST_PATH = ENV['TEST_PATH'] || '/tmp/orats'
-    POSTGRES_LOCATION =  ENV['POSTGRES_LOCATION'] || 'localhost'
+    TEST_PATH         = ENV['TEST_PATH']         || '/tmp/orats'
+    POSTGRES_LOCATION = ENV['POSTGRES_LOCATION'] || 'localhost'
     POSTGRES_USERNAME = ENV['POSTGRES_USERNAME'] || 'postgres'
     POSTGRES_PASSWORD = ENV['POSTGRES_PASSWORD'] || 'pleasedonthackme'
-    REDIS_LOCATION = ENV['REDIS_LOCATION'] || 'localhost'
-    REDIS_PASSWORD = ENV['REDIS_PASSWORD'] || ''
+    REDIS_LOCATION    = ENV['REDIS_LOCATION']    || 'localhost'
+    REDIS_PASSWORD    = ENV['REDIS_PASSWORD']    || ''
 
     CREDENTIALS = "-l #{POSTGRES_LOCATION} -u #{POSTGRES_USERNAME} -p #{POSTGRES_PASSWORD} -n #{REDIS_LOCATION} -d #{REDIS_PASSWORD}"
 
