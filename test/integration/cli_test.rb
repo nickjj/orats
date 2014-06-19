@@ -65,9 +65,9 @@ class TestCLI < Minitest::Test
 
     if ansible == :assert
       assert_ansible_yaml "#{absolute_target_path}/inventory/group_vars/all.yml"
-      absolute_target_path << "/services/#{@target_path}"
     end
 
+    absolute_target_path << "/services/#{@target_path}"
     assert_project_tests_pass absolute_target_path
   end
 
