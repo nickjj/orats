@@ -37,7 +37,7 @@ module Orats
 
           if @options[:auth]
             rails_template 'auth', '--skip ' do
-              run_rake 'db:migrate db:seed'
+              migrate_and_seed_database
             end
           end
 

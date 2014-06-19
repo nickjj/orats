@@ -119,6 +119,11 @@ module Orats
           git_commit 'Add the database schema file'
         end
 
+        def migrate_and_seed_database
+          run_rake 'db:migrate db:seed'
+          git_commit 'Update the database schema file'
+        end
+
         private
 
         def kill_spring_servers
