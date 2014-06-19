@@ -48,7 +48,17 @@ module Orats
             local_to_user_inventory inventory_path
           end
 
-          local_to_user_playbook unless @options[:playbook].empty?
+          unless @options[:playbook].empty?
+            playbook_path = @options[:playbook]
+
+            if File.directory?(playbook_path)
+              playbook_path = File.join(playbook_path, 'site.yml')
+
+              local_to_user_playbook playbook_path
+            end
+
+            local_to_user_playbook playbook_path
+          end
         end
 
         private
@@ -65,9 +75,9 @@ module Orats
           end
         end
 
-        def local_to_user_playbook
-          local_to_user('playbook', 'roles', @options[:playbook], @local_playbook) do
-            playbook file_to_string(@options[:playbook])
+        def local_to_user_playbook(path)
+          local_to_user('playbook', 'roles', path, @local_playbook) do
+            playbook file_to_string(path)
           end
         end
       end

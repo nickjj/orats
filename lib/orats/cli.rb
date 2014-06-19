@@ -129,15 +129,17 @@ module Orats
 
       `--hosts` to supply a hosts file for comparison []
 
-      `--inventory` to supply an inventory file for comparison []
+      `--inventory` to supply an inventory directory/file for comparison []
 
-      `--playbook` to supply a playbook file for comparison []
+      `--playbook` to supply a playbook directory/file for comparison []
 
       Quality of life features:
 
       `--inventory` also accepts a path to your project's inventory folder,
 if you kept the default file names it will automatically compare both your
-hosts.ini and group_vars/all.yml files.
+hosts and group_vars/all.yml files.
+
+      `--playbook` also accepts a path to a playbook folder, if you kept the playbook name as `site.yml` it will automatically choose it.
     D
 
     def diff
