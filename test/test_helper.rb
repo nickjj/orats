@@ -6,9 +6,17 @@ module Orats
   module Test
     include Commands::New::Server
 
+    TEST_PATH = ENV['TEST_PATH'] || '/tmp/orats'
+    POSTGRES_HOST =  ENV['POSTGRES_HOST'] || 'localhost'
+    POSTGRES_USERNAME = ENV['POSTGRES_USERNAME'] || 'postgres'
+    POSTGRES_PASSWORD = ENV['POSTGRES_PASSWORD'] || 'pleasedonthackme'
+    REDIS_LOCATION = ENV['REDIS_HOST'] || 'localhost'
+    REDIS_PASSWORD = ENV['REDIS_PASSWORD'] || ''
+
+    CREDENTIALS = "-l #{POSTGRES_HOST} -u #{POSTGRES_USERNAME} -p #{POSTGRES_PASSWORD} -n #{REDIS_LOCATION} -d #{REDIS_PASSWORD}"
+
     BINARY_PATH     = File.absolute_path('../../bin/orats', __FILE__)
-    TEST_PATH       = '/tmp/orats'
-    ORATS_NEW_FLAGS = '-p pleasedonthackme --skip-server-start --skip-galaxy'
+    ORATS_NEW_FLAGS = "#{CREDENTIALS} -FG"
 
     def orats(command, options = {})
       cmd, app_name   = command.split(' ')
