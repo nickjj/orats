@@ -1,10 +1,10 @@
 require 'minitest/autorun'
 require 'securerandom'
-require_relative '../lib/orats/commands/new/server'
+require_relative '../lib/orats/commands/project/server'
 
 module Orats
   module Test
-    include Commands::New::Server
+    include Commands::Project::Server
 
     TEST_PATH         = ENV['TEST_PATH']         || '/tmp/orats'
     POSTGRES_LOCATION = ENV['POSTGRES_LOCATION'] || 'localhost'
