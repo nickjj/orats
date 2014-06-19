@@ -200,7 +200,7 @@ Let's say you were to generate a new project at *~/tmp/myapp*, then you would ge
 ~/tmp/myapp/secrets
 ~/tmp/myapp/services
 ```
-f
+
 The **inventory** path contains the ansible inventory files for this project. This would be where your host addresses go along with configuration settings for this project.
 
 The **secrets** path contains the passwords for various things as well as ssh keypairs and ssl certificates. This path should be kept out of version control. You could also go 1 extra step and encrypt this directory locally.
