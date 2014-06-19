@@ -89,8 +89,6 @@ Here is an overview of the available commands. You can find out more information
     - Configuration:
         - Optionally takes: `--sudo-password []`
         - Optionally takes: `--skip-galaxy [false]`
-    - Template:
-        - Optionally takes: `--template []`
 
 - **Create an ansible playbook**:
     - `orats playbook <TARGET_PATH>`

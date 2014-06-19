@@ -61,7 +61,6 @@ module Orats
 
     option :sudo_password, default: '', aliases: '-s'
     option :skip_galaxy, type: :boolean, default: false, aliases: '-G'
-    option :template, default: '', aliases: '-m'
     desc 'inventory TARGET_PATH [options]', ''
     long_desc <<-D
       `orats inventory target_path` will create an ansible inventory.
@@ -71,10 +70,6 @@ module Orats
       `--sudo-password` to install ansible roles from the galaxy to a path outside of your user privileges []
 
       `--skip-galaxy` skip automatically installing roles from the galaxy [false]
-
-      Template features:
-
-      `--template` will let you supply a custom template, a url or file is ok but urls must start with http or https []
     D
 
     def inventory(target_path)
