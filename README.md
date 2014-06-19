@@ -1,6 +1,6 @@
 [![Gem Version](https://badge.fury.io/rb/orats.png)](http://badge.fury.io/rb/orats)
 
-**Note:**  
+##### Note
 This readme file is based off the master version of orats. If you want accurate documentation then make sure to select the branch for the latest *gem version* of orats.
 
 ## What is orats and what problem does it solve?
@@ -167,7 +167,7 @@ All of the changes have git commits to go with them. After generating a project 
 
 #### Try the base template
 
-`orats new myapp --pg-password foo --skip-galaxy`
+`orats project myapp --pg-password foo --skip-galaxy`
 
 #### Base FAQ
 
@@ -179,7 +179,7 @@ In order to do this it must know your postgres location, username and password. 
 
 ##### What is `--skip-galaxy`?
 
-By default the new command will generate ansible related files for you so that you can manage this app's "inventory". It also automatically downloads the ansible roles from the [ansible galaxy](https://galaxy.ansible.com/).
+By default the project command will generate ansible related files for you so that you can manage this app's "inventory". It also automatically downloads the ansible roles from the [ansible galaxy](https://galaxy.ansible.com/).
 
 This was done to ensure each app you create has the correct ansible role version to go with it. However, if you installed ansible through apt or somewhere outside of your home directory then you will get permissions errors when it tries to download the roles.
 
@@ -285,7 +285,7 @@ All of the changes have git commits to go with them. After generating a project 
 
 #### Try the auth template
 
-`orats new myauthapp --auth --pg-password foo --skip-galaxy`
+`orats project myauthapp --auth --pg-password foo --skip-galaxy`
 
 #### Auth FAQ
 
