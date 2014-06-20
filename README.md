@@ -89,7 +89,7 @@ Here is an overview of the available commands. You can find out more information
         - Optionally takes: `--redis-location [localhost]`
         - Optionally takes: `--redis-password []`
     - Template:
-        - Optionally takes: `--auth [false]`
+        - Optionally takes: `--template []`
         - Optionally takes: `--custom []`
     - Project:
         - Optionally takes: `--skip-ansible [false]`

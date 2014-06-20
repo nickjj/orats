@@ -10,6 +10,8 @@ module Orats
         include Rails
         include Server
 
+        PROJECT_TEMPLATES = ['auth']
+
         def initialize(target_path = '', options = {})
           super
 
@@ -34,8 +36,8 @@ module Orats
             generate_favicons
           end
 
-          if @options[:auth]
-            rails_template 'auth', '--skip ' do
+          if template_exist?(@options[:template])
+            rails_template @options[:template], '--skip ' do
               migrate_and_seed_database
             end
           end

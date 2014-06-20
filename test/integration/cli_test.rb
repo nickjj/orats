@@ -20,7 +20,7 @@ class TestCLI < Minitest::Test
   end
 
   def test_project_with_auth
-    assert_project '--auth', ansible: :assert
+    assert_project '--template auth', ansible: :assert
   end
 
   def test_project_without_ansible

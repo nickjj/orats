@@ -12,7 +12,7 @@ module Orats
     option :pg_password, required: true, aliases: '-p'
     option :redis_location, default: 'localhost', aliases: '-n'
     option :redis_password, default: '', aliases: '-d'
-    option :auth, type: :boolean, default: false, aliases: '-a'
+    option :template, default: '', aliases: '-m'
     option :custom, default: '', aliases: '-c'
     option :skip_ansible, type: :boolean, default: false, aliases: '-A'
     option :skip_server_start, type: :boolean, default: false, aliases: '-F'
@@ -38,7 +38,7 @@ module Orats
 
       Template features:
 
-      `--auth` will include authentication and authorization [false]
+      `--template` accepts a template name which will get added in addition to the base template []
 
       `--custom` will let you supply a custom template, a url or file is ok but urls must start with http or https []
 

@@ -6,6 +6,7 @@ module Orats
           exit_if_process :not_found, 'rails', 'git'
           exit_if_process :not_running, 'postgres', 'redis'
           exit_if_path_exists
+          exit_if_invalid_template
         end
 
         def rails_template(command, flags = '')
@@ -124,7 +125,29 @@ module Orats
           git_commit 'Update the database schema file'
         end
 
+        def template_exist?(template)
+          Exec::PROJECT_TEMPLATES.include?(template)
+        end
+
         private
+
+        def exit_if_invalid_template
+          if @options[:template].length > 0
+            log_task 'Check if template exists'
+
+            unless template_exist?(@options[:template])
+              log_error 'error', 'Cannot find template', 'message',
+                        "'#{@options[:template]}' is not a valid template name",
+                        true do
+                log_status_bottom 'tip',
+                                  'run `orats templates` to get a list of valid templates',
+                                  :white
+              end
+
+              exit 1
+            end
+          end
+        end
 
         def kill_spring_servers
           # rails generators will lock up if a spring server is running,
