@@ -27,7 +27,9 @@ Gems will also be updated once they are proven to work on the target rails/ruby 
         - [Ansible roles](#ansible-roles-used)
     - [Diff](#diff)
         - [Try it](#try-the-diff-command)
-- [Templates](#templates)
+    - [Templates](#templates)
+        - [Try it](#try-the-templates-command)
+- [Available templates](#available-templates)
     - [Base](#base)
         - [Try it](#try-the-base-template)
         - [FAQ](#base-faq)
@@ -118,6 +120,9 @@ Here is an overview of the available commands. You can find out more information
     - Optionally takes: `--hosts []`
     - Optionally takes: `--inventory []`
     - Optionally takes: `--playbook []`
+
+- **Get a list of available orats templates**:
+    - `orats templates`
 
 ### Project
 
@@ -271,7 +276,15 @@ playbook folder it will automatically choose the `site.yml` playbook.
 
 `orats diff`
 
-## Templates
+### Templates
+
+Return a list of available templates to choose from.
+
+#### Try the templates command
+
+`orats templates`
+
+## Available templates
 
 ### Base
 

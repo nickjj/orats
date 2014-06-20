@@ -141,6 +141,15 @@ hosts and group_vars/all.yml files.
       Commands::Diff::Exec.new(nil, options).init
     end
 
+    desc 'templates', ''
+    long_desc <<-D
+      `orats templates` will return a list of available orats templates.
+    D
+
+    def templates
+      Commands::Project::Exec.new.list_templates
+    end
+
     desc 'version', ''
     long_desc <<-D
       `orats version` will print the current version.

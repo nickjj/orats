@@ -10,12 +10,25 @@ module Orats
         include Rails
         include Server
 
-        PROJECT_TEMPLATES = ['auth']
+        PROJECT_TEMPLATES = {
+            auth: 'add authentication and authorization'
+        }
 
         def initialize(target_path = '', options = {})
           super
 
           @active_path = services_path
+        end
+
+        def list_templates
+          log_status_top 'templates', 'Available templates to choose from:',
+                         :blue
+          puts
+          PROJECT_TEMPLATES.each_pair do |key, value|
+            log_status_bottom key, value, :cyan, true
+            log_status_bottom 'usage', "orats project /tmp/foo --template #{key}",
+                              :white
+          end
         end
 
         def init

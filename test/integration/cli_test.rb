@@ -42,6 +42,10 @@ class TestCLI < Minitest::Test
     assert_orats 'diff', 'Compare this version of'
   end
 
+  def test_templates
+    assert_orats 'templates', '--template auth'
+  end
+
   def test_version
     assert_orats 'version', 'Orats'
   end
