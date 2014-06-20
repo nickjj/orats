@@ -27,6 +27,13 @@ class TestCLI < Minitest::Test
     assert_project '--skip-ansible', ansible: :refute
   end
 
+  def test_project_with_invalid_template
+    @target_path = generate_app_name
+    @extra_flags = "#{ORATS_NEW_FLAGS} --template foo"
+
+    assert_orats 'project', 'not a valid template'
+  end
+
   def test_inventory
     assert_inventory
   end
