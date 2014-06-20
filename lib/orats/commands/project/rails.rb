@@ -18,10 +18,10 @@ module Orats
         def custom_rails_template
           log_task 'Run custom rails template'
 
-          @options[:template].include?('://') ? url_to_string(@options[:template])
-          : file_to_string(@options[:template])
+          @options[:custom].include?('://') ? url_to_string(@options[:custom])
+          : file_to_string(@options[:custom])
 
-          rails_template '', "--skip --template #{@options[:template]}"
+          rails_template '', "--skip --template #{@options[:custom]}"
         end
 
         def gsub_postgres_info

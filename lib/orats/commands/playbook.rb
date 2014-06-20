@@ -14,7 +14,7 @@ module Orats
         exit_if_path_exists
 
         rails_template 'playbook'
-        custom_rails_template unless @options[:template].empty?
+        custom_rails_template unless @options[:custom].empty?
       end
     end
   end

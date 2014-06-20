@@ -43,7 +43,7 @@ module Orats
           Commands::Inventory.new(@target_path,
                                   @options).init unless @options[:skip_ansible]
 
-          custom_rails_template unless @options[:template].empty?
+          custom_rails_template unless @options[:custom].empty?
 
           server_start
         end

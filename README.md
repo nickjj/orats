@@ -79,7 +79,7 @@ Here is an overview of the available commands. You can find out more information
         - Optionally takes: `--redis-password []`
     - Template:
         - Optionally takes: `--auth [false]`
-        - Optionally takes: `--template []`
+        - Optionally takes: `--custom []`
     - Project:
         - Optionally takes: `--skip-ansible [false]`
         - Optionally takes: `--skip-server-start [false]`
@@ -96,7 +96,7 @@ Here is an overview of the available commands. You can find out more information
 - **Create an ansible playbook**:
     - `orats playbook <TARGET_PATH>`
     - Template:
-        - Optionally takes: `--template []`
+        - Optionally takes: `--custom []`
 
 - **Delete a directory and optionally all data associated to it**:
     - `orats nuke <TARGET_PATH>`

@@ -13,7 +13,7 @@ module Orats
     option :redis_location, default: 'localhost', aliases: '-n'
     option :redis_password, default: '', aliases: '-d'
     option :auth, type: :boolean, default: false, aliases: '-a'
-    option :template, default: '', aliases: '-m'
+    option :custom, default: '', aliases: '-c'
     option :skip_ansible, type: :boolean, default: false, aliases: '-A'
     option :skip_server_start, type: :boolean, default: false, aliases: '-F'
     option :sudo_password, default: '', aliases: '-s'
@@ -40,7 +40,7 @@ module Orats
 
       `--auth` will include authentication and authorization [false]
 
-      `--template` will let you supply a custom template, a url or file is ok but urls must start with http or https []
+      `--custom` will let you supply a custom template, a url or file is ok but urls must start with http or https []
 
       Project features:
 
@@ -76,14 +76,14 @@ module Orats
       Commands::Inventory.new(target_path, options).init
     end
 
-    option :template, default: '', aliases: '-m'
+    option :custom, default: '', aliases: '-c'
     desc 'playbook TARGET_PATH [options]', ''
     long_desc <<-D
       `orats playbook target_path` will create an ansible playbook.
 
       Template features:
 
-      `--template` will let you supply a custom template, a url or file is ok but urls must start with http or https []
+      `--custom` will let you supply a custom template, a url or file is ok but urls must start with http or https []
     D
 
     def playbook(target_path)
