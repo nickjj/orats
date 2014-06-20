@@ -242,21 +242,21 @@ orats gem to the latest orats gem. It can also compare the difference between
  the orats generated version of an inventory/playbook to an 
  inventory/playbook that you generated and have customized.
  
- This may come in handy when it comes time to upgrade orats and your project. 
+ This comes in handy when you want to upgrade orats and your project. 
  You will be able to see if your inventory/playbook are missing any variables
   or roles and it will also detect custom variables/roles that you have added.
    
 It allows you to make 2 different types of comparisons:
 
-#### Latest stable vs your version
+#### Latest stable version of orats vs your version
 
 When doing this type of comparison it only compares the actual files contained in the orats source code, not your generated inventory/playbook.
     
 This is the type of comparison that is made when you run the `diff` command 
-without any arguments. It might be useful to run this from time to time to 
-see if you are missing out on any new features in the latest orats version.
+without any arguments. It is useful to run this from time to time to 
+see if you are missing out on any new features in the latest version.
 
-#### Your version vs your custom project files
+#### Your orats version vs your custom project files
 
 If you pass in the `--hosts`, `--inventory` and/or `--playbook` flags along 
 with a path to each of their files then it will compare the files contained 
@@ -471,7 +471,7 @@ You will want to change `ACTION_MAILER_DEVISE_DEFAULT_FROM` in `inventory/group_
 You can pass custom templates into both the `project` and `playbook` commands
 . It works exactly like passing a custom application template to `rails new`.
 
-Pass in a custom template by providing the `--custom` flag  along with either a local path or a URL to your custom template.
+Pass in a custom template by providing the `--custom` flag along with either a local path or a URL.
 
 Here is a simple example of a custom template:
 
