@@ -32,6 +32,10 @@ Gems will also be updated once they are proven to work on the target rails/ruby 
     - [Playbook](#playbook)
         - [Try it](#try-the-playbook-template)
         - [Ansible roles](#ansible-roles-used)
+    - [Custom](#custom)
+        - [Try it](#try-the-custom-template)
+        - [FAQ](#custom-faq)
+            - [Any guides on how to make custom templates?](#any-guides-on-how-to-make-custom-templates)
 - [Wiki](https://github.com/nickjj/orats/wiki)
     - [What to look at after making a new project](https://github.com/nickjj/orats/wiki/What-to-look-at-after-making-a-new-project)
     - [Get your application on a server](https://github.com/nickjj/orats/wiki/Get-your-application-on-a-server)
@@ -350,3 +354,37 @@ Everything is broken up into ansible roles so you can quickly scale out horizont
 - `DavidWittman.redis` https://github.com/DavidWittman/ansible-redis
 
 All of the above roles will get installed and updated whenever you generate a new orats project.
+
+### Custom
+
+You can pass custom templates into both the `project` and `playbook` commands
+. It works exactly like passing a custom application template to `rails new`.
+
+Pass in a custom template by providing the `--custom` flag which is also 
+aliased to `-c` along with either a local path or a URL to your custom template.
+
+Here is a simple example of a custom template:
+
+```
+# /tmp/foo.rb
+
+file 'app/components/foo.rb', <<-S
+  class Foo
+  end
+S
+```
+
+#### Try the custom template
+
+`orats project /tmp/customexample -p foo --custom /tmp/foo.rb`
+
+#### Custom FAQ
+
+<a name="any-guides-on-how-to-make-custom-templates"></a>
+##### Any guides on how to make custom templates?
+
+There's the official [rails guide on custom application templates]
+(http://guides.rubyonrails.org/rails_application_templates.html).
+
+You can also view the [orats project templates](https://github.com/nickjj/orats/tree/master/lib/orats/templates) to use as inspiration. All of 
+the template files are self contained.
