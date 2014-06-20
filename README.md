@@ -17,6 +17,16 @@ Gems will also be updated once they are proven to work on the target rails/ruby 
 - [System dependencies](#system-dependencies)
 - [Installation](#installation)
 - [Commands](#commands)
+    - [Project](#project)
+    - [Inventory](#inventory)
+        - [Try it](#try-the-inventory-command)
+        - [FAQ](#inventory-faq)
+            - [What's with the sudo password](#whats-with-the-sudo-password)
+    - [Playbook](#playbook)
+        - [Try it](#try-the-playbook-command)
+        - [Ansible roles](#ansible-roles-used)
+    - [Diff](#diff)
+        - [Try it](#try-the-diff-command)
 - [Templates](#templates)
     - [Base](#base)
         - [Try it](#try-the-base-template)
@@ -29,9 +39,6 @@ Gems will also be updated once they are proven to work on the target rails/ruby 
         - [FAQ](#auth-faq)
             - [Development configuration?](#auth-what-do-i-need-to-configure-for-development)
             - [Production configuration?](#auth-what-do-i-need-to-configure-for-production)
-    - [Playbook](#playbook)
-        - [Try it](#try-the-playbook-template)
-        - [Ansible roles](#ansible-roles-used)
     - [Custom](#custom)
         - [Try it](#try-the-custom-template)
         - [FAQ](#custom-faq)
@@ -111,6 +118,158 @@ Here is an overview of the available commands. You can find out more information
     - Optionally takes: `--hosts []`
     - Optionally takes: `--inventory []`
     - Optionally takes: `--playbook []`
+
+### Project
+
+The project command kicks off a new orats project. It will always use the 
+base template and optionally allows you to provide the `--template foo` flag 
+where `foo` would be an available template provided by orats.
+
+You can also supply your own custom template which is explained in the 
+[custom template](#custom) section.
+
+Get started by checking out what the [base template](#base) provides.
+
+### Inventory
+
+The project command automatically creates an inventory for you but it also 
+has an optional flag to skip doing it by providing `--skip-ansible`.
+
+In case you decided to `--skip-ansible` or decided to delete your inventory 
+from a really old project to let orats generate a new one for you then you can
+ generate a new inventory on its own.
+
+You may also consider using this command if you happen to use ansible but are
+ not interested in the orats project because here is what it does:
+
+#### Features
+
+- Create an `inventory` folder
+    - Create a `hosts` files
+        - Populate it with a few groups used by an orats project
+    - Create a `group_vars/all.yml` file
+        - Populate it with a bunch of configuration for an orats project
+- Create a `secrets` folder
+    - Generate strong passwords for:
+        - Your postgres user
+        - Your redis server
+        - Your mail account
+    - Generate tokens for:
+        - Rails
+        - Devise
+        - Devise pepper
+    - Create a single private/public ssh keypair
+        - This could be used to send to your servers
+    - Create self signed ssl certificates to test/support ssl
+    - Create a monit pem file for its optional http interface over ssl
+- Galaxy install the roles required by an orats project
+    - Optionally turned off with `--skip-galaxy`
+
+#### Try the inventory command
+
+`orats inventory myinventory`
+
+#### Inventory FAQ
+
+##### What's with the sudo password flag?
+
+Ansible can be installed in a number of ways. A common way is to build a  package or use a package manager. When you install ansible this way it
+ gets installed to `/etc/ansible`.
+ 
+ By default ansible will download roles from the galaxy to 
+ `/etc/ansible/roles` which will require sudo to write to.
+ 
+ If you installed ansible to your home directory then orats is smart enough 
+ not to use sudo. It will only try to use sudo when it detects a permission 
+ error.
+ 
+ You can also choose not to provide the `--sudo-password` flag but then you 
+ will be prompted for a sudo password about 90% of the way through the 
+ duration of the inventory command.
+
+### Playbook
+
+Building your application is only one piece of the puzzle. If you want to ship your application you have to host it somewhere. You have a few options when it comes to managed hosts like Heroku but they tend to be very expensive if you fall out of their free tier.
+
+The playbook template creates an ansible playbook that will provision a **ubuntu 12.04 LTS server**. It can be hosted anywhere as there are no hard requirements on any specific host.
+
+#### Server breakdown
+
+Everything is broken up into ansible roles so you can quickly scale out horizontally or by splitting up your server groups such that your database is on a separate server than your application.
+
+- **Security**:
+    - Logging into the server is only possible with an ssh key
+    - Root login is disable
+    - fail2ban is setup
+    - ufw (firewall) is setup to block any ports not exposed by you
+    - All stack specific processes are running with less privileges than root
+- **User**:
+    - A single deploy user is created
+- **Services and runtimes**:
+    - Postgres
+    - Redis
+    - NodeJS
+    - Ruby
+- **Process management**:
+    - Your rails app and sidekiq have `init.d` scripts
+    - Your rails app and sidekiq are monitored using `monit`
+
+#### Try the playbook command
+
+`orats playbook myplaybook`
+
+#### Ansible roles used
+
+- `nickjj.user` https://github.com/nickjj/ansible-user
+- `nickjj.security` https://github.com/nickjj/ansible-security
+- `nickjj.postgres` https://github.com/nickjj/ansible-postgres
+- `nickjj.ruby` https://github.com/nickjj/ansible-ruby
+- `nickjj.rails` https://github.com/nickjj/ansible-rails
+- `nickjj.whenever` https://github.com/nickjj/ansible-whenever
+- `nickjj.pumacorn` https://github.com/nickjj/ansible-pumacorn
+- `nickjj.sidekiq` https://github.com/nickjj/ansible-sidekiq
+- `nickjj.monit` https://github.com/nickjj/ansible-monit
+- `nickjj.nodejs` https://github.com/nickjj/ansible-nodejs
+- `nickjj.nginx` https://github.com/nickjj/ansible-nginx
+- `DavidWittman.redis` https://github.com/DavidWittman/ansible-redis
+
+All of the above roles will get installed and updated whenever you generate a new orats project.
+
+### Diff
+
+The goal of the diff command is to provide you a way to compare your current 
+orats gem to the latest orats gem. It can also compare the difference between
+ the orats generated version of an inventory/playbook to an 
+ inventory/playbook that you generated and have customized.
+ 
+ This may come in handy when it comes time to upgrade orats and your project. 
+ You will be able to see if your inventory/playbook are missing any variables
+  or roles and it will also detect custom variables/roles that you have added.
+   
+It allows you to make 2 different types of comparisons:
+
+#### Latest stable vs your version
+
+When doing this type of comparison it only compares the actual files contained in the orats source code, not your generated inventory/playbook.
+    
+This is the type of comparison that is made when you run the `diff` command 
+without any arguments. It might be useful to run this from time to time to 
+see if you are missing out on any new features in the latest orats version.
+
+#### Your version vs your custom project files
+
+If you pass in the `--hosts`, `--inventory` and/or `--playbook` flags along 
+with a path to each of their files then it will compare the files contained 
+in the orats source code to your custom generated inventory/playbook.
+
+If you stick with the orats naming convention and directory structure there 
+are a few quality of life enhancements. If you supply the path to the 
+inventory folder it will do a comparison on both the inventory and hosts file for you. If you supply the path to a 
+playbook folder it will automatically choose the `site.yml` playbook.
+
+#### Try the diff command
+
+`orats diff`
 
 ## Templates
 
@@ -307,61 +466,12 @@ You may want to change `ACTION_MAILER_DEVISE_DEFAULT_FROM` in `.env`.
 
 You will want to change `ACTION_MAILER_DEVISE_DEFAULT_FROM` in `inventory/group_vars/all.yml`.
 
-### Playbook
-
-Building your application is only one piece of the puzzle. If you want to ship your application you have to host it somewhere. You have a few options when it comes to managed hosts like Heroku but they tend to be very expensive if you fall out of their free tier.
-
-The playbook template creates an ansible playbook that will provision a **ubuntu 12.04 LTS server**. It can be hosted anywhere as there are no hard requirements on any specific host.
-
-#### Server breakdown
-
-Everything is broken up into ansible roles so you can quickly scale out horizontally or by splitting up your server groups such that your database is on a separate server than your application.
-
-- **Security**:
-    - Logging into the server is only possible with an ssh key
-    - Root login is disable
-    - fail2ban is setup
-    - ufw (firewall) is setup to block any ports not exposed by you
-    - All stack specific processes are running with less privileges than root
-- **User**:
-    - A single deploy user is created
-- **Services and runtimes**:
-    - Postgres
-    - Redis
-    - NodeJS
-    - Ruby
-- **Process management**:
-    - Your rails app and sidekiq have `init.d` scripts
-    - Your rails app and sidekiq are monitored using `monit`
-
-#### Try the playbook template
-
-`orats playbook myplaybook`
-
-#### Ansible roles used
-
-- `nickjj.user` https://github.com/nickjj/ansible-user
-- `nickjj.security` https://github.com/nickjj/ansible-security
-- `nickjj.postgres` https://github.com/nickjj/ansible-postgres
-- `nickjj.ruby` https://github.com/nickjj/ansible-ruby
-- `nickjj.rails` https://github.com/nickjj/ansible-rails
-- `nickjj.whenever` https://github.com/nickjj/ansible-whenever
-- `nickjj.pumacorn` https://github.com/nickjj/ansible-pumacorn
-- `nickjj.sidekiq` https://github.com/nickjj/ansible-sidekiq
-- `nickjj.monit` https://github.com/nickjj/ansible-monit
-- `nickjj.nodejs` https://github.com/nickjj/ansible-nodejs
-- `nickjj.nginx` https://github.com/nickjj/ansible-nginx
-- `DavidWittman.redis` https://github.com/DavidWittman/ansible-redis
-
-All of the above roles will get installed and updated whenever you generate a new orats project.
-
 ### Custom
 
 You can pass custom templates into both the `project` and `playbook` commands
 . It works exactly like passing a custom application template to `rails new`.
 
-Pass in a custom template by providing the `--custom` flag which is also 
-aliased to `-c` along with either a local path or a URL to your custom template.
+Pass in a custom template by providing the `--custom` flag  along with either a local path or a URL to your custom template.
 
 Here is a simple example of a custom template:
 
