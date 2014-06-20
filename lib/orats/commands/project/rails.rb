@@ -126,7 +126,7 @@ module Orats
         end
 
         def template_exist?(template)
-          Exec::PROJECT_TEMPLATES.include?(template)
+          Exec::PROJECT_TEMPLATES.include?(template.to_sym)
         end
 
         private
