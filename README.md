@@ -5,7 +5,7 @@ This readme file is based off the master version of orats. If you want accurate 
 
 ## What is orats and what problem does it solve?
 
-It stands for opinionated rails application templates. The templates include solving tedious tasks that you would do for most projects. It handles creating a rails application with a bunch of opinions and optionally an ansible inventory/playbook so you can and provision your servers and deploy your apps effortlessly.
+It stands for opinionated rails application templates. The templates include solving tedious tasks that you would do for most projects. It handles creating a rails application with a bunch of opinions and optionally an ansible inventory/playbook so you can provision your servers and deploy your apps effortlessly.
 
 ## What version of Rails and Ruby are you targeting?
 
