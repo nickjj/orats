@@ -461,7 +461,7 @@ All of the changes have git commits to go with them. After generating a project 
 
 #### Try the auth template
 
-`orats project myauthapp --auth --pg-password foo --skip-galaxy`
+`orats project myauthapp --template auth --pg-password foo --skip-galaxy`
 
 #### Auth FAQ
 
