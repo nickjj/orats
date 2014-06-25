@@ -20,11 +20,11 @@ Gems will also be updated once they are proven to work on the target rails/ruby 
     - [Project](#project)
     - [Inventory](#inventory)
         - [Try it](#try-the-inventory-command)
-        - [FAQ](#inventory-faq)
-            - [What's with the sudo password](#whats-with-the-sudo-password)
     - [Playbook](#playbook)
         - [Try it](#try-the-playbook-command)
         - [Ansible roles](#ansible-roles-used)
+        - [FAQ](#playbook-faq)
+            - [What is the Galaxyfile?](#what-is-the-galaxyfile)
     - [Diff](#diff)
         - [Try it](#try-the-diff-command)
     - [Templates](#templates)
@@ -96,15 +96,9 @@ Here is an overview of the available commands. You can find out more information
     - Project:
         - Optionally takes: `--skip-ansible [false]`
         - Optionally takes: `--skip-server-start [false]`
-    - Ansible:
-        - Optionally takes: `--sudo-password []`
-        - Optionally takes: `--skip-galaxy [false]`
 
 - **Create an ansible inventory**:
     - `orats inventory <TARGET_PATH>`
-    - Configuration:
-        - Optionally takes: `--sudo-password []`
-        - Optionally takes: `--skip-galaxy [false]`
 
 - **Create an ansible playbook**:
     - `orats playbook <TARGET_PATH>`
@@ -167,30 +161,10 @@ You may also consider using this command if you happen to use ansible but are
         - This could be used to send to your servers
     - Create self signed ssl certificates to test/support ssl
     - Create a monit pem file for its optional http interface over ssl
-- Galaxy install the roles required by an orats project
-    - Optionally turned off with `--skip-galaxy`
 
 #### Try the inventory command
 
 `orats inventory myinventory`
-
-#### Inventory FAQ
-
-##### What's with the sudo password flag?
-
-Ansible can be installed in a number of ways. A common way is to build a  package or use a package manager. When you install ansible this way it
- gets installed to `/etc/ansible`.
- 
- By default ansible will download roles from the galaxy to 
- `/etc/ansible/roles` which will require sudo to write to.
- 
- If you installed ansible to your home directory then orats is smart enough 
- not to use sudo. It will only try to use sudo when it detects a permission 
- error.
- 
- You can also choose not to provide the `--sudo-password` flag but then you 
- will be prompted for a sudo password about 90% of the way through the 
- duration of the inventory command.
 
 ### Playbook
 
@@ -238,7 +212,31 @@ Everything is broken up into ansible roles so you can quickly scale out horizont
 - `nickjj.nginx` https://github.com/nickjj/ansible-nginx
 - `DavidWittman.redis` https://github.com/DavidWittman/ansible-redis
 
-All of the above roles will get installed and updated whenever you generate a new orats project.
+#### Playbook FAQ
+
+##### What is the Galaxyfile?
+
+It is similar to what a Gemfile is for ruby.
+
+When you generate a playbook it will create a `roles` folder inside of the 
+target path you specified. The roles folder will contain all of the above 
+roles.
+
+When you run the playbook it will use these files when it provisions
+ your server(s).
+ 
+This allows you to easily update the versions of each ansible role without 
+having to download a new version of orats.
+
+##### How do I update the roles for an existing playbook?
+
+Just run `orats playbook myplaybook` and it will overwrite 
+the roles in `myplaybook/roles` using the versions supplied in your 
+`Galaxyfile`. This is useful to run when a role requires a bug fix or new features were added.
+
+Since the roles are self contained in the playbook this allows you to have 
+multiple playbooks with certain role versions in case you have older orats 
+projects which require older role versions.
 
 ### Diff
 
@@ -343,7 +341,7 @@ All of the changes have git commits to go with them. After generating a project 
 
 #### Try the base template
 
-`orats project myapp --pg-password foo --skip-galaxy`
+`orats project myapp --pg-password foo`
 
 #### Base FAQ
 
@@ -352,16 +350,6 @@ All of the changes have git commits to go with them. After generating a project 
 Orats will automatically start your server (you can turn this off with a flag) and also run database migrations or generators depending on what you're doing.
 
 In order to do this it must know your postgres location, username and password. By default it will use localhost for the *location* and *postgres* as the username but if you need to supply those values because yours are different you can use `--pg-location foo` and `--pg-username bar`.
-
-##### What is `--skip-galaxy`?
-
-By default the project command will generate ansible related files for you so that you can manage this app's "inventory". It also automatically downloads the ansible roles from the [ansible galaxy](https://galaxy.ansible.com/).
-
-This was done to ensure each app you create has the correct ansible role version to go with it. However, if you installed ansible through apt or somewhere outside of your home directory then you will get permissions errors when it tries to download the roles.
-
-You can fix this by supplying `--sudo-password foo` to the above command if you know ansible is installed outside of your home directory or you can just wait while the command runs and it will prompt you for your sudo password when it gets to that point because orats will attempt to use sudo only after it fails trying to install the roles without sudo.
-
-If you don't care about the ansible at all you could add `--skip-ansible` to not generate any ansible files.
 
 ##### Does your redis server use a password?
 
@@ -461,7 +449,7 @@ All of the changes have git commits to go with them. After generating a project 
 
 #### Try the auth template
 
-`orats project myauthapp --template auth --pg-password foo --skip-galaxy`
+`orats project myauthapp --template auth --pg-password foo`
 
 #### Auth FAQ
 

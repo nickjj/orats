@@ -37,8 +37,6 @@ module Orats
         run "#{create_rsa_certificate(secrets_path,
                                       'monit.pem', 'monit.pem')} && openssl gendh 512 >> #{secrets_path}/monit.pem"
 
-        install_role_dependencies unless @options[:skip_galaxy]
-
         log_success
       end
 
@@ -77,25 +75,6 @@ module Orats
 
       def create_rsa_certificate(secrets_path, keyout, out)
         "openssl req -new -newkey rsa:2048 -days 365 -nodes -x509 -subj '/C=US/ST=Foo/L=Bar/O=Baz/CN=qux.com' -keyout #{secrets_path}/#{keyout} -out #{secrets_path}/#{out}"
-      end
-
-      def install_role_dependencies
-        log_task 'Update ansible roles from the galaxy'
-
-        galaxy_install =
-            "ansible-galaxy install -r #{base_path}/#{Common::RELATIVE_PATHS[:galaxyfile]} --force"
-
-        galaxy_out = run(galaxy_install, capture: true)
-
-        if galaxy_out.include?('you do not have permission')
-          if @options[:sudo_password].empty?
-            sudo_galaxy_command = 'sudo'
-          else
-            sudo_galaxy_command = "echo #{@options[:sudo_password]} | sudo -S"
-          end
-
-          run("#{sudo_galaxy_command} #{galaxy_install}")
-        end
       end
 
       def log_success

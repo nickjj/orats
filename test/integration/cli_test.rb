@@ -42,6 +42,13 @@ class TestCLI < Minitest::Test
     assert_playbook
   end
 
+  def test_playbook_update_roles
+    target_path = generate_app_name
+
+    assert_playbook target_path
+    assert_playbook target_path
+  end
+
   def test_diff
     assert_playbook
 
@@ -62,7 +69,7 @@ class TestCLI < Minitest::Test
   def assert_orats(command, match_regex, ansible: nil)
     out, err = capture_orats(command)
 
-    assert_match /#{match_regex}/, out
+    assert_match /#{match_regex}/, out, err
 
     assert_or_refute_ansible ansible if ansible
   end
@@ -99,11 +106,12 @@ class TestCLI < Minitest::Test
     assert_ansible_yaml "#{TEST_PATH}/#{@target_path}/inventory/group_vars/all.yml"
   end
 
-  def assert_playbook
-    @target_path = generate_app_name
+  def assert_playbook(target_path = generate_app_name)
+    @target_path = target_path
 
     assert_orats 'playbook', 'success'
     assert_ansible_yaml "#{TEST_PATH}/#{@target_path}/site.yml"
+    assert_path "#{TEST_PATH}/#{@target_path}/Galaxyfile"
   end
 
   def assert_nuked(options = {})

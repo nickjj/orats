@@ -16,8 +16,6 @@ module Orats
     option :custom, default: '', aliases: '-c'
     option :skip_ansible, type: :boolean, default: false, aliases: '-A'
     option :skip_server_start, type: :boolean, default: false, aliases: '-F'
-    option :sudo_password, default: '', aliases: '-s'
-    option :skip_galaxy, type: :boolean, default: false, aliases: '-G'
     desc 'project TARGET_PATH [options]', ''
     long_desc <<-D
       `orats project target_path --pg-password supersecret` will create a new rails project and it will also create an ansible inventory to go with it by default.
@@ -47,29 +45,15 @@ module Orats
       `--skip-ansible` skip creating the ansible related directories [false]
 
       `--skip-server-start` skip automatically running puma and sidekiq [false]
-
-      Ansible features:
-
-      `--sudo-password` to install ansible roles from the galaxy to a path outside of your user privileges []
-
-      `--skip-galaxy` skip automatically installing roles from the galaxy [false]
     D
 
     def project(target_path)
       Commands::Project::Exec.new(target_path, options).init
     end
 
-    option :sudo_password, default: '', aliases: '-s'
-    option :skip_galaxy, type: :boolean, default: false, aliases: '-G'
     desc 'inventory TARGET_PATH [options]', ''
     long_desc <<-D
       `orats inventory target_path` will create an ansible inventory.
-
-      Configuration:
-
-      `--sudo-password` to install ansible roles from the galaxy to a path outside of your user privileges []
-
-      `--skip-galaxy` skip automatically installing roles from the galaxy [false]
     D
 
     def inventory(target_path)
@@ -81,9 +65,14 @@ module Orats
     long_desc <<-D
       `orats playbook target_path` will create an ansible playbook.
 
+      Help:
+
+      If you pass in an existing playbook path it will update the role versions.
+
       Template features:
 
-      `--custom` will let you supply a custom template, a url or file is ok but urls must start with http or https []
+      `--custom` will let you supply a custom template, a url or file is ok but urls
+ must start with http or https []
     D
 
     def playbook(target_path)

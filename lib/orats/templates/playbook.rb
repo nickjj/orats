@@ -81,8 +81,15 @@ end
 def add_main_playbook
   log_task __method__
 
-  copy_from_local_gem 'site.yml', 'site.yml'
+  copy_from_local_gem 'site.yml'
   git_commit 'Add the main playbook'
+end
+
+def add_galaxyfile
+  log_task __method__
+
+  copy_from_local_gem 'Galaxyfile'
+  git_commit 'Add the Galaxyfile'
 end
 
 def remove_unused_files_from_git
@@ -92,24 +99,11 @@ def remove_unused_files_from_git
   git_commit 'Remove unused files'
 end
 
-def log_complete
-  puts
-  say_status 'success', "\e[1m\Everything has been setup successfully\e[0m", :cyan
-  puts
-  say_status 'question', 'Are most of your apps similar?', :yellow
-  say_status 'answer', 'You only need to generate one playbook and you just did', :white
-  say_status 'answer', 'Use the inventory in each project to customize certain things', :white
-  puts
-  say_status 'question', 'Are you new to ansible?', :yellow
-  say_status 'answer', 'http://docs.ansible.com/intro_getting_started.html', :white
-  puts
-end
-
 # ---
 
 delete_generated_rails_code
 add_playbook_directory
 add_license
 add_main_playbook
+add_galaxyfile
 remove_unused_files_from_git
-log_complete
