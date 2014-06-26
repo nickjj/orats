@@ -271,17 +271,14 @@ When you supply the `--inventory` flag along with a path to your
 
 #### Wait, there is an easier way to compare everything
 
-If you kept the default file names for the files orats generated then you can
- simply pass in the path to your inventory directory and playbook directory and
-  it will compare everything for you. This is much less annoying to type.
+If you kept the default file names for the files orats generated then you can pass in the path to your inventory directory and playbook directory and it will compare everything for you.
 
 #### Try the diff command
 
 ##### Individual files
 
 `orats diff -g /path/to/playbook/Galaxyfile -p /path/to/playbook/site.yml -h 
-/path/to/project/inventory/hosts -i /path/to/project/inventory/group_vars/all
-.yml`
+/path/to/project/inventory/hosts -i /path/to/project/inventory/group_vars/all.yml`
 
 ##### Shortcut
 
