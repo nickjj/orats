@@ -12,9 +12,9 @@ module Orats
 
       RELATIVE_PATHS = {
           galaxyfile: 'templates/includes/playbook/Galaxyfile',
+          playbook:   'templates/includes/playbook/site.yml',
           hosts:      'templates/includes/inventory/hosts',
           inventory:  'templates/includes/inventory/group_vars/all.yml',
-          playbook:   'templates/includes/playbook/site.yml',
           version:    'version.rb'
       }
 

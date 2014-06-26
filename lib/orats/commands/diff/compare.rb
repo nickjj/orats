@@ -2,98 +2,103 @@ module Orats
   module Commands
     module Diff
       module Compare
-        def remote_to_local_gem_versions
-          log_remote_info 'gem', 'Compare this version of orats to the latest orats version',
-                          'version', "Latest: #{@remote_gem_version}, Yours: v#{VERSION}"
+        def remote_gem_vs_yours
+          log_remote_info 'gem',
+                          'Compare your orats version to the latest version',
+                          'version',
+                          "You have v#{VERSION} and the latest version is #{@remote_gem_version}"
         end
 
-        def remote_to_local_galaxyfiles
-          galaxyfile_diff            = @remote_galaxyfile - @local_galaxyfile
-          local_galaxyfile_as_string = @local_galaxyfile.join
-          local_galaxyfile_roles     = @local_galaxyfile.size
-          roles_diff_count           = galaxyfile_diff.size
+        def remote_vs_yours(label, remote, yours, exact_match)
+          log_remote_info label,
+                          "Compare your #{label} to the latest version (#{@remote_gem_version})",
+                          'file', File.basename(Common::RELATIVE_PATHS[label
+                                                                       .to_sym])
 
-          log_status_top 'roles', "Compare this version of orats' roles to the latest version:", :green
+          outdated_and_missing = difference(remote, yours, exact_match, true)
+          extras               = difference(yours, remote, exact_match)
+          both_lists           = outdated_and_missing + extras
+          sorted_diff          = sort_difference(both_lists).uniq { |item| item[:name] }
 
-          if roles_diff_count == 0
-            log_status_bottom 'message', "All #{local_galaxyfile_roles} roles are up to date", :yellow
+          if sorted_diff.empty?
+            log_status_bottom 'results', 'no differences were found',
+                              :magenta, true
           else
-            log_status_bottom 'message', "There are #{roles_diff_count} differences", :yellow
+            padded_length = pad_by(sorted_diff)
 
-            galaxyfile_diff.each do |line|
-              name   = line.split(',').first
-              status = 'outdated'
-              color  = :yellow
+            sorted_diff.each do |item|
+              name    = sorted_diff.empty? ? item[:name] : item[:name].ljust(padded_length)
+              version = item[:version].empty? ? '' : "#{set_color('|',
+                                                                  :cyan)} #{item[:version]}"
 
-              unless local_galaxyfile_as_string.include?(name)
-                status = 'missing'
-                color  = :red
-              end
-
-              log_status_bottom status, name, color, true
+              log_status_bottom item[:status], "#{name} #{version}",
+                                item[:color], true
             end
-
-            log_results 'The latest version of orats may benefit you', 'Check github to see if the changes interest you'
-          end
-        end
-
-        def remote_to_local(label, keyword, remote, local)
-          item_diff       = remote - local
-          item_diff_count = item_diff.size
-
-          log_remote_info label, "Compare this version of orats' #{label} to the latest version",
-                          'file',
-                          File.basename(Common::RELATIVE_PATHS[label.to_sym])
-
-          item_diff.each do |line|
-            log_status_bottom 'missing', line, :red, true unless local.include?(line)
-          end
-
-          if item_diff_count > 0
-            log_results "#{item_diff_count} new #{keyword} are available",
-                        'You may benefit from upgrading to the latest orats'
-          else
-            log_results 'Everything appears to be in order', "No missing #{keyword} were found"
-          end
-        end
-
-        def local_to_user(label, keyword, flag_path, local)
-          user = yield
-
-          log_local_info label, "Compare this version of orats' #{label} to yours",
-                         'path', flag_path
-
-          missing_count = log_unmatched(local, user, 'missing', :red)
-          extra_count   = log_unmatched(user, local, 'extra', :yellow)
-
-          if missing_count > 0
-            log_results "#{missing_count} #{keyword} are missing",
-                        "Your ansible run will likely fail with this #{label}"
-          else
-            log_results 'Everything appears to be in order', "No missing #{keyword} were found"
-          end
-
-          if extra_count > 0
-            log_results "#{extra_count} extra #{keyword} were detected:",
-                        "No problem but remember to add them to future #{label}"
-          else
-            log_results "No extra #{keyword} were found:", "Extra #{keyword} are fine but you have none"
           end
         end
 
         private
 
-        def log_unmatched(compare, against, label, color)
-          count = 0
+        def name_and_version_from_line(line)
+          line.split(',')
+        end
 
-          compare.each do |item|
-            unless against.include?(item)
-              log_status_bottom label, item, color, true
-              count += 1
+        def pad_by(sorted_diff)
+          longest_role = sorted_diff.max_by { |s| s[:name].length }
+          longest_role[:name].length
+        end
+
+        def sort_difference(diff_list)
+          # custom sort order on the color key
+          diff_list.sort_by { |item| {red:    1,
+                                      yellow: 2,
+                                      green:  3}[item[:color]] }
+        end
+
+        def difference(remote, yours, exact_match, missing_and_outdated = false)
+          @diff_list      = []
+          yours_as_string = yours.join
+
+          if missing_and_outdated
+            diff = remote - yours
+
+            diff.each do |line|
+              line_parts      = name_and_version_from_line(line)
+              status          = 'outdated'
+              color           = :yellow
+              search_contents = exact_match ? yours : yours_as_string
+
+              unless search_contents.include?(line_parts[0])
+                status = 'missing'
+                color  = :red
+              end
+
+              @diff_list.push({
+                                  color:   color,
+                                  status:  status,
+                                  name:    line_parts[0],
+                                  version: line_parts[1] || ''
+                              })
+
+            end
+          else
+            remote.each do |line|
+              unless yours.include?(line)
+                line_parts = name_and_version_from_line(line)
+                status     = 'extra'
+                color      = :green
+
+                @diff_list.push({
+                                    color:   color,
+                                    status:  status,
+                                    name:    line_parts[0],
+                                    version: line_parts[1] || ''
+                                })
+              end
             end
           end
 
-          count
+          @diff_list
         end
       end
     end

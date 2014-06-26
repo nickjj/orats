@@ -15,8 +15,10 @@ module Orats
 
     CREDENTIALS = "-l #{POSTGRES_LOCATION} -u #{POSTGRES_USERNAME} -p #{POSTGRES_PASSWORD} -n #{REDIS_LOCATION} -d #{REDIS_PASSWORD}"
 
+    INCLUDES_PATH   = File.absolute_path('../../lib/orats/templates/includes',
+                                         __FILE__)
     BINARY_PATH     = File.absolute_path('../../bin/orats', __FILE__)
-    ORATS_NEW_FLAGS = "#{CREDENTIALS} -F"
+    ORATS_NEW_FLAGS = "#{CREDENTIALS} -S"
 
     def orats(command, options = {})
       cmd, app_name   = command.split(' ')

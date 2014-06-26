@@ -109,11 +109,13 @@ Here is an overview of the available commands. You can find out more information
     - `orats nuke <TARGET_PATH>`
     - Optionally takes: `--skip-data [false]`
 
-- **Compare differences between orats versions**:
+- **Compare differences between your orats files and the latest version's 
+files**:
     - `orats diff [options]`
+    - Optionally takes: `--galaxyfile []`
+    - Optionally takes: `--playbook []`
     - Optionally takes: `--hosts []`
     - Optionally takes: `--inventory []`
-    - Optionally takes: `--playbook []`
 
 - **Get a list of available orats templates**:
     - `orats templates`
@@ -240,39 +242,50 @@ projects which require older role versions.
 
 ### Diff
 
-The goal of the diff command is to provide you a way to compare your current 
-orats gem to the latest orats gem. It can also compare the difference between
- the orats generated version of an inventory/playbook to an 
- inventory/playbook that you generated and have customized.
- 
- This comes in handy when you want to upgrade orats and your project. 
- You will be able to see if your inventory/playbook are missing any variables
-  or roles and it will also detect custom variables/roles that you have added.
-   
-It allows you to make 2 different types of comparisons:
+The goal of the diff command is to compare your orats generated files with 
+the latest version to see what differences there are between the 2.
 
-#### Latest stable version of orats vs your version
+You can compare nothing in which case it just gives you back your version of 
+the orats gem vs the latest gem version or you can add paths to 1 or all of the 
+files below.
 
-When doing this type of comparison it only compares the actual files contained in the orats source code, not your generated inventory/playbook.
-    
-This is the type of comparison that is made when you run the `diff` command 
-without any arguments. It is useful to run this from time to time to 
-see if you are missing out on any new features in the latest version.
+##### Galaxyfile
 
-#### Your orats version vs your custom project files
+When you supply the `--galaxyfile` flag along with a path to your `Galaxyfile` 
+it will show you a list of missing, outdated and extra roles with the versions.
 
-If you pass in the `--hosts`, `--inventory` and/or `--playbook` flags along 
-with a path to each of their files then it will compare the files contained 
-in the orats source code to your custom generated inventory/playbook.
+##### Playbook
 
-If you stick with the orats naming convention and directory structure there 
-are a few quality of life enhancements. If you supply the path to the 
-inventory folder it will do a comparison on both the inventory and hosts file for you. If you supply the path to a 
-playbook folder it will automatically choose the `site.yml` playbook.
+When you supply the `--playbook` flag along with a path to your 
+`site.yml` file it will show you a list of missing or extra roles.
+
+##### Hosts
+
+When you supply the `--hosts` flag along with a path to your `hosts` file it 
+will show you a list of missing or extra groups.
+
+##### Inventory
+
+When you supply the `--inventory` flag along with a path to your 
+`group_vars/all.yml` file it will show you a list of missing or extra variables.
+
+#### Wait, there is an easier way to compare everything
+
+If you kept the default file names for the files orats generated then you can
+ simply pass in the path to your inventory directory and playbook directory and
+  it will compare everything for you. This is much less annoying to type.
 
 #### Try the diff command
 
-`orats diff`
+##### Individual files
+
+`orats diff -g /path/to/playbook/Galaxyfile -p /path/to/playbook/site.yml -h 
+/path/to/project/inventory/hosts -i /path/to/project/inventory/group_vars/all
+.yml`
+
+##### Shortcut
+
+`orats diff -i /path/to/my/project/inventory -p /path/to/playbook`
 
 ### Templates
 

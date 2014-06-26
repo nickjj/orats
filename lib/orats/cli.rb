@@ -96,34 +96,33 @@ module Orats
       Commands::Nuke.new(target_path, options).init
     end
 
+    option :galaxyfile, default: '', aliases: '-g'
+    option :playbook, default: '', aliases: '-p'
     option :hosts, default: '', aliases: '-h'
     option :inventory, default: '', aliases: '-i'
-    option :playbook, default: '', aliases: '-b'
     desc 'diff [options]', ''
     long_desc <<-D
       `orats diff` will run various comparisons on orats and your ansible files.
 
-      Help:
-
-      `The green/yellow labels` denote a remote check to compare the files contained in your version of orats to the latest files on github.
-
-      `The blue/cyan labels` denote a local check between the files contained in your version of orats to the files you have generated such as your own playbook or inventories.
-
       Options:
+
+      `--galaxyfile` to supply a galaxyfile for comparison []
+
+      `--playbook` to supply a playbook directory/file for comparison []
 
       `--hosts` to supply a hosts file for comparison []
 
       `--inventory` to supply an inventory directory/file for comparison []
 
-      `--playbook` to supply a playbook directory/file for comparison []
-
       Quality of life features:
 
-      `--inventory` also accepts a path to your project's inventory folder,
-if you kept the default file names it will automatically compare both your
-hosts and group_vars/all.yml files.
+      `--playbook` also accepts a playbook path, if you kept the
+default file names it will automatically compare both your Galaxyfile and
+site.yml files.
 
-      `--playbook` also accepts a path to a playbook folder, if you kept the playbook name as `site.yml` it will automatically choose it.
+      `--inventory` also accepts an inventory path, if you kept the
+default file names it will automatically compare both your hosts and
+group_vars/all.yml files.
     D
 
     def diff

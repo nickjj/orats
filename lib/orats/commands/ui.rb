@@ -31,11 +31,6 @@ module Orats
       end
 
       def log_remote_info(top_label, top_message, bottom_label, bottom_message)
-        log_status_top top_label, "#{top_message}:", :green
-        log_status_bottom bottom_label, bottom_message, :yellow
-      end
-
-      def log_local_info(top_label, top_message, bottom_label, bottom_message)
         log_status_top top_label, "#{top_message}:", :blue
         log_status_bottom bottom_label, bottom_message, :cyan
       end

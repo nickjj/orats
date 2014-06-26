@@ -50,10 +50,35 @@ class TestCLI < Minitest::Test
   end
 
   def test_diff
-    assert_playbook
+    assert_diff
 
-    @target_path = ''
-    assert_orats 'diff', 'Compare this version of'
+    out, err = capture_orats('diff')
+
+    assert_count out, 'gem', 1
+    assert_count out, 'missing', 0
+    assert_count out, 'outdated', 0
+    assert_count out, 'extra', 0
+  end
+
+  def test_diff_with_differences
+    file_paths = assert_diff
+
+    hosts_path      = "#{file_paths[0]}/hosts"
+    inventory_path  = "#{file_paths[0]}/group_vars/all.yml"
+    galaxyfile_path = "#{file_paths[1]}/Galaxyfile"
+    site_path       = "#{file_paths[1]}/site.yml"
+
+    gsub_file(hosts_path, '[cache]', '[something]')
+    gsub_file(inventory_path, 'postgres_user', 'hello_world')
+    gsub_file(galaxyfile_path, /nickjj.ruby,v.*$/, "nickjj.ruby,v0.1.2\nfoo")
+    gsub_file(site_path, 'nickjj.whenever', 'bar')
+
+    out, err = capture_orats('diff')
+
+    assert_count out, 'gem', 1
+    assert_count out, 'missing', 3
+    assert_count out, 'outdated', 1
+    assert_count out, 'extra', 4
   end
 
   def test_templates
@@ -69,7 +94,7 @@ class TestCLI < Minitest::Test
   def assert_orats(command, match_regex, ansible: nil)
     out, err = capture_orats(command)
 
-    assert_match /#{match_regex}/, out, err
+    assert_match /#{match_regex}/, out, err unless match_regex.empty?
 
     assert_or_refute_ansible ansible if ansible
   end
@@ -100,9 +125,9 @@ class TestCLI < Minitest::Test
 
   def assert_inventory
     @target_path = generate_app_name
-    @extra_flags = '--skip-galaxy'
 
     assert_orats 'inventory', 'success'
+    assert_path "#{TEST_PATH}/#{@target_path}/inventory/hosts"
     assert_ansible_yaml "#{TEST_PATH}/#{@target_path}/inventory/group_vars/all.yml"
   end
 
@@ -110,8 +135,21 @@ class TestCLI < Minitest::Test
     @target_path = target_path
 
     assert_orats 'playbook', 'success'
-    assert_ansible_yaml "#{TEST_PATH}/#{@target_path}/site.yml"
     assert_path "#{TEST_PATH}/#{@target_path}/Galaxyfile"
+    assert_ansible_yaml "#{TEST_PATH}/#{@target_path}/site.yml"
+  end
+
+  def assert_diff
+    assert_inventory
+    inventory_path = "#{TEST_PATH}/#{@target_path}/inventory"
+
+    assert_playbook
+    playbook_path = "#{TEST_PATH}/#{@target_path}"
+
+    @target_path = ''
+    @extra_flags = "-i #{inventory_path} -p #{playbook_path}"
+
+    [inventory_path, playbook_path]
   end
 
   def assert_nuked(options = {})
@@ -121,6 +159,11 @@ class TestCLI < Minitest::Test
 
     assert_match /#{@target_path}/, out
     system "rm -rf #{TEST_PATH}"
+  end
+
+  def assert_count(input, regex, expected)
+    assert input.scan(regex).size == expected,
+           "Found #{input.scan(regex).size} matches for '#{regex}' but expected #{expected}"
   end
 
   def assert_in_file(file_path, match_regex)
@@ -186,5 +229,12 @@ class TestCLI < Minitest::Test
     puts out_lines.join("\n\n").rstrip
     puts '-'*80
     puts
+  end
+
+  def gsub_file(file_path, replace, with)
+    IO.write(file_path, File.open(file_path) do |f|
+      f.read.gsub(replace, with)
+    end
+    )
   end
 end

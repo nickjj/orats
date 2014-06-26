@@ -10,75 +10,49 @@ module Orats
         include Parse
         include Compare
 
+        attr_accessor :diff_list
+
         def initialize(target_path = '', options = {})
           super
 
           @remote_galaxyfile = galaxyfile url_to_string(@remote_paths[:galaxyfile])
+          @remote_playbook   = playbook url_to_string(@remote_paths[:playbook])
           @remote_hosts      = hosts url_to_string(@remote_paths[:hosts])
           @remote_inventory  = inventory url_to_string(@remote_paths[:inventory])
-          @remote_playbook   = playbook url_to_string(@remote_paths[:playbook])
 
-          @local_galaxyfile = galaxyfile file_to_string(@local_paths[:galaxyfile])
-          @local_hosts      = hosts file_to_string(@local_paths[:hosts])
-          @local_inventory  = inventory file_to_string(@local_paths[:inventory])
-          @local_playbook   = playbook file_to_string(@local_paths[:playbook])
+          galaxyfile_path = @options[:galaxyfile]
+          playbook_path   = @options[:playbook]
+          hosts_path      = @options[:hosts]
+          inventory_path  = @options[:inventory]
+
+          if !@options[:inventory].empty? && File.directory?(@options[:inventory])
+            hosts_path     = File.join(inventory_path, 'hosts')
+            inventory_path = File.join(inventory_path, 'group_vars/all.yml')
+          end
+
+          if !@options[:playbook].empty? && File.directory?(@options[:playbook])
+            galaxyfile_path = File.join(playbook_path, 'Galaxyfile')
+            playbook_path   = File.join(playbook_path, 'site.yml')
+          end
+
+          @your_galaxyfile = galaxyfile file_to_string (galaxyfile_path) unless galaxyfile_path.empty?
+          @your_playbook   = playbook file_to_string(playbook_path) unless playbook_path.empty?
+          @your_hosts      = hosts file_to_string(hosts_path) unless hosts_path.empty?
+          @your_inventory  = inventory file_to_string(inventory_path) unless inventory_path.empty?
+
         end
 
         def init
-          remote_to_local_gem_versions
-          remote_to_local_galaxyfiles
-          remote_to_local 'hosts', 'groups', @remote_hosts, @local_hosts
-          remote_to_local 'inventory', 'variables', @remote_inventory, @local_inventory
-          remote_to_local 'playbook', 'roles', @remote_playbook, @local_playbook
+          remote_gem_vs_yours
 
-          local_to_user_hosts @options[:hosts] unless @options[:hosts].empty?
-
-          unless @options[:inventory].empty?
-            inventory_path = @options[:inventory]
-
-            if File.directory?(inventory_path)
-              hosts_path = File.join(inventory_path, 'hosts')
-
-              inventory_path = File.join(inventory_path,
-                                         'group_vars/all.yml')
-
-              local_to_user_hosts hosts_path
-            end
-
-            local_to_user_inventory inventory_path
-          end
-
-          unless @options[:playbook].empty?
-            playbook_path = @options[:playbook]
-
-            if File.directory?(playbook_path)
-              playbook_path = File.join(playbook_path, 'site.yml')
-
-              local_to_user_playbook playbook_path
-            end
-
-            local_to_user_playbook playbook_path
-          end
-        end
-
-        private
-
-        def local_to_user_hosts(path)
-          local_to_user('hosts', 'groups', path, @local_hosts) do
-            hosts file_to_string(path)
-          end
-        end
-
-        def local_to_user_inventory(path)
-          local_to_user('inventory', 'variables', path, @local_inventory) do
-            inventory file_to_string(path)
-          end
-        end
-
-        def local_to_user_playbook(path)
-          local_to_user('playbook', 'roles', path, @local_playbook) do
-            playbook file_to_string(path)
-          end
+          remote_vs_yours('galaxyfile', @remote_galaxyfile,
+                          @your_galaxyfile, false) unless @your_galaxyfile.nil?
+          remote_vs_yours('playbook', @remote_playbook,
+                          @your_playbook, true) unless @your_playbook.nil?
+          remote_vs_yours('hosts', @remote_hosts,
+                          @your_hosts, true) unless @your_hosts.nil?
+          remote_vs_yours('inventory', @remote_inventory,
+                          @your_inventory, true) unless @your_inventory.nil?
         end
       end
     end
