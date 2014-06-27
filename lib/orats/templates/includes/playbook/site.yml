@@ -4,6 +4,7 @@
   sudo: true
 
   roles:
+    - { role: nickjj.locale, tags: [common, locale] }
     - { role: nickjj.user, tags: [common, user] }
 
 - name: ensure database servers are configured
