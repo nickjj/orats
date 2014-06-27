@@ -212,7 +212,7 @@ Everything is broken up into ansible roles so you can quickly scale out horizont
 - `nickjj.monit` https://github.com/nickjj/ansible-monit [![Build Status](https://secure.travis-ci.org/nickjj/ansible-monit.png)](http://travis-ci.org/nickjj/ansible-monit)
 - `nickjj.nodejs` https://github.com/nickjj/ansible-nodejs [![Build Status](https://secure.travis-ci.org/nickjj/ansible-nodejs.png)](http://travis-ci.org/nickjj/ansible-nodejs)
 - `nickjj.nginx` https://github.com/nickjj/ansible-nginx [![Build Status](https://secure.travis-ci.org/nickjj/ansible-nginx.png)](http://travis-ci.org/nickjj/ansible-nginx)
-- `DavidWittman.redis` https://github.com/DavidWittman/ansible-redis
+- `DavidWittman.redis` https://github.com/DavidWittman/ansible-redis [![Build Status](https://secure.travis-ci.org/DavidWittman/ansible-redis.png)](http://travis-ci.org/DavidWittman/ansible-redis)
 
 #### Playbook FAQ
 
