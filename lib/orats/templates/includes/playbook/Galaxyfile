@@ -4,9 +4,9 @@ nickjj.postgres,v0.1.3
 nickjj.ruby,v0.1.7
 nickjj.nodejs,v0.1.1
 nickjj.nginx,v0.1.4
-nickjj.rails,v0.1.92
-nickjj.whenever,v0.1.1
-nickjj.pumacorn,v0.1.1
-nickjj.sidekiq,v0.1.1
+nickjj.rails,v0.2.2
+nickjj.whenever,v0.1.2
+nickjj.pumacorn,v0.1.2
+nickjj.sidekiq,v0.1.2
 nickjj.monit,v0.1.3
 DavidWittman.redis
