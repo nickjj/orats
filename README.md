@@ -201,6 +201,7 @@ Everything is broken up into ansible roles so you can quickly scale out horizont
 
 #### Ansible roles used
 
+- `nickjj.locale` https://github.com/nickjj/ansible-locale [![Build Status](https://secure.travis-ci.org/nickjj/ansible-locale.png)](http://travis-ci.org/nickjj/ansible-locale)
 - `nickjj.user` https://github.com/nickjj/ansible-user [![Build Status](https://secure.travis-ci.org/nickjj/ansible-user.png)](http://travis-ci.org/nickjj/ansible-user)
 - `nickjj.security` https://github.com/nickjj/ansible-security
 - `nickjj.postgres` https://github.com/nickjj/ansible-postgres [![Build Status](https://secure.travis-ci.org/nickjj/ansible-postgres.png)](http://travis-ci.org/nickjj/ansible-postgres)
