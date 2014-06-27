@@ -222,7 +222,7 @@ end
 def add_whenever_config
   log_task __method__
 
-  copy_from_local_gem 'config/whenever.rb'
+  copy_from_local_gem 'config/schedule.rb'
   git_commit 'Add the whenever config'
 end
 
