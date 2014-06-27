@@ -201,17 +201,17 @@ Everything is broken up into ansible roles so you can quickly scale out horizont
 
 #### Ansible roles used
 
-- `nickjj.user` https://github.com/nickjj/ansible-user
+- `nickjj.user` https://github.com/nickjj/ansible-user [![Build Status](https://secure.travis-ci.org/nickjj/ansible-user.png)](http://travis-ci.org/nickjj/ansible-user)
 - `nickjj.security` https://github.com/nickjj/ansible-security
-- `nickjj.postgres` https://github.com/nickjj/ansible-postgres
-- `nickjj.ruby` https://github.com/nickjj/ansible-ruby
-- `nickjj.rails` https://github.com/nickjj/ansible-rails
-- `nickjj.whenever` https://github.com/nickjj/ansible-whenever
-- `nickjj.pumacorn` https://github.com/nickjj/ansible-pumacorn
-- `nickjj.sidekiq` https://github.com/nickjj/ansible-sidekiq
-- `nickjj.monit` https://github.com/nickjj/ansible-monit
-- `nickjj.nodejs` https://github.com/nickjj/ansible-nodejs
-- `nickjj.nginx` https://github.com/nickjj/ansible-nginx
+- `nickjj.postgres` https://github.com/nickjj/ansible-postgres [![Build Status](https://secure.travis-ci.org/nickjj/ansible-postgres.png)](http://travis-ci.org/nickjj/ansible-postgres)
+- `nickjj.ruby` https://github.com/nickjj/ansible-ruby [![Build Status](https://secure.travis-ci.org/nickjj/ansible-ruby.png)](http://travis-ci.org/nickjj/ansible-ruby)
+- `nickjj.rails` https://github.com/nickjj/ansible-rails [![Build Status](https://secure.travis-ci.org/nickjj/ansible-rails.png)](http://travis-ci.org/nickjj/ansible-rails)
+- `nickjj.whenever` https://github.com/nickjj/ansible-whenever [![Build Status](https://secure.travis-ci.org/nickjj/ansible-whenever.png)](http://travis-ci.org/nickjj/ansible-whenever)
+- `nickjj.pumacorn` https://github.com/nickjj/ansible-pumacorn [![Build Status](https://secure.travis-ci.org/nickjj/ansible-pumacorn.png)](http://travis-ci.org/nickjj/ansible-pumacorn)
+- `nickjj.sidekiq` https://github.com/nickjj/ansible-sidekiq [![Build Status](https://secure.travis-ci.org/nickjj/ansible-sidekiq.png)](http://travis-ci.org/nickjj/ansible-sidekiq)
+- `nickjj.monit` https://github.com/nickjj/ansible-monit [![Build Status](https://secure.travis-ci.org/nickjj/ansible-monit.png)](http://travis-ci.org/nickjj/ansible-monit)
+- `nickjj.nodejs` https://github.com/nickjj/ansible-nodejs [![Build Status](https://secure.travis-ci.org/nickjj/ansible-nodejs.png)](http://travis-ci.org/nickjj/ansible-nodejs)
+- `nickjj.nginx` https://github.com/nickjj/ansible-nginx [![Build Status](https://secure.travis-ci.org/nickjj/ansible-nginx.png)](http://travis-ci.org/nickjj/ansible-nginx)
 - `DavidWittman.redis` https://github.com/DavidWittman/ansible-redis
 
 #### Playbook FAQ
