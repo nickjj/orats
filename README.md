@@ -59,7 +59,7 @@ Before running orats...
 - [Postgres](https://wiki.postgresql.org/wiki/Detailed_installation_guides)
 - [Redis](http://redis.io/topics/quickstart)
 - Ruby 2.1.x - [chruby](https://github.com/postmodern/chruby) | [rbenv](https://github.com/sstephenson/rbenv) | [rvm](https://rvm.io/)
-- Rails 4.1.x - `gem install rails -v '~> 4.1.1'`
+- Rails 4.1.x - `gem install rails -v '~> 4.1.2'`
 
 #### You should install
 
