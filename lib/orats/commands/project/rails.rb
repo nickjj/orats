@@ -132,12 +132,14 @@ module Orats
         private
 
         def exit_if_invalid_template
-          if @options[:template].length > 0
+          template = @options[:template] || ''
+
+          if template.length > 0
             log_task 'Check if template exists'
 
-            unless template_exist?(@options[:template])
+            unless template_exist?(template)
               log_error 'error', 'Cannot find template', 'message',
-                        "'#{@options[:template]}' is not a valid template name",
+                        "'#{template}' is not a valid template name",
                         true do
                 log_status_bottom 'tip',
                                   'run `orats templates` to get a list of valid templates',
