@@ -59,6 +59,13 @@ def add_playbook_directory
   git_commit 'Initial commit'
 end
 
+def add_gitignore
+  log_task __method__
+
+  copy_from_local_gem '../common/.gitignore', '.gitignore'
+  git_commit 'Add .gitignore'
+end
+
 def add_license
   log_task __method__
 
@@ -97,6 +104,7 @@ end
 
 delete_generated_rails_code
 add_playbook_directory
+add_gitignore
 add_license
 add_main_playbook
 add_galaxyfile
