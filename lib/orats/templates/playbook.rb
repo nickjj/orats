@@ -1,5 +1,3 @@
-require 'securerandom'
-
 # =============================================================================
 # template for generating an orats ansible playbook for ansible 1.6.x
 # =============================================================================
@@ -9,10 +7,6 @@ require 'securerandom'
 # -----------------------------------------------------------------------------
 # private functions
 # -----------------------------------------------------------------------------
-def generate_token
-  SecureRandom.hex(64)
-end
-
 def method_to_sentence(method)
   method.tr!('_', ' ')
   method[0] = method[0].upcase
