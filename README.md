@@ -289,10 +289,7 @@ All of the changes have git commits to go with them. After generating a role you
 `orats role your_github_user_name.mynewrole --repo-name ansible-mynewrole`
 
 The custom repo name is probably what you'll want to use all the time if you 
-plan to make your roles open source.
-
-For example my roles are named things like `nickjj.postgres` and `nickjj
-.rails`. However my repos are named `ansible-postgres` and `ansible-rails`.
+plan to make your roles open source. For example my roles are named things like `nickjj.postgres` and `nickjj.rails`. However my repos are named `ansible-postgres` and `ansible-rails`.
 
 When you submit your role to the galaxy you would use `rails` as the 
 optional name for your role.
