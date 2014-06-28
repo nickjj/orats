@@ -120,6 +120,7 @@ def add_tests_and_travis
 
   copy_from_local_gem '.travis.yml'
   copy_from_local_gem 'tests/main.yml'
+  copy_from_local_gem 'tests/inventory'
   git_commit 'Add tests and travis-ci'
 end
 

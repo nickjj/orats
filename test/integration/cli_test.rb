@@ -64,6 +64,8 @@ class TestCLI < Minitest::Test
     assert_path "#{absolute_target_path}/README.md"
     assert_path "#{absolute_target_path}/LICENSE"
     assert_path "#{absolute_target_path}/tests"
+    assert_path "#{absolute_target_path}/tests/main.yml"
+    assert_path "#{absolute_target_path}/tests/inventory"
     refute_path "#{absolute_target_path}/files/main.yml"
     refute_path "#{absolute_target_path}/templates/main.yml"
 
