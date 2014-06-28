@@ -1,0 +1,7 @@
+---
+- hosts: localhost
+  remote_user: travis
+  sudo: true
+
+  roles:
+    - repo_name

@@ -2,6 +2,7 @@ require 'thor'
 require 'orats/commands/project/exec'
 require 'orats/commands/inventory'
 require 'orats/commands/playbook'
+require 'orats/commands/role'
 require 'orats/commands/nuke'
 require 'orats/commands/diff/exec'
 
@@ -77,6 +78,26 @@ module Orats
 
     def playbook(target_path)
       Commands::Playbook.new(target_path, options).init
+    end
+
+    option :repo_name, default: '', aliases: '-r'
+    option :custom, default: '', aliases: '-c'
+    desc 'role TARGET_PATH [options]', ''
+    long_desc <<-D
+      `orats role target_path` will create an ansible role suitable for the galaxy.
+
+      Configuration:
+
+      `--repo-name` if your github repo name is different than the full role name
+
+      Template features:
+
+      `--custom` will let you supply a custom template, a url or file is ok but urls
+ must start with http or https []
+    D
+
+    def role(target_path)
+      Commands::Role.new(target_path, options).init
     end
 
     option :skip_data, type: :boolean, default: false, aliases: '-D'

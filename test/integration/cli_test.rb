@@ -49,6 +49,34 @@ class TestCLI < Minitest::Test
     assert_playbook target_path
   end
 
+  def test_role
+    @target_path = 'githubname.myrole'
+    @extra_flags = '-r ansible-myrole'
+
+    out, err = capture_orats('role')
+
+    assert_match /success/, out, err
+
+    absolute_target_path = "#{TEST_PATH}/#{@target_path}"
+
+    assert_path "#{absolute_target_path}/.gitignore"
+    assert_path "#{absolute_target_path}/.travis.yml"
+    assert_path "#{absolute_target_path}/README.md"
+    assert_path "#{absolute_target_path}/LICENSE"
+    assert_path "#{absolute_target_path}/tests"
+    refute_path "#{absolute_target_path}/files/main.yml"
+    refute_path "#{absolute_target_path}/templates/main.yml"
+
+    meta_main  = IO.read("#{absolute_target_path}/meta/main.yml")
+    readme     = IO.read("#{absolute_target_path}/README.md")
+    tests_main = IO.read("#{absolute_target_path}/tests/main.yml")
+
+    refute meta_main.include?('author_name')
+    assert_count readme, 'githubname.myrole', 2
+    assert_count readme, 'ansible-myrole', 3
+    assert_count tests_main, 'myrole', 1
+  end
+
   def test_diff
     assert_diff
 

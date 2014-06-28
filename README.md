@@ -25,6 +25,8 @@ Gems will also be updated once they are proven to work on the target rails/ruby 
         - [Ansible roles](#ansible-roles-used)
         - [FAQ](#playbook-faq)
             - [What is the Galaxyfile?](#what-is-the-galaxyfile)
+    - [Role](#role)
+        - [Try it](#try-the-role-command)
     - [Diff](#diff)
         - [Try it](#try-the-diff-command)
     - [Templates](#templates)
@@ -102,6 +104,13 @@ Here is an overview of the available commands. You can find out more information
 
 - **Create an ansible playbook**:
     - `orats playbook <TARGET_PATH>`
+    - Template:
+        - Optionally takes: `--custom []`
+
+- **Create a new ansible role**:
+    - `orats role <TARGET_PATH>`
+    - Configuration:
+        - Optionally takes: `--repo-name []`
     - Template:
         - Optionally takes: `--custom []`
 
@@ -240,6 +249,53 @@ the roles in `myplaybook/roles` using the versions supplied in your
 Since the roles are self contained in the playbook this allows you to have 
 multiple playbooks with certain role versions in case you have older orats 
 projects which require older role versions.
+
+### Role
+
+The role command generates an ansible role with a few opinions. The 
+`ansible-galaxy` command that ships with ansible already comes with an `init`
+ function but the formatting of the files wasn't to my liking.
+ 
+I also wanted it to add in tests using travis-ci and setup a basic 
+idempotence test for all new roles.
+
+#### Changes vs ansible-galaxy init
+
+All of the changes have git commits to go with them. After generating a role you
+ can type `git reflog` to get a list of changes.
+
+- **Core changes**:
+    - Add travis-ci tests
+    - Remove the `vars` folder
+    - Add `LICENSE` (MIT)
+    - Add `.gitignore`
+- **meta/main.yml**:
+    - Automatically fill in the author name based on your git name
+- **README.md**:
+    - Add a travis badge
+    - Add a section to link back to your role on the official ansible galaxy
+    - Automatically fill in your repo name, role name and name where necessary
+    - Add instructions for using the role in an example playbook
+    - Add a todo list for you to make the role your own
+
+#### Try the role command
+
+##### Basic
+
+`orats role your_github_user_name.myrole`
+
+##### Custom repo name
+
+`orats role your_github_user_name.mynewrole --repo-name ansible-mynewrole`
+
+The custom repo name is probably what you'll want to use all the time if you 
+plan to make your roles open source.
+
+For example my roles are named things like `nickjj.postgres` and `nickjj
+.rails`. However my repos are named `ansible-postgres` and `ansible-rails`.
+
+When you submit your role to the galaxy you would use `rails` as the 
+optional name for your role.
 
 ### Diff
 
