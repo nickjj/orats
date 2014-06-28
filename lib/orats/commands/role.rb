@@ -11,6 +11,7 @@ module Orats
       end
 
       def init
+        check_exit_conditions check_running_processes: false
         exit_if_invalid_role_name
 
         rails_template 'role'

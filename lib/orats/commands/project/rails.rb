@@ -2,9 +2,9 @@ module Orats
   module Commands
     module Project
       module Rails
-        def check_exit_conditions
+        def check_exit_conditions(check_running_processes: true)
           exit_if_process :not_found, 'rails', 'git'
-          exit_if_process :not_running, 'postgres', 'redis'
+          exit_if_process :not_running, 'postgres', 'redis' if check_running_processes
           exit_if_path_exists
           exit_if_invalid_template
         end
