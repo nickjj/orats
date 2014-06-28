@@ -12,7 +12,7 @@ Thanks for generating a role with orats. Here's your todo list:
 - Sign up for [travis-ci.org](http://travis-ci.org) (it is free for public repos)
 - Review `.travis.yml` and write reasonable tests
 - Push your role to github and tag it with a version number
-- Publish your role on the [ansible galaxy](https://galaxy.ansible.com] if it's not private
+- Publish your role on the [ansible galaxy](https://galaxy.ansible.com) if it's not private
 - Replace the `role_id` with your id in the `Ansible galaxy` section of this readme
 
 ## Role variables
