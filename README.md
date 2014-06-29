@@ -190,8 +190,8 @@ Everything is broken up into ansible roles so you can quickly scale out horizont
 - **Security**:
     - Logging into the server is only possible with an ssh key
     - Root login is disable
-    - fail2ban is setup
-    - ufw (firewall) is setup to block any ports not exposed by you
+    - fail2ban is setup and configurable
+    - ferm (firewall) is setup to block any ports not exposed by you
     - All stack specific processes are running with less privileges than root
 - **User**:
     - A single deploy user is created
@@ -211,8 +211,10 @@ Everything is broken up into ansible roles so you can quickly scale out horizont
 #### Ansible roles used
 
 - `nickjj.locale` https://github.com/nickjj/ansible-locale [![Build Status](https://secure.travis-ci.org/nickjj/ansible-locale.png)](http://travis-ci.org/nickjj/ansible-locale)
+- `nickjj.sshd` https://github.com/nickjj/ansible-sshd [![Build Status](https://secure.travis-ci.org/nickjj/ansible-sshd.png)](http://travis-ci.org/nickjj/ansible-sshd)
+- `nickjj.ferm` https://github.com/nickjj/ansible-ferm [![Build Status](https://secure.travis-ci.org/nickjj/ansible-ferm.png)](http://travis-ci.org/nickjj/ansible-ferm)
+- `nickjj.fail2ban` https://github.com/nickjj/ansible-fail2ban [![Build Status](https://secure.travis-ci.org/nickjj/ansible-fail2ban.png)](http://travis-ci.org/nickjj/ansible-fail2ban)
 - `nickjj.user` https://github.com/nickjj/ansible-user [![Build Status](https://secure.travis-ci.org/nickjj/ansible-user.png)](http://travis-ci.org/nickjj/ansible-user)
-- `nickjj.security` https://github.com/nickjj/ansible-security
 - `nickjj.postgres` https://github.com/nickjj/ansible-postgres [![Build Status](https://secure.travis-ci.org/nickjj/ansible-postgres.png)](http://travis-ci.org/nickjj/ansible-postgres)
 - `nickjj.ruby` https://github.com/nickjj/ansible-ruby [![Build Status](https://secure.travis-ci.org/nickjj/ansible-ruby.png)](http://travis-ci.org/nickjj/ansible-ruby)
 - `nickjj.rails` https://github.com/nickjj/ansible-rails [![Build Status](https://secure.travis-ci.org/nickjj/ansible-rails.png)](http://travis-ci.org/nickjj/ansible-rails)
