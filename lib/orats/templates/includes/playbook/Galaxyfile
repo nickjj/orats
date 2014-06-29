@@ -1,6 +1,8 @@
 nickjj.locale,v0.1.1
+nickjj.sshd,v0.1.2
+nickjj.ferm,v0.1.1
+nickjj.fail2ban,v0.1.2
 nickjj.user,v0.1.0
-nickjj.security,v0.1.2
 nickjj.postgres,v0.1.3
 nickjj.ruby,v0.1.7
 nickjj.nodejs,v0.1.1

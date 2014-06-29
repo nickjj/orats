@@ -1,10 +1,25 @@
 ---
-- name: ensure all servers are commonly configured
+- name: ensure all servers are commonly configured without sudo
+  hosts: all:!localhost
+  sudo: false
+
+  tasks:
+    - name: ensure IP address of the ansible controller is set
+      set_fact:
+        ansible_controller: '{{ ansible_env.SSH_CLIENT.split(" ") | first }}/32'
+      when: (ansible_controller is undefined and ansible_connection != "local")
+      tags: [common, ferm]
+
+
+- name: ensure all servers are commonly configured with sudo
   hosts: all
   sudo: true
 
   roles:
     - { role: nickjj.locale, tags: [common, locale] }
+    - { role: nickjj.sshd, tags: [common, sshd] }
+    - { role: nickjj.ferm, tags: [common, ferm] }
+    - { role: nickjj.fail2ban, tags: [common, fail2ban] }
     - { role: nickjj.user, tags: [common, user] }
 
 - name: ensure database servers are configured
@@ -12,12 +27,6 @@
   sudo: true
 
   roles:
-    - role: nickjj.security
-      tags: [database, security]
-      security_ufw_ports:
-        - rule: deny
-          port: 80
-          proto: tcp
     - { role: nickjj.postgres, tags: [database, postgres] }
 
 - name: ensure cache servers are configured
@@ -25,12 +34,6 @@
   sudo: true
 
   roles:
-    - role: nickjj.security
-      tags: [cache, security]
-      security_ufw_ports:
-        - rule: deny
-          port: 80
-          proto: tcp
     - { role: DavidWittman.redis, tags: [cache, redis] }
 
 - name: ensure app servers are configured
@@ -38,12 +41,12 @@
   sudo: true
 
   roles:
-    - role: nickjj.security
-      tags: [app, security]
-      security_ufw_ports:
-        - rule: allow
-          port: 80
-          proto: tcp
+    - role: nickjj.ferm
+      tags: [app, ferm]
+      ferm_input_list:
+        - type: "dport_accept"
+          dport: ["http", "https"]
+
     - { role: nickjj.ruby, tags: [app, ruby] }
     - { role: nickjj.nodejs, tags: [app, nodejs] }
     - { role: nickjj.nginx, tags: [app, nginx] }
