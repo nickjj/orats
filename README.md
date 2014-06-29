@@ -190,8 +190,9 @@ Everything is broken up into ansible roles so you can quickly scale out horizont
 - **Security**:
     - Logging into the server is only possible with an ssh key
     - Root login is disable
-    - fail2ban is setup and configurable
+    - sshd_config is setup with reasonable defaults and is fully configurable
     - ferm (firewall) is setup to block any ports not exposed by you
+    - fail2ban is setup and configurable
     - All stack specific processes are running with less privileges than root
 - **User**:
     - A single deploy user is created
