@@ -79,11 +79,18 @@ def add_license
   git_commit 'Add MIT license'
 end
 
-def add_main_playbook
+def add_common_plays
+  log_task __method__
+
+  copy_from_local_gem 'common.yml'
+  git_commit 'Add common playsk'
+end
+
+def add_site_plays
   log_task __method__
 
   copy_from_local_gem 'site.yml'
-  git_commit 'Add the main playbook'
+  git_commit 'Add the site plays'
 end
 
 def add_galaxyfile
@@ -106,6 +113,7 @@ delete_generated_rails_code
 add_playbook_directory
 add_gitignore
 add_license
-add_main_playbook
+add_common_plays
+add_site_plays
 add_galaxyfile
 remove_unused_files_from_git

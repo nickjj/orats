@@ -1,0 +1,23 @@
+---
+- name: ensure all servers are commonly configured without sudo
+  hosts: all:!localhost
+  sudo: false
+
+  tasks:
+    - name: ensure IP address of the ansible controller is set
+      set_fact:
+        ansible_controller: '{{ ansible_env.SSH_CLIENT.split(" ") | first }}/32'
+      when: (ansible_controller is undefined and ansible_connection != "local")
+      tags: [common, ferm]
+
+
+- name: ensure all servers are commonly configured with sudo
+  hosts: all
+  sudo: true
+
+  roles:
+    - { role: nickjj.locale, tags: [common, locale] }
+    - { role: nickjj.sshd, tags: [common, sshd] }
+    - { role: nickjj.ferm, tags: [common, ferm] }
+    - { role: nickjj.fail2ban, tags: [common, fail2ban] }
+    - { role: nickjj.user, tags: [common, user] }

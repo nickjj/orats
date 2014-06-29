@@ -166,6 +166,7 @@ class TestCLI < Minitest::Test
 
     assert_orats 'playbook', 'success'
     assert_path "#{TEST_PATH}/#{@target_path}/Galaxyfile"
+    assert_ansible_yaml "#{TEST_PATH}/#{@target_path}/common.yml"
     assert_ansible_yaml "#{TEST_PATH}/#{@target_path}/site.yml"
   end
 
