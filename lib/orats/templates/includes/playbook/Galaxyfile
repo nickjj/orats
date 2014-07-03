@@ -1,6 +1,6 @@
 nickjj.locale,v0.1.1
 nickjj.sshd,v0.1.2
-nickjj.ferm,v0.1.1
+nickjj.ferm,v0.1.2
 nickjj.fail2ban,v0.1.2
 nickjj.user,v0.1.0
 nickjj.postgres,v0.1.3
@@ -11,5 +11,5 @@ nickjj.rails,v0.2.2
 nickjj.whenever,v0.1.2
 nickjj.pumacorn,v0.1.2
 nickjj.sidekiq,v0.1.2
-nickjj.monit,v0.1.3
+nickjj.monit,v0.1.4
 DavidWittman.redis
