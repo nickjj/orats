@@ -101,7 +101,6 @@ rails_deploy_migrate_master_host: "{{ groups['app'][0] }}"
 
 rails_deploy_env:
   RAILS_ENV: production
-  SOURCE_ENV_PATH: "/etc/default/{{ rails_deploy_app_name }}"
 
   PROJECT_PATH: "{{ rails_deploy_path }}"
   TIME_ZONE: Eastern Time (US & Canada)
