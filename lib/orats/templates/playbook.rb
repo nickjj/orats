@@ -83,7 +83,7 @@ def add_common_plays
   log_task __method__
 
   copy_from_local_gem 'common.yml'
-  git_commit 'Add common playsk'
+  git_commit 'Add common plays'
 end
 
 def add_site_plays
