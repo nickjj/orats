@@ -19,13 +19,12 @@ def method_to_sentence(method)
   method
 end
 
-def log_task(message)
+def task(message, color = :blue)
   puts
-  say_status 'task', "#{method_to_sentence(message.to_s)}:", :yellow
-  puts '-'*80, ''; sleep 0.25
+  say_status 'task', set_color(message, :bold), color
 end
 
-def git_commit(message)
+def commit(message)
   git add: '-A'
   git commit: "-m '#{message}'"
 end
@@ -38,7 +37,7 @@ def git_config(field)
   git_field_value.to_s.empty? ? default_value : git_field_value
 end
 
-def copy_from_local_gem(source, dest = '')
+def orats_to_local(source, dest = '')
   dest = source if dest.empty?
 
   base_path = "#{File.expand_path File.dirname(__FILE__)}/includes/new/rails"
@@ -49,15 +48,15 @@ end
 
 # ---
 
-def initial_git_commit
-  log_task __method__
+def initial_commit
+  task __method__
 
   git :init
-  git_commit 'Initial git commit'
+  commit 'Initial git commit'
 end
 
 def update_gitignore
-  log_task __method__
+  task __method__
 
   append_to_file '.gitignore' do
     <<-S
@@ -77,68 +76,68 @@ def update_gitignore
 /public/assets/*
     S
   end
-  git_commit 'Add common OS files, editor files and other paths'
+  commit 'Add common OS files, editor files and other paths'
 end
 
 def copy_gemfile
-  log_task __method__
+  task __method__
 
-  copy_from_local_gem 'Gemfile'
-  git_commit 'Add Gemfile'
+  orats_to_local 'Gemfile'
+  commit 'Add Gemfile'
 end
 
 def copy_base_favicon
-  log_task __method__
+  task __method__
 
-  copy_from_local_gem 'app/assets/favicon/favicon_base.png'
-  git_commit 'Add a 256x256 base favicon'
+  orats_to_local 'app/assets/favicon/favicon_base.png'
+  commit 'Add a 256x256 base favicon'
 end
 
 def add_dotenv
-  log_task 'add_dotenv'
+  task 'add_dotenv'
 
-  copy_from_local_gem '.env', '.env'
+  orats_to_local '.env', '.env'
   gsub_file '.env', 'generate_token', generate_token
   gsub_file '.env', 'app_name', app_name
-  git_commit 'Add development environment file'
+  commit 'Add development environment file'
 end
 
 def add_procfile
-  log_task __method__
+  task __method__
 
-  copy_from_local_gem 'Procfile'
-  git_commit 'Add Procfile'
+  orats_to_local 'Procfile'
+  commit 'Add Procfile'
 end
 
 def add_markdown_readme
-  log_task __method__
+  task __method__
 
-  copy_from_local_gem 'README.md'
-  git_commit 'Add markdown readme'
+  orats_to_local 'README.md'
+  commit 'Add markdown readme'
 end
 
 def add_license
-  log_task __method__
+  task __method__
 
   author_name  = git_config 'name'
   author_email = git_config 'email'
 
-  copy_from_local_gem '../../common/LICENSE', 'LICENSE'
+  orats_to_local '../../common/LICENSE', 'LICENSE'
   gsub_file 'LICENSE', 'Time.now.year', Time.now.year.to_s
   gsub_file 'LICENSE', 'author_name', author_name
   gsub_file 'LICENSE', 'author_email', author_email
-  git_commit 'Add MIT license'
+  commit 'Add MIT license'
 end
 
 def update_app_secrets
-  log_task __method__
+  task __method__
 
-  copy_from_local_gem 'config/secrets.yml'
-  git_commit 'DRY out the yaml'
+  orats_to_local 'config/secrets.yml'
+  commit 'DRY out the yaml'
 end
 
 def update_app_config
-  log_task __method__
+  task __method__
 
   inject_into_file 'config/application.rb', after: "automatically loaded.\n" do
     <<-S
@@ -187,71 +186,72 @@ ActionView::Base.field_error_proc = Proc.new do |html_tag, instance|
 end
     S
   end
-  git_commit 'Configure the mailer/redis, update the timezone and adjust the validation output'
+  commit 'Configure the mailer/redis, update the timezone and adjust ' + \
+             ' the validation output'
 end
 
 def update_database_config
-  log_task __method__
+  task __method__
 
-  copy_from_local_gem 'config/database.yml'
-  git_commit 'DRY out the yaml'
+  orats_to_local 'config/database.yml'
+  commit 'DRY out the yaml'
 end
 
 def add_puma_config
-  log_task __method__
+  task __method__
 
-  copy_from_local_gem 'config/puma.rb'
-  git_commit 'Add the puma config'
+  orats_to_local 'config/puma.rb'
+  commit 'Add the puma config'
 end
 
 def add_sidekiq_config
-  log_task __method__
+  task __method__
 
-  copy_from_local_gem 'config/sidekiq.yml'
-  git_commit 'Add the sidekiq config'
+  orats_to_local 'config/sidekiq.yml'
+  commit 'Add the sidekiq config'
 end
 
 def add_sitemap_config
-  log_task __method__
+  task __method__
 
-  copy_from_local_gem 'config/sitemap.rb'
+  orats_to_local 'config/sitemap.rb'
   gsub_file 'config/sitemap.rb', 'app_name', app_name
-  git_commit 'Add the sitemap config'
+  commit 'Add the sitemap config'
 end
 
 def add_whenever_config
-  log_task __method__
+  task __method__
 
-  copy_from_local_gem 'config/schedule.rb'
-  git_commit 'Add the whenever config'
+  orats_to_local 'config/schedule.rb'
+  commit 'Add the whenever config'
 end
 
 def add_sidekiq_initializer
-  log_task __method__
+  task __method__
 
-  copy_from_local_gem 'config/initializers/sidekiq.rb'
+  orats_to_local 'config/initializers/sidekiq.rb'
   gsub_file 'config/initializers/sidekiq.rb', 'ns_app', app_name
-  git_commit 'Add the sidekiq initializer'
+  commit 'Add the sidekiq initializer'
 end
 
 def add_mini_profiler_initializer
-  log_task __method__
+  task __method__
 
-  copy_from_local_gem 'config/initializers/mini_profiler.rb'
-  git_commit 'Add the mini profiler initializer'
+  orats_to_local 'config/initializers/mini_profiler.rb'
+  commit 'Add the mini profiler initializer'
 end
 
 def add_staging_environment
-  log_task __method__
+  task __method__
 
-  copy_from_local_gem 'config/environments/staging.rb'
+  orats_to_local 'config/environments/staging.rb'
   gsub_file 'config/environments/staging.rb', 'app_name.humanize',
             app_name.humanize
-  git_commit 'Add a staging environment'
+  commit 'Add a staging environment'
 end
 
 def update_development_environment
-  log_task __method__
+  task __method__
 
   inject_into_file 'config/environments/development.rb',
                    before: "\nend" do
@@ -261,20 +261,22 @@ def update_development_environment
   config.generators.javascript_engine = :coffee
     S
   end
-  git_commit 'Update the default generator asset engines'
+  commit 'Update the default generator asset engines'
 end
 
 def update_production_environment
-  log_task __method__
+  task __method__
 
-  inject_into_file 'config/environments/production.rb', after: "config.log_level = :info\n" do
+  inject_into_file 'config/environments/production.rb',
+                   after: "config.log_level = :info\n" do
     <<-'S'
   config.logger = Logger.new(config.paths['log'].first, 'daily')
     S
   end
-  git_commit 'Update the logger to rotate daily'
+  commit 'Update the logger to rotate daily'
 
-  inject_into_file 'config/environments/production.rb', after: "%w( search.js )\n" do
+  inject_into_file 'config/environments/production.rb',
+                   after: "%w( search.js )\n" do
     <<-'S'
   config.assets.precompile << Proc.new { |path|
     if path =~ /\.(eot|svg|ttf|woff|png)\z/
@@ -283,15 +285,15 @@ def update_production_environment
   }
     S
   end
-  git_commit 'Update the assets precompiler to include common file types'
+  commit 'Update the assets precompiler to include common file types'
 
   gsub_file 'config/environments/production.rb',
             '# config.assets.css_compressor', 'config.assets.css_compressor'
-  git_commit 'Add sass asset compression'
+  commit 'Add sass asset compression'
 end
 
 def update_routes
-  log_task __method__
+  task __method__
 
   prepend_file 'config/routes.rb', "require 'sidekiq/web'\n\n"
 
@@ -305,85 +307,87 @@ def update_routes
   mount Sidekiq::Web => '/sidekiq'
     S
   end
-  git_commit 'Add a concern for pagination and mount sidekiq'
+  commit 'Add a concern for pagination and mount sidekiq'
 end
 
 def add_backup_lib
-  log_task __method__
+  task __method__
 
-  copy_from_local_gem 'lib/backup/config.rb'
-  copy_from_local_gem 'lib/backup/models/backup.rb'
-  git_commit 'Add backup library'
+  orats_to_local 'lib/backup/config.rb'
+  orats_to_local 'lib/backup/models/backup.rb'
+  commit 'Add backup library'
 end
 
 def add_favicon_task
-  log_task __method__
+  task __method__
 
-  copy_from_local_gem 'lib/tasks/orats/favicon.rake'
-  git_commit 'Add a favicon generator task'
+  orats_to_local 'lib/tasks/orats/favicon.rake'
+  commit 'Add a favicon generator task'
 end
 
 def add_backup_task
-  log_task __method__
+  task __method__
 
-  copy_from_local_gem 'lib/tasks/orats/backup.rake'
+  orats_to_local 'lib/tasks/orats/backup.rake'
   gsub_file 'lib/tasks/orats/backup.rake', 'app_name', app_name
-  git_commit 'Add an application backup task'
+  commit 'Add an application backup task'
 end
 
 def add_helpers
-  log_task __method__
+  task __method__
 
-  copy_from_local_gem 'app/helpers/application_helper.rb'
-  git_commit 'Add various helpers'
+  orats_to_local 'app/helpers/application_helper.rb'
+  commit 'Add various helpers'
 end
 
 def add_layout
-  log_task __method__
+  task __method__
 
-  copy_from_local_gem 'app/views/layouts/application.html.erb'
-  git_commit 'Add layout'
+  orats_to_local 'app/views/layouts/application.html.erb'
+  commit 'Add layout'
 end
 
 def add_layout_partials
-  log_task __method__
+  task __method__
 
-  copy_from_local_gem 'app/views/layouts/_flash.html.erb'
+  orats_to_local 'app/views/layouts/_flash.html.erb'
 
-  copy_from_local_gem 'app/views/layouts/_navigation.html.erb'
+  orats_to_local 'app/views/layouts/_navigation.html.erb'
   gsub_file 'app/views/layouts/_navigation.html.erb', 'app_name', app_name
 
-  copy_from_local_gem 'app/views/layouts/_navigation_links.html.erb'
+  orats_to_local 'app/views/layouts/_navigation_links.html.erb'
 
-  copy_from_local_gem 'app/views/layouts/_footer.html.erb'
+  orats_to_local 'app/views/layouts/_footer.html.erb'
   gsub_file 'app/views/layouts/_footer.html.erb', 'Time.now.year.to_s',
             Time.now.year.to_s
   gsub_file 'app/views/layouts/_footer.html.erb', 'app_name', app_name
 
-  copy_from_local_gem 'app/views/layouts/_google_analytics_snippet.html.erb'
-  copy_from_local_gem 'app/views/layouts/_google_analytics_tracker.html.erb'
+  orats_to_local 'app/views/layouts/_google_analytics_snippet.html.erb'
+  orats_to_local 'app/views/layouts/_google_analytics_tracker.html.erb'
 
-  copy_from_local_gem 'app/views/layouts/_disqus_comments_snippet.html.erb'
-  copy_from_local_gem 'app/views/layouts/_disqus_count_snippet.html.erb'
+  orats_to_local 'app/views/layouts/_disqus_comments_snippet.html.erb'
+  orats_to_local 'app/views/layouts/_disqus_count_snippet.html.erb'
 
-  git_commit 'Add layout partials'
+  commit 'Add layout partials'
 end
 
 def add_http_error_pages
-  log_task __method__
+  task __method__
 
-  copy_from_local_gem 'public/404.html'
-  copy_from_local_gem 'public/422.html'
-  copy_from_local_gem 'public/500.html'
-  copy_from_local_gem 'public/502.html'
+  orats_to_local 'public/404.html'
+  orats_to_local 'public/422.html'
+  orats_to_local 'public/500.html'
+  orats_to_local 'public/502.html'
 
-  git_commit 'Add http status code pages'
+  commit 'Add http status code pages'
 end
 
 def update_sass
-  log_task __method__
+  task __method__
 
-  run 'mv app/assets/stylesheets/application.css app/assets/stylesheets/application.css.scss'
+  run 'mv app/assets/stylesheets/application.css app/assets/stylesheets/' + \
+      'application.css.scss'
+
   inject_into_file 'app/assets/stylesheets/application.css.scss',
                    " *= require font-awesome\n",
                    before: " *= require_self\n"
@@ -459,19 +463,20 @@ img {
 }
     S
   end
-  git_commit 'Add font-awesome, bootstrap and a few default styles'
+  commit 'Add font-awesome, bootstrap and a few default styles'
 end
 
 def update_coffeescript
-  log_task __method__
+  task __method__
 
   gsub_file 'app/assets/javascripts/application.js', "//= require jquery\n", ''
-  git_commit 'Remove jquery because it is loaded from a CDN'
+  commit 'Remove jquery because it is loaded from a CDN'
 
   inject_into_file 'app/assets/javascripts/application.js',
                    "//= require jquery.turbolinks\n",
                    before: "//= require_tree .\n"
-  inject_into_file 'app/assets/javascripts/application.js', before: "//= require_tree .\n" do
+  inject_into_file 'app/assets/javascripts/application.js',
+                   before: "//= require_tree .\n" do
     <<-S
 //= require bootstrap/affix
 //= require bootstrap/alert
@@ -487,19 +492,19 @@ def update_coffeescript
 //= require bootstrap/transition
     S
   end
-  git_commit 'Add jquery.turbolinks and bootstrap'
+  commit 'Add jquery.turbolinks and bootstrap'
 end
 
 def remove_unused_files_from_git
-  log_task __method__
+  task __method__
 
   git add: '-u'
-  git_commit 'Remove unused files'
+  commit 'Remove unused files'
 end
 
 # ---
 
-initial_git_commit
+initial_commit
 update_gitignore
 copy_gemfile
 copy_base_favicon

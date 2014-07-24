@@ -1,47 +1,55 @@
-require 'orats/commands/common'
+require 'orats/common'
 
 module Orats
   module Commands
+    # delete a path and its data
     class Nuke < Common
       def initialize(target_path = '', options = {})
         super
       end
 
       def init
-        log_nuke_info
-        log_nuke_details unless @options[:skip_data]
+        exit_if_invalid_system
 
-        confirmed_to_delete = yes?('Are you sure? (y/N)', :cyan); puts
-
-        if confirmed_to_delete
-          nuke_data unless @options[:skip_data]
-          nuke_directory
-        end
+        nuke_report
+        nuke_details
+        nuke_data unless @options[:skip_data]
+        nuke_path
       end
 
       private
 
-      def log_nuke_info
-        log_error 'nuke', 'You are about to permanently delete this directory',
-                  'path', File.expand_path(@target_path)
+      def exit_if_path_missing
+        task 'Check if path is missing'
+
+        return if Dir.exist?(@target_path) || File.exist?(@target_path)
+
+        error 'Path was not found', @target_path
+        exit 1
       end
 
-      def log_nuke_details
-        rails_projects = []
-
-        valid_rails_directories.each { |rails_dir| rails_projects << File.basename(rails_dir) }
-        project_names = rails_projects.join(', ')
-
-        log_error 'nuke', 'You are about to permanently delete all postgres databases for',
-                  'databases', project_names, true
-
-        log_error 'nuke', 'You are about to permanently delete all redis namespaces for',
-                  'namespaces', project_names
+      def nuke_report
+        puts
+        log 'warning', 'You are about to permanently delete this path',
+            :yellow, true
+        log 'nuke path', File.expand_path(@target_path), :white
+        puts
       end
 
-      def valid_rails_directories
+      def nuke_details
+        rails_apps = []
+
+        valid_rails_apps.each do
+          |rails_dir| rails_apps << File.basename(rails_dir)
+        end
+
+        nuke_items(rails_apps) unless @options[:skip_data]
+      end
+
+      def valid_rails_apps
         rails_gemfiles =
-            run("find #{@active_path} -type f -name Gemfile | xargs grep -lE \"gem 'rails'|gem \\\"rails\\\"\"",
+            run("find #{@target_path} -type f -name Gemfile | " + \
+                "xargs grep -lE \"gem 'rails'|gem \\\"rails\\\"\"",
                 capture: true)
 
         gemfile_paths = rails_gemfiles.split("\n")
@@ -49,37 +57,51 @@ module Orats
         gemfile_paths.map { |gemfile| File.dirname(gemfile) }
       end
 
+      def nuke_items(apps)
+        if apps.empty?
+          results 'No apps were found in this path',
+                  'skipping', File.expand_path(@target_path)
+          nuke_path
+          exit
+        else
+          nuke_app_details(apps.join(', '))
+        end
+      end
+
+      def nuke_app_details(app_names)
+        puts
+        log 'nuke', 'You are about to permanently delete all postgres' + \
+            ' databases for', :red, true
+        log 'databases', app_names, :yellow
+        puts
+        log 'nuke', 'You are about to permanently delete all redis' + \
+            ' namespaces for', :red, true
+        log 'namespaces', app_names, :yellow
+        puts
+
+        exit unless yes?('Are you sure? (y/N)', :cyan)
+      end
+
       def nuke_data
-        valid_rails_directories.each do |directory|
-          log_task 'Remove postgres databases'
-          run_from directory, 'bundle exec rake db:drop:all'
+        valid_rails_apps.each do |app|
+          task 'Delete postgres database'
+          drop_database app
 
-          nuke_redis File.basename(directory)
+          task 'Delete redis keys'
+          drop_namespace File.basename(app)
         end
       end
 
-      def nuke_redis(namespace)
-        log_task 'Remove redis keys'
+      def nuke_path
+        exit_if_path_missing
 
-        while not_able_to_nuke_redis?(@options[:redis_password], namespace)
-          log_status_top 'error', "The redis password you supplied was incorrect\n", :red
-          new_password = ask('Enter the correct password or CTRL+C to quit:', :cyan)
-          puts
+        task 'Delete path'
 
-          break unless not_able_to_nuke_redis?(new_password, namespace)
-        end
-      end
+        return if @options[:skip_data]
 
-      def not_able_to_nuke_redis?(password, namespace)
-        password.empty? ? redis_password = '' : redis_password = "-a #{password}"
-        redis_out = run("redis-cli #{redis_password} KEYS '#{namespace}:*' | xargs --delim='\n' redis-cli #{redis_password} DEL", capture: true)
-
-        redis_out.include?('NOAUTH Authentication required')
-      end
-
-      def nuke_directory
-        log_task 'Delete directory'
-        run "rm -rf #{@active_path}"
+        puts
+        exit unless yes?('Are you sure? (y/N)', :cyan)
+        run "rm -rf #{@target_path}"
       end
     end
   end

@@ -1,0 +1,19 @@
+Delete the target path and optionally all data associated to it.
+
+Development server credentials:
+
+`--pg-location` to supply a custom postgres location [localhost]
+
+`--pg-username` to supply a custom postgres username [postgres]
+
+`--pg-password` to supply your postgres password []
+
+`--redis-location` to supply a custom redis location [localhost]
+
+`--redis-password` to supply your redis password []
+
+Options:
+
+`--skip-data` to skip deleting app specific postgres and redis data [false]
+
+`--rc` to supply an .oratsrc file path to automatically populate credentials []

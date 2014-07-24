@@ -3,7 +3,6 @@ development: &default
   adapter: postgresql
   database: <%= ENV['DATABASE_NAME'] %>
   host: <%= ENV['DATABASE_HOST'] %>
-  port: <%= ENV['DATABASE_PORT'] %>
   pool: <%= ENV['DATABASE_POOL'] %>
   timeout: <%= ENV['DATABASE_TIMEOUT'] %>
   username: <%= ENV['DATABASE_USERNAME'] %>

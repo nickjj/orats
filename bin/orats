@@ -10,8 +10,11 @@
 git_path = File.expand_path('../../.git', __FILE__)
 
 if File.exist?(git_path)
-  $:.unshift(File.expand_path('../../lib', __FILE__))
+  $LOAD_PATH.unshift(File.expand_path('../../lib', __FILE__))
 end
 
 require 'orats/cli'
-Orats::CLI.start(ARGV)
+require 'orats/argv_adjust'
+
+argv = Orats::ARGVAdjust.new.init
+Orats::CLI.start(argv)

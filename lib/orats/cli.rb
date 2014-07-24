@@ -1,169 +1,81 @@
 require 'thor'
-require 'orats/commands/project/exec'
-require 'orats/commands/inventory'
-require 'orats/commands/playbook'
-require 'orats/commands/role'
+require 'orats/commands/new/exec'
 require 'orats/commands/nuke'
-require 'orats/commands/diff/exec'
+require 'orats/version'
 
 module Orats
+  # the thor driven command line interface
   class CLI < Thor
+    # if options are added through the .oratsrc file then we run the risk
+    # of having options not set for the command it was ran for
+
+    # for example the new command has a --template flag but the nuke command
+    # does not. thor will throw an error if you have --template in the
+    # .oratsrc config because it does not exist for the nuke command
+
+    # the code below gets a list of options that came from the .oratsrc file
+    # and compares them to the current options for the current command
+
+    # this is good, but now we need a way to somehow add these options into
+    # the command to fool thor into thinking they exist. we need to add
+    # the option somehow, thoughts?
+
+    # for now none of the code below is in action and the readme explicitly
+    # says you can only store the postgres and redis credentials since
+    # the args only get inserted into the new and nuke commands
+    def initialize(args, local_options, config)
+      super
+
+      matched_options = []
+
+      config[:current_command].options.each do |key|
+        aliases = key[1].aliases
+        option = key[0].to_s.gsub('_', '-')
+
+        aliases.each do |item|
+          matched_options << item if local_options.join.include?(item)
+        end
+
+        matched_options << option if local_options.include?("--#{option}")
+      end
+    end
+
     option :pg_location, default: 'localhost', aliases: '-l'
     option :pg_username, default: 'postgres', aliases: '-u'
-    option :pg_password, required: true, aliases: '-p'
+    option :pg_password, default: '', aliases: '-p'
     option :redis_location, default: 'localhost', aliases: '-n'
     option :redis_password, default: '', aliases: '-d'
-    option :template, default: '', aliases: '-m'
+    option :template, default: '', aliases: '-t'
     option :custom, default: '', aliases: '-c'
-    option :skip_ansible, type: :boolean, default: false, aliases: '-A'
     option :skip_server_start, type: :boolean, default: false, aliases: '-S'
-    desc 'project TARGET_PATH [options]', ''
-    long_desc <<-D
-      `orats project target_path --pg-password supersecret` will create a new rails project and it will also create an ansible inventory to go with it by default.
-
-      You must supply at least this flag:
-
-      `--pg-password` to supply your development postgres password so the rails application can run database migrations
-
-      Configuration:
-
-      `--pg-location` to supply a custom postgres location [localhost]
-
-      `--pg-username` to supply a custom postgres username [postgres]
-
-      `--redis-location` to supply a custom redis location [localhost]
-
-      `--redis-password` to supply your development redis password []
-
-      Template features:
-
-      `--template` accepts a template name which will get added in addition to the base template []
-
-      `--custom` will let you supply a custom template, a url or file is ok but urls must start with http or https []
-
-      Project features:
-
-      `--skip-ansible` skip creating the ansible related directories [false]
-
-      `--skip-server-start` skip automatically running puma and sidekiq [false]
-    D
-
-    def project(target_path)
-      Commands::Project::Exec.new(target_path, options).init
+    option :rc, default: ''
+    desc 'new PATH [options]', 'Create a new orats application'
+    long_desc File.read(File.join(File.dirname(__FILE__), 'cli_help/new'))
+    def new(target_path)
+      Commands::New::Exec.new(target_path, options).init
     end
 
-    desc 'inventory TARGET_PATH [options]', ''
-    long_desc <<-D
-      `orats inventory target_path` will create an ansible inventory.
-    D
-
-    def inventory(target_path)
-      Commands::Inventory.new(target_path, options).init
-    end
-
-    option :custom, default: '', aliases: '-c'
-    desc 'playbook TARGET_PATH [options]', ''
-    long_desc <<-D
-      `orats playbook target_path` will create an ansible playbook.
-
-      Help:
-
-      If you pass in an existing playbook path it will update the role versions.
-
-      Template features:
-
-      `--custom` will let you supply a custom template, a url or file is ok but urls
- must start with http or https []
-    D
-
-    def playbook(target_path)
-      Commands::Playbook.new(target_path, options).init
-    end
-
-    option :repo_name, default: '', aliases: '-r'
-    option :custom, default: '', aliases: '-c'
-    desc 'role TARGET_PATH [options]', ''
-    long_desc <<-D
-      `orats role target_path` will create an ansible role suitable for the galaxy.
-
-      Configuration:
-
-      `--repo-name` if your github repo name is different than the full role name
-
-      Template features:
-
-      `--custom` will let you supply a custom template, a url or file is ok but urls
- must start with http or https []
-    D
-
-    def role(target_path)
-      Commands::Role.new(target_path, options).init
-    end
-
-    option :skip_data, type: :boolean, default: false, aliases: '-D'
+    option :pg_location, default: 'localhost', aliases: '-l'
+    option :pg_username, default: 'postgres', aliases: '-u'
+    option :pg_password, default: '', aliases: '-p'
+    option :redis_location, default: 'localhost', aliases: '-n'
     option :redis_password, default: '', aliases: '-d'
-    desc 'nuke TARGET_PATH [options]', ''
-    long_desc <<-D
-      `orats nuke target_path` will delete the directory and optionally all data associated to it.
-
-      Options:
-
-      `--skip-data` will skip deleting app specific postgres databases and redis namespaces [false]
-
-      `--redis-password` to supply your development redis password []
-    D
-
+    option :skip_data, type: :boolean, default: false, aliases: '-D'
+    option :rc, default: ''
+    desc 'nuke PATH [options]', 'Delete a path and optionally its data'
+    long_desc File.read(File.join(File.dirname(__FILE__), 'cli_help/nuke'))
     def nuke(target_path)
       Commands::Nuke.new(target_path, options).init
     end
 
-    option :galaxyfile, default: '', aliases: '-g'
-    option :playbook, default: '', aliases: '-p'
-    option :hosts, default: '', aliases: '-h'
-    option :inventory, default: '', aliases: '-i'
-    desc 'diff [options]', ''
-    long_desc <<-D
-      `orats diff` will run various comparisons on orats and your ansible files.
-
-      Options:
-
-      `--galaxyfile` to supply a galaxyfile for comparison []
-
-      `--playbook` to supply a playbook directory/file for comparison []
-
-      `--hosts` to supply a hosts file for comparison []
-
-      `--inventory` to supply an inventory directory/file for comparison []
-
-      Quality of life features:
-
-      `--playbook` also accepts a playbook path, if you kept the
-default file names it will automatically compare both your Galaxyfile and
-site.yml files.
-
-      `--inventory` also accepts an inventory path, if you kept the
-default file names it will automatically compare both your hosts and
-group_vars/all.yml files.
-    D
-
-    def diff
-      Commands::Diff::Exec.new(nil, options).init
-    end
-
-    desc 'templates', ''
-    long_desc <<-D
-      `orats templates` will return a list of available orats templates.
-    D
-
+    desc 'templates', 'Return a list of available templates'
+    long_desc 'Return a list of available built in templates.'
     def templates
-      Commands::Project::Exec.new.list_templates
+      Commands::New::Exec.new.available_templates
     end
 
-    desc 'version', ''
-    long_desc <<-D
-      `orats version` will print the current version.
-    D
-
+    desc 'version', 'The current version of orats'
+    long_desc 'Print the current version.'
     def version
       puts "Orats version #{VERSION}"
     end
