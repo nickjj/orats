@@ -1,0 +1,16 @@
+---
+language: "ruby"
+rvm:
+  - 2.1.2
+
+services:
+  - "redis-server"
+
+install: "gem install rubocop"
+
+before_script:
+  - >
+  printf "AllCops:\n  Exclude:\n    - 'lib/orats/templates/**/*'\nStyle/LineLength:\n  Max: 79"
+
+script:
+  - "ruby test/integration/cli_test.rb --verbose"
