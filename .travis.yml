@@ -6,14 +6,14 @@ rvm:
 services:
   - "redis-server"
 
-install: "gem install rake rails rubocop"
+install: "gem install rails rubocop"
 
 before_script:
   - "git config --global user.email 'foo@bar.com'"
   - "git config --global user.name 'Foo Bar'"
+  - "bundle install"
   - >
     printf "AllCops:\n  Exclude:\n    - 'lib/orats/templates/**/*'\nStyle/LineLength:\n  Max: 79" > .rubocop.yml
 
-# disable this until I get travis figured out for ruby projects
-# script:
-#  - "ruby test/integration/cli_test.rb --verbose"
+script:
+  - "ruby test/integration/cli_test.rb --verbose"
