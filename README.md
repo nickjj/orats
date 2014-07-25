@@ -243,6 +243,7 @@ There's the official [rails guide on custom application templates]
 
 You can also view the [orats templates](https://github.com/nickjj/orats/tree/master/lib/orats/templates) to use as inspiration. All of the template files are self contained.
 
+<a name="the-oratsrc-file"></a>
 ## The .oratsrc file
 
 Both the `new` and `nuke` commands are dependent on having your postgres and redis login information because they need to connection to those databases to perform various tasks.
