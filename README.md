@@ -29,7 +29,7 @@ Gems will also be updated once they are proven to work on the target rails/ruby 
         - [Try it](#try-the-custom-template)
         - [FAQ](#custom-faq)
             - [Any guides on how to make custom templates?](#any-guides-on-how-to-make-custom-templates)
-- [The .oratsrc file](#the-oratsrc=file)
+- [The .oratsrc file](#the-oratsrc-file)
 - [Wiki](https://github.com/nickjj/orats/wiki)
     - [What to look at after making a new project](https://github.com/nickjj/orats/wiki/What-to-look-at-after-making-a-new-project)
 
@@ -243,7 +243,6 @@ There's the official [rails guide on custom application templates]
 
 You can also view the [orats templates](https://github.com/nickjj/orats/tree/master/lib/orats/templates) to use as inspiration. All of the template files are self contained.
 
-<a name="the-oratsrc-file"></a>
 ## The .oratsrc file
 
 Both the `new` and `nuke` commands are dependent on having your postgres and redis login information because they need to connection to those databases to perform various tasks.
