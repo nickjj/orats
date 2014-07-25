@@ -1,4 +1,4 @@
-[![Gem Version](https://badge.fury.io/rb/orats.png)](http://badge.fury.io/rb/orats) [![Build Status](https://secure.travis-ci.org/nickjj/orats.png)](http://travis-ci.org/nickjj/orats)
+[![Gem Version](https://badge.fury.io/rb/orats.png)](http://badge.fury.io/rb/orats)
 
 ## What is orats and what problem does it solve?
 
