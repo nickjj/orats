@@ -6,7 +6,7 @@ rvm:
 services:
   - "redis-server"
 
-install: "gem install rubocop thor minitest"
+install: "gem install rails rubocop"
 
 before_script:
   - >
