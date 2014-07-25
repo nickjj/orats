@@ -9,6 +9,8 @@ services:
 install: "gem install rails rubocop"
 
 before_script:
+  - "git config --global user.email 'foo@bar.com'"
+  - "git config --global user.name 'Foo Bar'"
   - >
     printf "AllCops:\n  Exclude:\n    - 'lib/orats/templates/**/*'\nStyle/LineLength:\n  Max: 79" > .rubocop.yml
 
