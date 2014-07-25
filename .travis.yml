@@ -6,7 +6,7 @@ rvm:
 services:
   - "redis-server"
 
-install: "gem install rails rubocop"
+install: "gem install rake rails rubocop"
 
 before_script:
   - "git config --global user.email 'foo@bar.com'"
