@@ -304,27 +304,11 @@ def update_routes
   commit 'Add a concern for pagination and mount sidekiq'
 end
 
-def add_backup_lib
-  task __method__
-
-  orats_to_local 'lib/backup/config.rb'
-  orats_to_local 'lib/backup/models/backup.rb'
-  commit 'Add backup library'
-end
-
 def add_favicon_task
   task __method__
 
   orats_to_local 'lib/tasks/orats/favicon.rake'
   commit 'Add a favicon generator task'
-end
-
-def add_backup_task
-  task __method__
-
-  orats_to_local 'lib/tasks/orats/backup.rake'
-  gsub_file 'lib/tasks/orats/backup.rake', 'app_name', app_name
-  commit 'Add an application backup task'
 end
 
 def add_helpers
@@ -519,8 +503,6 @@ add_staging_environment
 update_development_environment
 update_production_environment
 update_routes
-add_backup_lib
-add_backup_task
 add_favicon_task
 add_helpers
 add_layout
