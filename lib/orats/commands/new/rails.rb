@@ -68,7 +68,7 @@ module Orats
         end
 
         def gsub_redis_info
-          task 'Update the redis connection details'
+          task 'Update the CACHE_URL'
 
           unless @options[:redis_password].empty?
             gsub_file "#{@target_path}/.env", '//',
