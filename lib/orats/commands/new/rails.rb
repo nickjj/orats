@@ -108,7 +108,7 @@ module Orats
 
         def bundle_binstubs
           task 'Run bundle binstubs for a few gems'
-          run_from @target_path, 'bundle binstubs whenever puma sidekiq backup'
+          run_from @target_path, 'bundle binstubs whenever puma sidekiq'
 
           commit 'Add binstubs for the important gems'
         end
