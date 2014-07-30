@@ -112,7 +112,6 @@ All of the changes have git commits to go with them. After generating a project 
     - Keep a sitemap up to date using `sitemap_generator`
     - Add a `pages` controller with `home` action that has points of interest
 - **Rake tasks**:
-    - Daily backups using `backup` and `whenever`
     - Generate favicons for many devices based off a single source png
 - **Config**:
     - Extract a bunch of configuration to environment variables
@@ -247,12 +246,14 @@ You can also view the [orats templates](https://github.com/nickjj/orats/tree/mas
 
 Both the `new` and `nuke` commands are dependent on having your postgres and redis login information because they need to connection to those databases to perform various tasks.
 
-There are 5 flags to configure for this:
+There are 7 flags to configure for this:
 
 - `--pg-location` (defaults to localhost)
+- `--pg-port` (defaults to 5432)
 - `--pg-username` (defaults to postgres)
 - `--pg-password` (defaults to an empty string)
 - `--redis-location` (defaults to localhost)
+- `--redis-port` (defaults to 6379)
 - `--redis-password` (defaults to an empty string)
 
 For most people you will only need to supply the postgres password but still it's annoying to have to type those flags in every time you create a new app or nuke an app. It's really annoying if you develop inside of linux containers like myself which means the location is not localhost.
