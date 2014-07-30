@@ -3,13 +3,7 @@ environment ENV['RAILS_ENV']
 threads ENV['PUMA_THREADS_MIN'].to_i, ENV['PUMA_THREADS_MAX'].to_i
 workers ENV['PUMA_WORKERS'].to_i
 
-pidfile "#{ENV['PROJECT_PATH']}/tmp/puma.pid"
-
-if ENV['RAILS_ENV'] == 'production'
-  bind "unix://#{ENV['PROJECT_PATH']}/tmp/puma.sock"
-else
-  port '3000'
-end
+pidfile "tmp/puma.pid"
 
 # https://github.com/puma/puma/blob/master/examples/config.rb#L125
 prune_bundler

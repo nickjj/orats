@@ -156,14 +156,8 @@ def update_app_config
     config.action_mailer.default_options = { from: ENV['ACTION_MAILER_DEFAULT_FROM'] }
     config.action_mailer.default_url_options = { host: ENV['ACTION_MAILER_HOST'] }
 
-    redis_store_options = { host: ENV['CACHE_HOST'],
-                            port: ENV['CACHE_PORT'].to_i,
-                            db: ENV['CACHE_DATABASE'].to_i,
-                            namespace: '#{app_name}::cache'
-                          }
-
-    redis_store_options[:password] = ENV['CACHE_PASSWORD'] if ENV['CACHE_PASSWORD'].present?
-    config.cache_store = :redis_store, redis_store_options
+    config.cache_store = :redis_store, ENV['CACHE_URL'],
+                         { namespace: '#{app_name}::cache' }
 
     # run `bundle exec rake time:zones:all` to get a complete list of valid time zone names
     config.time_zone = ENV['TIME_ZONE'] unless ENV['TIME_ZONE'] == 'UTC'
