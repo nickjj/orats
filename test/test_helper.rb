@@ -12,14 +12,16 @@ module Orats
 
     TEST_PATH         = ENV['TEST_PATH']         || '/tmp/orats'
     POSTGRES_LOCATION = ENV['POSTGRES_LOCATION'] || 'localhost'
+    POSTGRES_PORT     = ENV['POSTGRES_PORT']     || '5432'
     POSTGRES_USERNAME = ENV['POSTGRES_USERNAME'] || 'postgres'
     POSTGRES_PASSWORD = ENV['POSTGRES_PASSWORD'] || ''
     REDIS_LOCATION    = ENV['REDIS_LOCATION']    || 'localhost'
+    REDIS_PORT        = ENV['REDIS_PORT']        || '6379'
     REDIS_PASSWORD    = ENV['REDIS_PASSWORD']    || ''
 
-    CREDENTIALS = "-l #{POSTGRES_LOCATION} -u #{POSTGRES_USERNAME} " + \
-                  " -p #{POSTGRES_PASSWORD} " + \
-                  " -n #{REDIS_LOCATION} -d #{REDIS_PASSWORD}"
+    CREDENTIALS = "-l #{POSTGRES_LOCATION} -o #{POSTGRES_PORT} " + \
+                  "-u #{POSTGRES_USERNAME} -p #{POSTGRES_PASSWORD} " + \
+                  "-n #{REDIS_LOCATION} -r #{REDIS_PORT} -d #{REDIS_PASSWORD}"
 
     INCLUDES_PATH   = File.absolute_path('../../lib/orats/templates/includes',
                                          __FILE__)

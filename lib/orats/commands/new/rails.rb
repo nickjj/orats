@@ -40,7 +40,6 @@ module Orats
         def rails_template_actions
           gsub_postgres_info
           gsub_redis_info
-          gsub_app_path
           gsub_readme
 
           bundle_install
@@ -53,27 +52,34 @@ module Orats
         end
 
         def gsub_postgres_info
-          task 'Update the postgres connection details'
+          task 'Update the DATABASE_URL'
 
-          gsub_file "#{@target_path}/.env", "DATABASE_HOST: 'localhost'",
-                    "DATABASE_HOST: '#{@options[:pg_location]}'"
-          gsub_file "#{@target_path}/.env", ": 'postgres'",
-                    ": '#{@options[:pg_username]}'"
-          gsub_file "#{@target_path}/.env", ": 'supersecrets'",
-                    ": '#{@options[:pg_password]}'"
+          unless @options[:pg_password].empty?
+            gsub_file "#{@target_path}/.env", 'db_user',
+                      "db_user:#{@options[:pg_password]}"
+          end
 
-          commit 'Update the postgres connection details'
+          gsub_file "#{@target_path}/.env", 'db_location',
+                    @options[:pg_location]
+          gsub_file "#{@target_path}/.env", 'db_port', @options[:pg_port]
+          gsub_file "#{@target_path}/.env", 'db_user', @options[:pg_username]
+
+          commit 'Update the DATABASE_URL'
         end
 
         def gsub_redis_info
           task 'Update the redis connection details'
 
-          gsub_file "#{@target_path}/.env", "HE_PASSWORD: ''",
-                    "HE_PASSWORD: '#{@options[:redis_password]}'"
-          gsub_file "#{@target_path}/.env", "CACHE_HOST: 'localhost'",
-                    "CACHE_HOST: '#{@options[:redis_location]}'"
+          unless @options[:redis_password].empty?
+            gsub_file "#{@target_path}/.env", '//',
+                      "//#{@options[:redis_password]}@"
+          end
 
-          commit 'Update the redis connection details'
+          gsub_file "#{@target_path}/.env", 'cache_location',
+                    @options[:redis_location]
+          gsub_file "#{@target_path}/.env", 'cache_port', @options[:redis_port]
+
+          commit 'Update the CACHE_URL'
         end
 
         def gsub_app_path

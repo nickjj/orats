@@ -41,9 +41,11 @@ module Orats
     end
 
     option :pg_location, default: 'localhost', aliases: '-l'
+    option :pg_port, default: '5432', aliases: '-o'
     option :pg_username, default: 'postgres', aliases: '-u'
     option :pg_password, default: '', aliases: '-p'
     option :redis_location, default: 'localhost', aliases: '-n'
+    option :redis_port, default: '6379', aliases: '-r'
     option :redis_password, default: '', aliases: '-d'
     option :template, default: '', aliases: '-t'
     option :custom, default: '', aliases: '-c'
@@ -56,9 +58,11 @@ module Orats
     end
 
     option :pg_location, default: 'localhost', aliases: '-l'
+    option :pg_port, default: '5432', aliases: '-o'
     option :pg_username, default: 'postgres', aliases: '-u'
     option :pg_password, default: '', aliases: '-p'
     option :redis_location, default: 'localhost', aliases: '-n'
+    option :redis_port, default: '6379', aliases: '-r'
     option :redis_password, default: '', aliases: '-d'
     option :skip_data, type: :boolean, default: false, aliases: '-D'
     option :rc, default: ''

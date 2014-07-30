@@ -59,9 +59,10 @@ module Orats
 
     def manually_create_postgres_db
       database = File.basename(@target_path)
+      dev_database = "#{database}_development"
       test_database = "#{database}_test"
 
-      createdb(database)
+      createdb(dev_database)
       createdb(test_database)
     end
 
@@ -74,9 +75,10 @@ module Orats
 
     def manually_delete_postgres_db(name)
       database = File.basename(name)
+      dev_database = "#{database}_development"
       test_database = "#{database}_test"
 
-      dropdb(database)
+      dropdb(dev_database)
       dropdb(test_database)
     end
 
