@@ -38,7 +38,7 @@ module Orats
       task 'Check if the postgres database exists'
 
       # detect if the database already exists
-      database = File.basename(@target_path)
+      database = "#{File.basename(@target_path)}_development"
       return if run("#{postgres_bin} -d #{database} -l | " + \
                     "grep #{database} | wc -l", capture: true).chomp == '0'
 
