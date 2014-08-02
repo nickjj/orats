@@ -195,6 +195,7 @@ def add_puma_config
   task __method__
 
   orats_to_local 'config/puma.rb'
+  gsub_file 'config/puma.rb', 'app_name', app_name
   commit 'Add the puma config'
 end
 
