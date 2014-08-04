@@ -23,6 +23,10 @@ class TestCLI < Minitest::Test
     assert_new '--template auth'
   end
 
+  def test_new_with_unicorn
+    assert_new '--backend unicorn'
+  end
+
   def test_new_with_invalid_template
     @target_path = generate_app_name
     @extra_flags = "#{ORATS_NEW_FLAGS} --template foo"

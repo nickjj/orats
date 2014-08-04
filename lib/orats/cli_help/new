@@ -24,4 +24,6 @@ Template features:
 
 Project features:
 
+`--backend` to switch to a different server backend, ie. unicorn
+
 `--skip-server-start` to skip automatically running puma and sidekiq [false]

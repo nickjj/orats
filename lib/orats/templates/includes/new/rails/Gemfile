@@ -13,6 +13,7 @@ gem 'pg', '~> 0.17.1'
 gem 'redis-rails', '~> 4.0.0'
 
 gem 'puma', '~> 2.9.0'
+#gem 'unicorn', '~> 4.8.3'
 gem 'sidekiq', '~> 3.2.1'
 gem 'sinatra', '>= 1.4.5', require: false
 

@@ -41,6 +41,7 @@ module Orats
           gsub_postgres_info
           gsub_redis_info
           gsub_readme
+          gsub_unicorn if @options[:backend] == 'unicorn'
 
           bundle_install
           bundle_binstubs
@@ -99,6 +100,17 @@ module Orats
           commit 'Update the readme'
         end
 
+        def gsub_unicorn
+          task 'Update files for switching to unicorn'
+
+          gsub_file "#{@target_path}/Procfile", 'puma -C config/puma.rb',
+                    'unicorn -c config/unicorn.rb'
+          gsub_file "#{@target_path}/Gemfile", "gem 'puma'", "#gem 'puma'"
+          gsub_file "#{@target_path}/Gemfile", "#gem 'unic", "gem 'unic"
+
+          commit 'Switch from puma to unicorn'
+        end
+
         def bundle_install
           task 'Run bundle install, this may take a while'
           run_from @target_path, 'bundle install'
@@ -108,7 +120,8 @@ module Orats
 
         def bundle_binstubs
           task 'Run bundle binstubs for a few gems'
-          run_from @target_path, 'bundle binstubs whenever puma sidekiq'
+          run_from @target_path,
+                   "bundle binstubs whenever #{@options[:backend]} sidekiq"
 
           commit 'Add binstubs for the important gems'
         end

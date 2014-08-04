@@ -199,6 +199,14 @@ def add_puma_config
   commit 'Add the puma config'
 end
 
+def add_unicorn_config
+  task __method__
+
+  orats_to_local 'config/unicorn.rb'
+  gsub_file 'config/unicorn.rb', 'app_name', app_name
+  commit 'Add the unicorn config'
+end
+
 def add_sidekiq_config
   task __method__
 
@@ -495,6 +503,7 @@ update_app_secrets
 update_app_config
 update_database_config
 add_puma_config
+add_unicorn_config
 add_sidekiq_config
 add_sitemap_config
 add_whenever_config
