@@ -1,7 +1,7 @@
 environment ENV['RAILS_ENV']
 
-threads ENV['BACKEND_THREADS_MIN'].to_i, ENV['BACKEND_THREADS_MAX'].to_i
-workers ENV['BACKEND_WORKERS'].to_i
+threads ENV['THREADS_MIN'].to_i, ENV['THREADS_MAX'].to_i
+workers ENV['WORKERS'].to_i
 
 if ENV['RAILS_ENV'] == 'development' || ENV['RAILS_ENV'] == 'test'
   bind 'tcp://0.0.0.0:3000'

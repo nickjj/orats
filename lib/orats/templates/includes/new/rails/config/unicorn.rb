@@ -1,7 +1,7 @@
 # heavily inspired by gitlab:
 # https://github.com/gitlabhq/gitlabhq/blob/master/config/unicorn.rb.example
 
-worker_processes ENV['BACKEND_WORKERS'].to_i
+worker_processes ENV['WORKERS'].to_i
 
 if ENV['RAILS_ENV'] == 'development' || ENV['RAILS_ENV'] == 'test'
   listen '0.0.0.0:3000'
@@ -17,6 +17,7 @@ stdout_path "#{ENV['LOG_PATH']}/app_name.stdout.log"
 stderr_path "#{ENV['LOG_PATH']}/app_name.stderr.log"
 
 preload_app true
+
 GC.respond_to?(:copy_on_write_friendly=) and
   GC.copy_on_write_friendly = true
 
