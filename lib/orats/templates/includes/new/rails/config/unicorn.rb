@@ -1,7 +1,7 @@
 # heavily inspired by gitlab:
 # https://github.com/gitlabhq/gitlabhq/blob/master/config/unicorn.rb.example
 
-worker_processes 2
+worker_processes ENV['BACKEND_WORKERS'].to_i
 
 if ENV['RAILS_ENV'] == 'development' || ENV['RAILS_ENV'] == 'test'
   listen '0.0.0.0:3000'
