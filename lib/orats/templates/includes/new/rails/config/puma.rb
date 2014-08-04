@@ -6,13 +6,10 @@ workers ENV['PUMA_WORKERS'].to_i
 if ENV['RAILS_ENV'] == 'development' || ENV['RAILS_ENV'] == 'test'
   bind 'tcp://0.0.0.0:3000'
 else
-  # You should write out your sockets and pids to /var/run/app_name if you are
-  # deploying to a debian based system. If you are using ginas to provision
-  # your servers this is where it will look by default.
-  run_path = '/var/run/app_name'
-  bind "unix:#{run_path}/app_name"
-  pidfile "#{run_path}/app_name.pid"
+  bind "unix:#{ENV['RUN_STATE_PATH']}/app_name"
 end
+
+pidfile "#{ENV['RUN_STATE_PATH']}/app_name.pid"
 
 # https://github.com/puma/puma/blob/master/examples/config.rb#L125
 prune_bundler
