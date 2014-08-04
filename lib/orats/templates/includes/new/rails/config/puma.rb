@@ -11,14 +11,19 @@ end
 
 pidfile "#{ENV['RUN_STATE_PATH']}/app_name.pid"
 
-# https://github.com/puma/puma/blob/master/examples/config.rb#L125
-prune_bundler
+worker_timeout 30
 
-restart_command 'bundle exec bin/puma'
+stdout_redirect "#{ENV['LOG_PATH']}/app_name.stdout.log",
+                "#{ENV['LOG_PATH']}/app_name.stderr.log"
+
+preload_app!
+
+restart_command 'bundle exec puma'
 
 on_worker_boot do
-  require 'active_record'
+  defined?(ActiveRecord::Base) and
+    ActiveRecord::Base.connection.disconnect!
 
-  ActiveRecord::Base.connection.disconnect! rescue ActiveRecord::ConnectionNotEstablished
-  ActiveRecord::Base.establish_connection(ENV['DATABASE_URL'])
+  defined?(ActiveRecord::Base) and
+    ActiveRecord::Base.establish_connection
 end
