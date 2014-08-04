@@ -13,8 +13,8 @@ pid "#{ENV['RUN_STATE_PATH']}/app_name.pid"
 
 timeout 30
 
-stderr_path "#{ENV['LOG_PATH']}/app_name.stderr.log"
 stdout_path "#{ENV['LOG_PATH']}/app_name.stdout.log"
+stderr_path "#{ENV['LOG_PATH']}/app_name.stderr.log"
 
 preload_app true
 GC.respond_to?(:copy_on_write_friendly=) and
