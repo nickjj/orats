@@ -6,15 +6,17 @@ workers ENV['WORKERS'].to_i
 if ENV['RAILS_ENV'] == 'development' || ENV['RAILS_ENV'] == 'test'
   bind 'tcp://0.0.0.0:3000'
 else
-  bind "unix:#{ENV['RUN_STATE_PATH']}/app_name"
+  bind "unix:#{ENV['RUN_STATE_PATH']}/#{ENV['SERVICE']}/#{ENV['SERVICE']}"
 end
 
-pidfile "#{ENV['RUN_STATE_PATH']}/app_name.pid"
+pidfile "#{ENV['RUN_STATE_PATH']}/#{ENV['SERVICE']}/#{ENV['SERVICE']}.pid"
 
 worker_timeout 30
 
-stdout_redirect "#{ENV['LOG_PATH']}/app_name.stdout.log",
-                "#{ENV['LOG_PATH']}/app_name.stderr.log"
+stdout_redirect "#{ENV['LOG_PATH']}/#{ENV['SERVICE']}/" + \
+                "#{ENV['SERVICE']}.access.log",
+                "#{ENV['LOG_PATH']}/#{ENV['SERVICE']}/" + \
+                "#{ENV['SERVICE']}.error.log"
 
 preload_app!
 

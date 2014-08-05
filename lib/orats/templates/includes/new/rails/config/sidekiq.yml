@@ -1,5 +1,5 @@
 ---
-:pidfile: "<%= ENV['RUN_STATE_PATH'] %>/sidekiq.pid"
+:pidfile: "<%= ENV['RUN_STATE_PATH'] %>/sidekiq/sidekiq.pid"
 :concurrency: <%= ENV['SIDEKIQ_CONCURRENCY'].to_i %>
 :queues:
   - default

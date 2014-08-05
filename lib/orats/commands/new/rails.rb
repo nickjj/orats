@@ -38,6 +38,7 @@ module Orats
         end
 
         def rails_template_actions
+          create_env_paths
           gsub_postgres_info
           gsub_redis_info
           gsub_readme
@@ -50,6 +51,17 @@ module Orats
           create_and_migrate_database
           generate_home_page
           generate_favicons
+        end
+
+        def create_env_paths
+          task 'Create the log and run state paths'
+
+          service = File.basename(@target_path)
+          paths = "log/#{service} tmp/#{service} log/sidekiq tmp/sidekiq"
+
+          run_from @target_path, "mkdir #{paths}"
+
+          commit 'Add log and run state paths'
         end
 
         def gsub_postgres_info

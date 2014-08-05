@@ -6,15 +6,16 @@ worker_processes ENV['WORKERS'].to_i
 if ENV['RAILS_ENV'] == 'development' || ENV['RAILS_ENV'] == 'test'
   listen '0.0.0.0:3000'
 else
-  listen "unix:#{ENV['RUN_STATE_PATH']}/app_name", backlog: 64
+  listen "unix:#{ENV['RUN_STATE_PATH']}/#{ENV['SERVICE']}/#{ENV['SERVICE']}",
+         backlog: 64
 end
 
-pid "#{ENV['RUN_STATE_PATH']}/app_name.pid"
+pid "#{ENV['RUN_STATE_PATH']}/#{ENV['SERVICE']}/#{ENV['SERVICE']}.pid"
 
 timeout 30
 
-stdout_path "#{ENV['LOG_PATH']}/app_name.stdout.log"
-stderr_path "#{ENV['LOG_PATH']}/app_name.stderr.log"
+stdout_path "#{ENV['LOG_PATH']}/#{ENV['SERVICE']}/#{ENV['SERVICE']}.access.log"
+stderr_path "#{ENV['LOG_PATH']}/#{ENV['SERVICE']}/#{ENV['SERVICE']}.error.log"
 
 preload_app true
 
