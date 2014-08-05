@@ -29,8 +29,9 @@ stdout_redirect "#{ENV['LOG_PATH']}/#{ENV['SERVICE']}.access.log",
 # Preload the application before starting the workers.
 preload_app!
 
-# The command used to issue a restart.
-restart_command 'bundle exec puma'
+# The path to the puma binary without any arguments, it will inherit everything
+# from the original process.
+restart_command 'bin/puma'
 
 on_worker_boot do
   # Don't bother having the master process hang onto older connections.
