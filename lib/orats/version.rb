@@ -1,4 +1,4 @@
 # set the version of this gem
 module Orats
-  VERSION = '0.9.1'
+  VERSION = '0.9.2'
 end
