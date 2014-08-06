@@ -5,13 +5,12 @@
 # responses such as reading from a cache.
 worker_processes ENV['WORKERS'].to_i
 
-# This allows you to develop on port 3000 while using a socket elsewhere.
-if ENV['RAILS_ENV'] == 'development' || ENV['RAILS_ENV'] == 'test'
-  listen '0.0.0.0:3000'
+# Listen on a tcp port or unix socket.
+if ENV['LISTEN_ON'].include?(':')
+  listen ENV['LISTEN_ON']
 else
-  # A shorter backlog will force quicker fails when the server is busy.
-  listen "unix:#{ENV['RUN_STATE_PATH']}/#{ENV['SERVICE']}",
-  backlog: 64
+  # Use a shorter socket backlog for quicker failover when busy.
+  listen ENV['LISTEN_ON'], backlog: 64
 end
 
 # The path where the pid file will be written to.

@@ -8,11 +8,11 @@ threads ENV['THREADS_MIN'].to_i, ENV['THREADS_MAX'].to_i
 # responses such as reading from a cache.
 workers ENV['WORKERS'].to_i
 
-# This allows you to develop on port 3000 while using a socket elsewhere.
-if ENV['RAILS_ENV'] == 'development' || ENV['RAILS_ENV'] == 'test'
-  bind 'tcp://0.0.0.0:3000'
+# Listen on a tcp port or unix socket.
+if ENV['LISTEN_ON'].include?(':')
+  bind "tcp://#{ENV['LISTEN_ON']}"
 else
-  bind "unix:#{ENV['RUN_STATE_PATH']}/#{ENV['SERVICE']}"
+  bind "unix:#{ENV['LISTEN_ON']}"
 end
 
 # The path where the pid file will be written to.
