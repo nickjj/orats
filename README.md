@@ -145,6 +145,7 @@ All of the changes have git commits to go with them. After generating a project 
         - Add disqus
 - **Public**:
     - Add 404, 422, 500 and 502 pages so they can be served directly from your reverse proxy
+    - Add a deploy page that could be swapped in/out during server deploys
     - Add all of the favicons output by the favicon generator
 
 #### Try the base template

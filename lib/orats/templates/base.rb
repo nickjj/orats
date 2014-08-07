@@ -358,15 +358,16 @@ def add_layout_partials
   commit 'Add layout partials'
 end
 
-def add_http_error_pages
+def add_public_html_pages
   task __method__
 
   orats_to_local 'public/404.html'
   orats_to_local 'public/422.html'
   orats_to_local 'public/500.html'
   orats_to_local 'public/502.html'
+  orats_to_local 'public/deploy.html'
 
-  commit 'Add http status code pages'
+  commit 'Add public html pages'
 end
 
 def update_sass
@@ -517,7 +518,7 @@ add_favicon_task
 add_helpers
 add_layout
 add_layout_partials
-add_http_error_pages
+add_public_html_pages
 update_sass
 update_coffeescript
 remove_unused_files_from_git
