@@ -20,8 +20,8 @@ pidfile "#{ENV['RUN_STATE_PATH']}/#{ENV['SERVICE']}.pid"
 worker_timeout 30
 
 # The paths to where logs will be written to.
-stdout_redirect "#{ENV['LOG_PATH']}/#{ENV['SERVICE']}.access.log",
-                "#{ENV['LOG_PATH']}/#{ENV['SERVICE']}.error.log"
+stdout_redirect "#{ENV['LOG_PATH']}/#{ENV['SERVICE']}.log",
+                "#{ENV['LOG_PATH']}/#{ENV['SERVICE']}.log"
 
 # Preload the application before starting the workers.
 preload_app!

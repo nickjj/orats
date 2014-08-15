@@ -21,8 +21,8 @@ pid "#{ENV['RUN_STATE_PATH']}/#{ENV['SERVICE']}.pid"
 timeout 30
 
 # The paths to where logs will be written to.
-stdout_path "#{ENV['LOG_PATH']}/#{ENV['SERVICE']}.access.log"
-stderr_path "#{ENV['LOG_PATH']}/#{ENV['SERVICE']}.error.log"
+stdout_path "#{ENV['LOG_PATH']}/#{ENV['SERVICE']}.log"
+stderr_path "#{ENV['LOG_PATH']}/#{ENV['SERVICE']}.log"
 
 # Combine Ruby 2.0.0dev or REE with "preload_app true" for memory savings:
 # http://rubyenterpriseedition.com/faq.html#adapt_apps_for_cow
