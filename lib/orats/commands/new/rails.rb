@@ -41,7 +41,7 @@ module Orats
           gsub_postgres_info
           gsub_redis_info
           gsub_readme
-          gsub_unicorn if @options[:backend] == 'unicorn'
+          gsub_puma if @options[:backend] == 'puma'
 
           bundle_install
           bundle_binstubs
@@ -100,15 +100,16 @@ module Orats
           commit 'Update the readme'
         end
 
-        def gsub_unicorn
-          task 'Update files for switching to unicorn'
+        def gsub_puma
+          task 'Update files for switching to puma'
 
-          gsub_file "#{@target_path}/Procfile", 'puma -C config/puma.rb',
-                    'unicorn -c config/unicorn.rb'
-          gsub_file "#{@target_path}/Gemfile", "gem 'puma'", "#gem 'puma'"
-          gsub_file "#{@target_path}/Gemfile", "#gem 'unic", "gem 'unic"
+          gsub_file "#{@target_path}/Procfile", 'unicorn -c config/unicorn.rb',
+                    'puma -C config/puma.rb'
+          gsub_file "#{@target_path}/Gemfile",
+                    "gem 'unicorn'", "#gem 'unicorn'"
+          gsub_file "#{@target_path}/Gemfile", "#gem 'puma'", "gem 'puma'"
 
-          commit 'Switch from puma to unicorn'
+          commit 'Switch from unicorn to puma'
         end
 
         def bundle_install

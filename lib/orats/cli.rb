@@ -50,7 +50,7 @@ module Orats
     option :template, default: '', aliases: '-t'
     option :custom, default: '', aliases: '-c'
     option :skip_server_start, type: :boolean, default: false, aliases: '-S'
-    option :backend, default: 'puma', aliases: '-b'
+    option :backend, default: 'unicorn', aliases: '-b'
     option :rc, default: ''
     desc 'new PATH [options]', 'Create a new orats application'
     long_desc File.read(File.join(File.dirname(__FILE__), 'cli_help/new'))

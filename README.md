@@ -104,7 +104,7 @@ All of the changes have git commits to go with them. After generating a project 
 - **Core changes**:
     - Use `postgres` as the primary SQL database
     - Use `redis` as the cache backend
-    - Use `puma` or `unicorn` as the web backend
+    - Use `unicorn` or `puma` as the web backend
     - Use `sidekiq` as a background worker
 - **Features**:
     - Configure scheduled jobs and tasks using `whenever`

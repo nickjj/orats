@@ -23,8 +23,8 @@ class TestCLI < Minitest::Test
     assert_new '--template auth'
   end
 
-  def test_new_with_unicorn
-    assert_new '--backend unicorn'
+  def test_new_with_puma
+    assert_new '--backend puma'
   end
 
   def test_new_with_invalid_template
