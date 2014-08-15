@@ -19,9 +19,8 @@ pidfile "#{ENV['RUN_STATE_PATH']}/#{ENV['SERVICE']}.pid"
 # uploads you may want to increase this.
 worker_timeout 30
 
-# The paths to where logs will be written to.
-stdout_redirect "#{ENV['LOG_PATH']}/#{ENV['SERVICE']}.log",
-                "#{ENV['LOG_PATH']}/#{ENV['SERVICE']}.log"
+# The file that gets logged to.
+stdout_redirect ENV['LOG_FILE'], ENV['LOG_FILE']
 
 # Preload the application before starting the workers.
 preload_app!
