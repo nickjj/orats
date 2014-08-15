@@ -164,6 +164,8 @@ def update_app_config
 
     # http://www.loc.gov/standards/iso639-2/php/English_list.php
     config.i18n.default_locale = ENV['DEFAULT_LOCALE'] unless ENV['DEFAULT_LOCALE'] == 'en'
+
+    config.paths['log'] = ENV['LOG_FILE']
     S
   end
 
@@ -180,8 +182,7 @@ ActionView::Base.field_error_proc = Proc.new do |html_tag, instance|
 end
     S
   end
-  commit 'Configure the mailer/redis, update the timezone and adjust ' + \
-             ' the validation output'
+  commit 'Configure various application wide settings'
 end
 
 def update_database_config
