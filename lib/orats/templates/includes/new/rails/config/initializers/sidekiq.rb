@@ -1,6 +1,6 @@
 sidekiq_config = {
-    url:       ENV['CACHE_URL'],
-    namespace: "ns_app::sidekiq_#{Rails.env}"
+  url:       ENV['BACKGROUND_URL'],
+  namespace: "ns_app::sidekiq_#{Rails.env}"
 }
 
 Sidekiq.configure_server do |config|
