@@ -9,10 +9,6 @@ require 'securerandom'
 # -----------------------------------------------------------------------------
 # private functions
 # -----------------------------------------------------------------------------
-def generate_token
-  SecureRandom.hex(64)
-end
-
 def method_to_sentence(method)
   method.tr!('_', ' ')
   method[0] = method[0].upcase
@@ -63,7 +59,7 @@ def update_gemfile
   inject_into_file 'Gemfile', before: "\ngem 'kaminari'" do
     <<-S
 
-gem 'devise', '~> 3.2.4'
+gem 'devise', '~> 3.3.0'
 gem 'devise-async', '~> 0.9.0'
 gem 'pundit', '~> 0.2.3'
     S
@@ -74,19 +70,12 @@ end
 def update_dotenv
   task __method__
 
-  inject_into_file '.env', before: "\nSMTP_ADDRESS" do
-    <<-CODE
-TOKEN_DEVISE_SECRET: #{generate_token}
-TOKEN_DEVISE_PEPPER: #{generate_token}
-    CODE
-  end
-
   inject_into_file '.env', before: "\nDATABASE_NAME" do
     <<-CODE
 ACTION_MAILER_DEVISE_DEFAULT_FROM: info@#{app_name}.com
     CODE
   end
-  commit 'Add devise tokens and default e-mail'
+  commit 'Add devise default e-mail'
 end
 
 def run_bundle_install
@@ -141,14 +130,9 @@ def update_devise_initializer
   gsub_file 'config/initializers/devise.rb',
             "'please-change-me-at-config-initializers-devise@example.com'",
             "ENV['ACTION_MAILER_DEVISE_DEFAULT_EMAIL']"
-  gsub_file 'config/initializers/devise.rb', /(?<=key = )'\w{128}'/,
-            "ENV['TOKEN_DEVISE_SECRET']"
-  gsub_file 'config/initializers/devise.rb', /(?<=pepper = )'\w{128}'/,
-            "ENV['TOKEN_DEVISE_PEPPER']"
   gsub_file 'config/initializers/devise.rb',
             '# config.timeout_in = 30.minutes',
             'config.timeout_in = 2.hours'
-
   gsub_file 'config/initializers/devise.rb',
             '# config.expire_auth_token_on_timeout = false',
             'config.expire_auth_token_on_timeout = true'
