@@ -34,7 +34,7 @@ module Orats
             file_to_string(@options[:custom])
           end
 
-          rails_template '', "--skip --template #{@options[:custom]}"
+          rails_template '', "--skip --custom #{@options[:custom]}"
         end
 
         def rails_template_actions
