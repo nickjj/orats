@@ -38,6 +38,17 @@ class TestCLI < Minitest::Test
     assert_orats 'templates', 'auth'
   end
 
+  def test_new_with_custom
+    custom_file = "#{TEST_PATH}/custom_file.rb"
+    `mkdir -p #{TEST_PATH}`
+    File.open(custom_file, 'w') do |file|
+      file.write "file 'custom_file.rb', 'class CustomFile\nend'"
+    end
+
+    assert_new "--custom #{custom_file}"
+    assert_path "#{TEST_PATH}/#{@target_path}/custom_file.rb"
+  end
+
   def test_version
     assert_orats 'version', 'Orats'
   end

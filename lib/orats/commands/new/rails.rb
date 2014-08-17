@@ -28,13 +28,11 @@ module Orats
         def custom_rails_template
           task 'Add custom template'
 
-          if @options[:custom].include('://')
-            url_to_string(@options[:custom])
-          else
-            file_to_string(@options[:custom])
-          end
+          rails_template '', "--skip --template #{@options[:custom]}"
+          run_from @target_path,
+                   'rm -rf app/assets/stylesheets/application.css'
 
-          rails_template '', "--skip --custom #{@options[:custom]}"
+          commit 'Add custom template'
         end
 
         def rails_template_actions
