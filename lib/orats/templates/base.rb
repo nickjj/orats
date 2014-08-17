@@ -165,7 +165,13 @@ def update_app_config
     # http://www.loc.gov/standards/iso639-2/php/English_list.php
     config.i18n.default_locale = ENV['DEFAULT_LOCALE'] unless ENV['DEFAULT_LOCALE'] == 'en'
 
+    # Log everything to a single file.
     config.paths['log'] = ENV['LOG_FILE']
+
+    # Rotate logs daily. This gets overwritten in staging/production by writing
+    # to syslog instead of a log file. Rotating in development prevents your
+    # log file from getting out of control in size.
+    config.logger = Logger.new(config.paths['log'].first, 'daily')
     S
   end
 
@@ -272,12 +278,23 @@ def update_production_environment
   task __method__
 
   inject_into_file 'config/environments/production.rb',
-                   after: "config.log_level = :info\n" do
+                   before: "Rails.application.configure" do
     <<-'S'
-  config.logger = Logger.new(config.paths['log'].first, 'daily')
+require 'syslog/logger'
+
     S
   end
-  commit 'Update the logger to rotate daily'
+
+  inject_into_file 'config/environments/production.rb',
+                   after: "config.log_level = :info\n" do
+    <<-S
+
+  # Log to syslog.
+  config.log_tags = [ :subdomain, :uuid ]
+  config.logger = ActiveSupport::TaggedLogging.new(Syslog::Logger.new('#{app_name}'))
+    S
+  end
+  commit 'Update the logger to be tagged and sent to syslog'
 
   inject_into_file 'config/environments/production.rb',
                    after: "%w( search.js )\n" do
