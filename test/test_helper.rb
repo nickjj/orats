@@ -42,6 +42,27 @@ module Orats
       system "#{prepend_command} #{BINARY_PATH} #{command} #{options[:flags]}"
     end
 
+    def assert_count(input, regex, expected)
+      assert input.scan(regex).size == expected,
+             "Found #{input.scan(regex).size} matches for '#{regex}' but " + \
+             "expected #{expected}"
+    end
+
+    def assert_in_file(file_path, match_regex)
+      file_contents = `cat #{file_path}`
+      assert_match(/#{match_regex}/, file_contents)
+    end
+
+    def assert_path(file_or_dir)
+      assert File.exist?(file_or_dir),
+             "Expected path '#{file_or_dir}' to exist"
+    end
+
+    def refute_path(file_or_dir)
+      refute File.exist?(file_or_dir),
+             "Expected path '#{file_or_dir}' to exist"
+    end
+
     private
 
     def answer(options)
