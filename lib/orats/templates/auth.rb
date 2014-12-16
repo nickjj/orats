@@ -59,9 +59,9 @@ def update_gemfile
   inject_into_file 'Gemfile', before: "\ngem 'kaminari'" do
     <<-S
 
-gem 'devise', '~> 3.3.0'
+gem 'devise', '~> 3.4.1'
 gem 'devise-async', '~> 0.9.0'
-gem 'pundit', '~> 0.2.3'
+gem 'pundit', '~> 0.3.0'
     S
   end
   commit 'Add authentication related gems'
