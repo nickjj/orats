@@ -467,6 +467,11 @@ img {
   color: $brand-danger;
   font-size: $font-size-small;
 }
+
+html.turbolinks-progress-bar::before {
+  background-color: #aa0000 !important;
+  height: 3px !important;
+}
     S
   end
   commit 'Add font-awesome, bootstrap and a few default styles'
@@ -498,6 +503,10 @@ def update_coffeescript
 //= require bootstrap/transition
     S
   end
+
+  inject_into_file 'app/assets/javascripts/application.js',
+                   "\nTurbolinks.enableProgressBar();\n",
+                   after: "//= require_tree .\n"
   commit 'Add jquery.turbolinks and bootstrap'
 end
 
