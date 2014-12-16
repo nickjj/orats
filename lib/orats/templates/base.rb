@@ -1,7 +1,7 @@
 require 'securerandom'
 
 # =============================================================================
-# template for generating an orats base project for rails 4.1.x
+# template for generating an orats base project for rails 4.2.x
 # =============================================================================
 # view the task list at the bottom of the file
 # -----------------------------------------------------------------------------
