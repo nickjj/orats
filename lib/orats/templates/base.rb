@@ -286,7 +286,7 @@ require 'syslog/logger'
   end
 
   inject_into_file 'config/environments/production.rb',
-                   after: "config.log_level = :info\n" do
+                   after: "config.log_level = :debug\n" do
     <<-S
 
   # Log to syslog.
@@ -296,10 +296,10 @@ require 'syslog/logger'
   end
   commit 'Update the logger to be tagged and sent to syslog'
 
-  inject_into_file 'config/environments/production.rb',
+  inject_into_file 'config/initializers/assets.rb',
                    after: "%w( search.js )\n" do
     <<-'S'
-  config.assets.precompile << Proc.new { |path|
+  Rails.application.config.assets.precompile << Proc.new { |path|
     if path =~ /\.(eot|svg|ttf|woff|png)\z/
       true
     end
@@ -307,10 +307,6 @@ require 'syslog/logger'
     S
   end
   commit 'Update the assets precompiler to include common file types'
-
-  gsub_file 'config/environments/production.rb',
-            '# config.assets.css_compressor', 'config.assets.css_compressor'
-  commit 'Add sass asset compression'
 end
 
 def update_routes
