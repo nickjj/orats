@@ -392,12 +392,12 @@ def update_sass
   task __method__
 
   run 'mv app/assets/stylesheets/application.css app/assets/stylesheets/' + \
-      'application.css.scss'
+      'application.scss'
 
-  inject_into_file 'app/assets/stylesheets/application.css.scss',
+  inject_into_file 'app/assets/stylesheets/application.scss',
                    " *= require font-awesome\n",
                    before: " *= require_self\n"
-  append_file 'app/assets/stylesheets/application.css.scss' do
+  append_file 'app/assets/stylesheets/application.scss' do
     <<-S
 
 // Core variables and mixins
