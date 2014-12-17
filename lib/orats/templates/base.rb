@@ -364,7 +364,6 @@ def add_layout_partials
   gsub_file 'app/views/layouts/_footer.html.erb', 'app_name', app_name
 
   orats_to_local 'app/views/layouts/_google_analytics_snippet.html.erb'
-  orats_to_local 'app/views/layouts/_google_analytics_tracker.html.erb'
 
   orats_to_local 'app/views/layouts/_disqus_comments_snippet.html.erb'
   orats_to_local 'app/views/layouts/_disqus_count_snippet.html.erb'
