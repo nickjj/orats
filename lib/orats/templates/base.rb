@@ -299,11 +299,11 @@ require 'syslog/logger'
   inject_into_file 'config/initializers/assets.rb',
                    after: "%w( search.js )\n" do
     <<-'S'
-  Rails.application.config.assets.precompile << Proc.new { |path|
-    if path =~ /\.(eot|svg|ttf|woff|png)\z/
-      true
-    end
-  }
+Rails.application.config.assets.precompile << Proc.new { |path|
+  if path =~ /\.(eot|svg|ttf|woff|png)\z/
+    true
+  end
+}
     S
   end
   commit 'Update the assets precompiler to include common file types'
