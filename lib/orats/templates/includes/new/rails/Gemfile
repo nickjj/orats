@@ -26,6 +26,7 @@ gem 'kaminari', '~> 0.16.1'
 group :development do
   gem 'foreman', require: false
   gem 'spring', '~> 1.2.0'
+  gem 'web-console', '~> 2.0.0'
   gem 'rack-mini-profiler', '~> 0.9.1'
   gem 'bullet', '~> 4.14.0'
   gem 'meta_request', '~> 0.3.0'
