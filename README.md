@@ -6,7 +6,7 @@ It stands for opinionated rails application templates. The templates include sol
 
 ## What version of Rails and Ruby are you targeting?
 
-#### Rails 4.1.x and Ruby 2.1.x
+#### Rails 4.2.x and Ruby 2.1.x
 
 Gems will also be updated once they are proven to work on the target rails/ruby versions. The gems are locked using the pessimistic operator `~>` to ensure your installation works over time as long as rubygems.org's API is working.
 
@@ -43,7 +43,7 @@ Before running orats...
 - [Postgres](https://wiki.postgresql.org/wiki/Detailed_installation_guides)
 - [Redis](http://redis.io/topics/quickstart)
 - Ruby 2.1.x - [chruby](https://github.com/postmodern/chruby) | [rbenv](https://github.com/sstephenson/rbenv) | [rvm](https://rvm.io/)
-- Rails 4.1.x - `gem install rails -v '~> 4.1.4'`
+- Rails 4.2.x - `gem install rails -v '~> 4.2.0'`
 
 #### You should install
 
