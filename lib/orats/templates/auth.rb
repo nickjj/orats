@@ -349,7 +349,7 @@ def add_auth_links_to_the_navbar
     S
   end
 
-  append_file 'app/assets/stylesheets/application.css.scss' do
+  append_file 'app/assets/stylesheets/application.scss' do
     <<-S
 
 @media (min-width: $screen-sm) {
