@@ -61,7 +61,7 @@ module Orats
 
     def exit_if_invalid_system
       exit_if_process :not_found, 'rails', 'git', 'psql', 'redis-cli'
-      exit_if_process :not_running, 'postgres', 'redis'
+      #exit_if_process :not_running, 'postgres', 'redis'
 
       exit_if_postgres_unreachable
       exit_if_redis_unreachable
