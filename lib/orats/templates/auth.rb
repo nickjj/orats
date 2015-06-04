@@ -61,7 +61,7 @@ def update_gemfile
 
 gem 'devise', '~> 3.4.1'
 gem 'devise-async', '~> 0.9.0'
-gem 'pundit', '~> 0.3.0'
+gem 'pundit', '~> 1.0.0'
     S
   end
   commit 'Add authentication related gems'
