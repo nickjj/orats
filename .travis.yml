@@ -1,0 +1,9 @@
+---
+
+language: ruby
+rvm:
+  - 2.3
+
+script:
+- 'rubocop'
+- 'ruby test/integration/cli_test.rb'

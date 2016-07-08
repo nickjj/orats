@@ -21,11 +21,11 @@ module Orats
     end
 
     def log(tag, message, ansi_color, bold = false)
-      if bold
-        msg = set_color(message, :bold)
-      else
-        msg = set_color(message)
-      end
+      msg = if bold
+              set_color(message, :bold)
+            else
+              set_color(message)
+            end
 
       say_status tag, msg, ansi_color
     end

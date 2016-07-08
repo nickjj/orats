@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 
 # inject ../../lib into the $LOAD_PATH, this is useful because
-# when developing locally on a gem the require paths will be
+# when developing locally on a gem the, require paths will be
 # different because the lib directory is not on the $LOAD_PATH
 
 # since git directories are not included in gem releases we can
@@ -14,7 +14,4 @@ if File.exist?(git_path)
 end
 
 require 'orats/cli'
-require 'orats/argv_adjust'
-
-argv = Orats::ARGVAdjust.new.init
-Orats::CLI.start(argv)
+Orats::CLI.start

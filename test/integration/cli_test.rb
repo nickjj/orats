@@ -1,4 +1,5 @@
 require_relative '../test_helper'
+require_relative '../../lib/orats/util'
 
 # integration tests for the orats cli
 class TestCLI < Minitest::Test
@@ -12,45 +13,55 @@ class TestCLI < Minitest::Test
   end
 
   def teardown
-    assert_nuked unless @target_path.nil?
+    FileUtils.rm_rf(absolute_test_path)
   end
 
   def test_new
+    @target_path = generate_app_name
+
     assert_new
-  end
 
-  def test_new_with_auth
-    assert_new '--template auth'
-  end
+    Dir.glob("#{absolute_test_path}/**/*", File::FNM_DOTMATCH) do |file|
+      next if file == '.' || file == '..' || File.directory?(file)
 
-  def test_new_with_puma
-    assert_new '--backend puma'
+      text = File.read(file)
+
+      %w(orats_base OratsBase VERSION).each do |term|
+        refute_match term, text
+      end
+    end
   end
 
   def test_new_with_invalid_template
     @target_path = generate_app_name
-    @extra_flags = "#{ORATS_NEW_FLAGS} --template foo"
+    @extra_flags = '--template foo'
 
     assert_orats 'new', 'not a valid template'
   end
 
-  def test_templates
-    assert_orats 'templates', 'auth'
-  end
-
-  def test_new_with_custom
-    custom_file = "#{TEST_PATH}/custom_file.rb"
-    `mkdir -p #{TEST_PATH}`
-    File.open(custom_file, 'w') do |file|
-      file.write "file 'custom_file.rb', 'class CustomFile\nend'"
-    end
-
-    assert_new "--custom #{custom_file}"
-    assert_path "#{TEST_PATH}/#{@target_path}/custom_file.rb"
-  end
-
   def test_version
-    assert_orats 'version', 'Orats'
+    @target_path = ''
+    @extra_flags = ''
+
+    assert_orats 'version', 'orats'
+  end
+
+  def test_underscore
+    @target_path = ''
+    @extra_flags = ''
+
+    assert_equal 'foo', Util.underscore('foo')
+    assert_equal 'foo_bar', Util.underscore('fooBar')
+    assert_equal 'foo_bar_baz', Util.underscore('FooBarBaz')
+  end
+
+  def test_classify
+    @target_path = ''
+    @extra_flags = ''
+
+    assert_equal 'Foo', Util.classify('foo')
+    assert_equal 'FooBar', Util.classify('foo_bar')
+    assert_equal 'FooBarBaz', Util.classify('foo_bar_baz')
   end
 
   private
@@ -61,58 +72,25 @@ class TestCLI < Minitest::Test
     assert_match(/#{match_regex}/, out, err) unless match_regex.empty?
   end
 
-  def assert_new(flags = '')
-    @target_path         = generate_app_name
-    @extra_flags         = "#{ORATS_NEW_FLAGS} #{flags}"
-    absolute_target_path = "#{TEST_PATH}/#{@target_path}"
-
-    assert_orats 'new', 'Start your server'
-    assert_new_tests_pass absolute_target_path
-  end
-
-  def assert_new_tests_pass(target_path)
-    out, err = capture_subprocess_io do
-      system "cd #{target_path} && bundle exec rake test"
-    end
-
-    log_rails_test_results out
-    assert out.include?('0 failures') && out.include?('0 errors'), err
-  end
-
-  def assert_nuked(options = {})
-    out, _ = capture_subprocess_io do
-      orats "nuke #{@target_path}", flags: options[:flags], answer: 'y'
-    end
-
-    assert_match(/#{@target_path}/, out)
-    system "rm -rf #{TEST_PATH}"
-  end
-
   def capture_orats(command)
     out, err = capture_subprocess_io do
-      orats "#{command} #{@target_path}", flags: @extra_flags
+      cmd_arg = if @target_path
+                  " #{@target_path}"
+                else
+                  ''
+                end
+
+      orats "#{command}#{cmd_arg}", flags: @extra_flags
     end
 
     [out, err]
   end
 
-  def log_rails_test_results(out)
-    out_lines = out.split("\n")
+  def assert_new(flags = '')
+    @target_path         = generate_app_name
+    @extra_flags         = flags
 
-    out_lines.delete_if do |line|
-      line.include?('Sidekiq') || line.start_with?('.') ||
-          line.include?('Running') || line.include?('Run options') ||
-          line.empty?
-    end
-  end
-
-  def print_rails_test_results(out)
-    puts
-    puts '-' * 80
-    puts 'Results of running `bundle exec rake test` on the generated test app:'
-    puts '-' * 80
-    puts out.join("\n\n").rstrip
-    puts '-' * 80
-    puts
+    assert_orats 'new', 'Create'
+    assert_path absolute_test_path
   end
 end

@@ -5,5 +5,4 @@
 *~
 .idea/
 *.gem
-Gemfile.lock
-.rubocop.yml
+/Gemfile.lock

@@ -1,0 +1,11 @@
+Destroy the target path and optionally all Docker data associated to it.
+
+Options:
+
+`--rm-docker` to delete Docker specific data for this project [false]
+
+In order to use `--rm-docker` you must be running orats from a terminal
+capable of connecting to Docker.
+
+When set, it will delete all Docker images, containers, volumes and networks
+associated to this project.

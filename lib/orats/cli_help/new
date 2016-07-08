@@ -1,29 +1,5 @@
-Create a new shiny rails app with quite a few best practices and opinions.
-
-Development server credentials:
-
-`--pg-location` to supply a custom postgres location [localhost]
-
-`--pg-username` to supply a custom postgres username [postgres]
-
-`--pg-password` to supply your postgres password to run migrations []
-
-`--redis-location` to supply a custom redis location [localhost]
-
-`--redis-password` to supply your redis password []
+Create a shiny Dockerized Rails application
 
 Options:
 
-`--rc` to supply an .oratsrc file path to automatically populate credentials []
-
-Template features:
-
-`--template` to mix in an official orats template by supplying its name []
-
-`--custom` to add your own template at the very end, a url or file is ok []
-
-Project features:
-
-`--backend` to switch to a different server backend, ie. puma
-
-`--skip-server-start` to skip automatically running puma and sidekiq [false]
+`--template` to supply the template name to use [base]

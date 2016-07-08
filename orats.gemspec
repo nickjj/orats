@@ -9,8 +9,8 @@ Gem::Specification.new do |spec|
   spec.authors     = ['Nick Janetakis']
   spec.email       = ['nick.janetakis@gmail.com']
   spec.summary     = 'Opinionated rails application templates.'
-  spec.description = 'Generate modern Ruby on Rails applications using ' + \
-                     ' best practices.'
+  spec.description = 'Generate Dockerized Ruby on Rails applications ' \
+                     'using best practices.'
 
   spec.homepage    = 'https://github.com/nickjj/orats'
   spec.license     = 'MIT'
@@ -25,4 +25,5 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'bundler', '~> 1.5'
   spec.add_development_dependency 'rake', '~> 0'
   spec.add_development_dependency 'minitest', '~> 5.3'
+  spec.add_development_dependency 'rubocop', '~> 0.41'
 end

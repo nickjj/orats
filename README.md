@@ -1,87 +1,66 @@
-[![Gem Version](https://badge.fury.io/rb/orats.png)](http://badge.fury.io/rb/orats)
+[![Gem Version](https://badge.fury.io/rb/orats.png)](http://badge.fury.io/rb/orats) [![Build Status](https://secure.travis-ci.org/nickjj/orats.png)](http://travis-ci.org/nickjj/orats)
 
-## What is orats and what problem does it solve?
+## What is orats?
 
-It stands for opinionated rails application templates. The templates include solving tedious tasks that you would do for most projects. It handles creating a rails application with a bunch of opinions and best practices.
+It stands for opinionated rails application templates.
 
-## What version of Rails and Ruby are you targeting?
+The goal is to provide you an excellent base application that you can use on
+your next Rails project.
 
-#### Rails 4.2.x and Ruby 2.1.x
+You're meant to generate a project using orats and then build your custom
+application on top of it.
 
-Gems will also be updated once they are proven to work on the target rails/ruby versions. The gems are locked using the pessimistic operator `~>` to ensure your installation works over time as long as rubygems.org's API is working.
+It also happens to use Docker so that your app can be ran on any major
+platform -- even without needing Ruby installed.
+
+## What versions are you targeting?
+
+#### Ruby 2.3+
+
+#### Rails 5+
+
+#### Docker 1.11+
 
 ## Contents
-- [System dependencies](#system-dependencies)
 - [Installation](#installation)
 - [Commands](#commands)
     - [New](#new)
         - [Try it](#try-the-new-command)
-    - [Nuke](#nuke)
-        - [Try it](#try-the-nuke-command)
     - [Templates](#templates)
         - [Try it](#try-the-templates-command)
 - [Available templates](#available-templates)
     - [Base](#base)
-        - [Try it](#try-the-base-template)
-    - [Auth](#auth)
-        - [Try it](#try-the-auth-template)
-    - [Custom](#custom)
-        - [Try it](#try-the-custom-template)
-        - [FAQ](#custom-faq)
-            - [Any guides on how to make custom templates?](#any-guides-on-how-to-make-custom-templates)
-- [The .oratsrc file](#the-oratsrc-file)
-- [Wiki](https://github.com/nickjj/orats/wiki)
-    - [What to look at after making a new project](https://github.com/nickjj/orats/wiki/What-to-look-at-after-making-a-new-project)
-
-## System dependencies
-
-Before running orats...
-
-#### You must install
-
-- [Git](http://git-scm.com/book/en/Getting-Started-Installing-Git)
-- [Postgres](https://wiki.postgresql.org/wiki/Detailed_installation_guides)
-- [Redis](http://redis.io/topics/quickstart)
-- Ruby 2.1.x - [chruby](https://github.com/postmodern/chruby) | [rbenv](https://github.com/sstephenson/rbenv) | [rvm](https://rvm.io/)
-- Rails 4.2.x - `gem install rails -v '~> 4.2.0'`
-
-#### You should install
-
-- [Imagemagick](https://www.google.com/search?q=install+imagemagick)
-    - If you want favicons to be automatically created (optional)
-
-#### You need these processes to be running
-
-- Postgres
-- Redis
+- [FAQ](#faq)
+    - [How can I learn about the Docker specific aspects of the project?](#how-can-i-learn-about-the-docker-specific-aspects-of-the-project)
+    - [What do I do after I generate the application?](#what-do-i-do-after-i-generate-the-application)
+    - [What's the bare minimum to get things running?](#whats-the-bare-minimum-to-get-things-running)
+    - [Do I need to install orats to use the base app?](#do-i-need-to-install-orats-to-use-the-base-app)
 
 ## Installation
 
 `gem install orats`
 
-Or if you already have orats then run `gem update orats` to upgrade to the latest version.
+Or if you already have orats then run `gem update orats` to upgrade to the
+latest version.
+
+If you don't have Ruby installed, then you can
+[generate an app easily with bash](#do-i-need-to-install-orats-to-use-the-base-app).
 
 ## Commands
 
-To get the details of each command then please run `orats help` from the terminal. Below is a high level overview of what the main commands do.
+To get the details of each command then please run `orats help` from the
+terminal. Here's a high level overview:
 
 ### New
 
-The new command kicks off a new orats app. It will always use the base template and optionally allows you to provide the `--template foo` flag where `foo` would be an available template provided by orats.
+The new command generates a new orats app, which is just a Rails app in the end.
 
-You can also supply your own custom template which is explained in the [custom template](#custom) section.
+Currently there is only 1 template, which is the "base" template but others may
+be added in the future.
 
-Get started by checking out what the [base template](#base) provides.
+#### Try the new command
 
-### Nuke
-
-You can delete an app using the nuke command. It is much better than just using `rm -rf` because it will clean up the postgres and redis namespace as long as you don't disable that functionality with the `--skip-data` flag.
-
-#### Try the nuke command
-
-You will need to have generated an app before trying this. Check out the [try the base template](#try-the-base-template) section to learn how to generate an app.
-
-`orats nuke /tmp/someapp --pg-password foo`
+`orats new myproject`
 
 ### Templates
 
@@ -95,181 +74,111 @@ Return a list of available templates to choose from.
 
 ### Base
 
-This is the starter template that every other template will append to. I feel like when I make a new project, 95% of the time it includes these features and when I do not want a specific thing it is much quicker to remove it than add it.
+This is the starter template that every other template will be based upon. I
+feel like when I make a new project, 95% of the time it includes these features
+and when I do not want a specific thing it is much quicker to remove it than
+add it.
 
-#### Changes vs the standard rails project
-
-All of the changes have git commits to go with them. After generating a project you can type `git reflog` to get a list of changes.
+#### Main changes vs a fresh Rails project
 
 - **Core changes**:
     - Use `postgres` as the primary SQL database
     - Use `redis` as the cache backend
-    - Use `unicorn` or `puma` as the web backend
-    - Use `sidekiq` as a background worker
+    - Use `sidekiq` as a background worker through Active Job
+    - Use a standalone Action Cable server
 - **Features**:
-    - Configure scheduled jobs and tasks using `whenever`
-    - Pagination and a route concern mapped to `/page` using `kaminari`
-    - Keep a sitemap up to date using `sitemap_generator`
-    - Add a `pages` controller with `home` action that has points of interest
-- **Rake tasks**:
-    - Generate favicons for many devices based off a single source png
+    - Add a `pages` controller with `home` action
 - **Config**:
-    - Extract a bunch of configuration to environment variables
-    - Rewrite the database.yml and secrets.yml files to be more dry
+    - Extract a bunch of configuration settings to environment variables
+    - Rewrite the `database.yml` and `secrets.yml` files
     - Add a staging environment
     - **Development mode only**:
-        - Use the `dotenv` gem to manage environment variables
-        - Use `foreman` to manage the app's processes
-        - Use `bullet`, `rack mini profiler` and `meta_request` for profiling/analysis
-        - Log everything to 1 file and rotate it
-        - Set `scss`/`coffee` as the default generator engines
+        - Use `rack mini profiler` for profiling / analysis
     - **Production mode only**:
-        - Log everything to 1 file and write the rails output to syslog
-        - Add popular file types to the assets precompile list
-        - Compress `css`/`js` when running `rake assets:precompile`
-    - Change validation errors to output inline on each element instead of a big list
+        - Add popular file types to the assets pre-compile list
+    - Log to STDOUT so that Docker can consume and deal with log entries
+    - Change validation errors to output in-line on each element instead of a big list
 - **Helpers**:
     - `title`, `meta_description`, `heading` to easily set those values per view
-    - `humanize_boolean` to convert true/false into Yes/No
-    - `css_for_boolean` to convert true/false into a css class success/danger
+    - `humanize_boolean` to convert true / false into Yes / No
+    - `css_for_boolean` to convert true / false into a css class success / danger
 - **Views**:
-    - Use `sass` and `coffeescript`
-    - Use `bootstrap 3.x` and `font-awesome`
+    - Use `scss` and `javascript`
+    - Use `bootstrap 3.x` and `font-awesome 4.x`
     - Add a minimal and modern layout file
-    - Load `jquery` 1.10.x through a CDN
     - Conditionally load `html5shiv`, `json3` and `respondjs` for IE < 9 support
     - **Partials**:
-        - Add navigation and navigation links
+        - Add navigation
         - Add flash message
         - Add footer
-        - Add google analytics
-        - Add disqus
-- **Public**:
-    - Add 404, 422, 500 and 502 pages so they can be served directly from your reverse proxy
-    - Add a deploy page that could be swapped in/out during server deploys
-    - Add all of the favicons output by the favicon generator
+        - Add Google Analytics
 
-#### Try the base template
+## FAQ
 
-`orats new myapp --pg-password foo`
+#### How can I learn about the Docker specific aspects of the project?
 
-#### Base FAQ
+Check out the blog post "[Learn how this application was Dockerized](#)".
 
-##### What is `--pg-password`?
+#### What do I do after I generate the application?
 
-Orats will automatically start your server (you can turn this off with a flag) and also run database migrations or generators depending on what you're doing.
+Start by reading the above blog post, because the Docker blog post explains
+how you can run the project. It also goes over a few Docker related caveats
+that may hang you up if you're not already familiar with Docker.
 
-In order to do this it must know your postgres location, username and password. By default it will use localhost for the *location* and *postgres* as the username but if you need to supply those values because yours are different you can use `--pg-location foo` and `--pg-username bar`.
+After that, just dive into the project's source code and write your awesome app!
 
-##### Does your redis server use a password?
+#### What's the bare minimum to get things running?
 
-If your redis server is configured to use a password then you must also pass in `--redis-password foo`.
+If you don't feel like reading the blog post, this is the bare minimum to get
+everything up and running -- assuming you have Docker and Docker Compose installed.
 
-### Auth
-
-This is the auth template which gets merged into the base template. It contains a basic authentication setup using devise and pundit.
-
-#### Changes vs the base template
-
-All of the changes have git commits to go with them. After generating a project you can type `git reflog` to get a list of changes.
-
-- **Core**:
-    - Handle authentication with `devise`
-    - Handle devise e-mails with `devise-async`
-    - Handle authorization with `pundit`
-    - Add `app/policies` with a basic pundit policy included
-- **Config**:
-    - Add devise related environment variables
-    - Set the session timeout to 2 hours
-    - Expire the auth token on timeout
-    - Enable account locking based on failed attempts (7 tries)
-    - Allow unlocking by e-mail or after 2 hours
-    - Inform users of their last login attempt when failing to login
-    - Add en-locale strings for authorization messages
-    - Add devise queue to the sidekiq config
-    - Add pundit related code to the application controller
-- **Routes**:
-    - Protect the `/sidekiq` end point so only logged in admins can see it
-    - Enable/Disable users from publicly registering by commenting out a few lines
-- **Database**:
-    - Add a seed user that you should change the details of ASAP once you deploy
-- **Models**:
-    - Add `Account` devise model with an extra `role` field
-        - Add `admin` and `guest` roles
-        - Add `.is?` method to compare roles
-        - Add `generate_password` method
-        - Add a way to cache the `current_account`
-- **Controllers**:
-    - Alias `current_user` to `current_account`
-    - Allow you to override devise's default sign in URL by uncommenting a few lines
-- **Views**:
-    - Use bootstrap for all of the devise views
-    - Add authentication links to the navbar
-- **Tests**:
-    - Add `Account` fixtures
-    - Add model tests for `Account`
-
-#### Try the auth template
-
-`orats new myauthapp --template auth --pg-password foo`
-
-### Custom
-
-You can pass custom templates into the `new` command. It works exactly like passing a custom application template to `rails new`.
-
-Pass in a custom template by providing the `--custom` flag along with either a local path or a URL.
-
-Here is a simple example of a custom template:
-
-```
-# /tmp/foo.rb
-
-file 'app/components/foo.rb', <<-S
-  class Foo
-  end
-S
+```sh
+# 1) Read the .env file carefully and change any user specific settings, such
+#    as e-mail credentials and platform specific settings (check the comments).
+#
+# 2) Build and run the project with Docker Compose
+docker-compose up --build
+#
+# 3) Reset and Migrate the database (run this in a 2nd Docker-enabled terminal)
+# OSX / Windows users can skip adding the --user "$(id -u):$(id -g)" flag
+docker-compose exec --user "$(id -u):$(id -g)" website rails db:reset
+docker-compose exec --user "$(id -u):$(id -g)" website rails db:migrate
+#
+# 4a) Running Docker natively? Visit http://localhost:3000
+# 4b) Running Docker with the Toolbox? Visit http://192.168.99.100:3000
+#     (you may need to replace 192.168.99.100 with your Docker machine IP)
 ```
 
-#### Try the custom template
+#### Do I need to install orats to use the base app?
 
-`orats new /tmp/customexample -p foo --custom /tmp/foo.rb`
+Not really. The base application is already generated and you can view it
+[directly in this repo](https://github.com/nickjj/orats/tree/master/lib/orats/templates/base).
 
-#### Custom FAQ
+The main benefit of the orats gem is that it will do a recursive find / replace
+on a few strings to personalize the project for your project's name. It will
+also make it easy to pick different templates when they are available.
 
-<a name="any-guides-on-how-to-make-custom-templates"></a>
-##### Any guides on how to make custom templates?
+You could easily do this yourself if you don't have Ruby installed on your work
+station. The 3 strings you'll want to replace are:
 
-There's the official [rails guide on custom application templates]
-(http://guides.rubyonrails.org/rails_application_templates.html).
+- `OratsBase` (used as class names and in the generated home page)
+- `orats_base` (used for a number of Rails specific prefixes and more)
+- `VERSION` (used to set the current orats version in the generated home page)
 
-You can also view the [orats templates](https://github.com/nickjj/orats/tree/master/lib/orats/templates) to use as inspiration. All of the template files are self contained.
+You could whip up a simple bash script to do this, such as:
 
-## The .oratsrc file
+```sh
+# Clone this repo to a directory of your choosing.
+git clone https://github.com/nickjj/orats /tmp/orats
 
-Both the `new` and `nuke` commands are dependent on having your postgres and redis login information because they need to connection to those databases to perform various tasks.
+# Copy the base project to a directory of your choosing.
+cp -r /tmp/orats/lib/orats/templates/base /tmp/foo_bar
 
-There are 7 flags to configure for this:
+# Swap a few custom values into the base project.
+find /tmp/foo_bar -type f -exec sed -i -e 's/OratsBase/FooBar/g' {} \;
+find /tmp/foo_bar -type f -exec sed -i -e 's/orats_base/foo_bar/g' {} \;
+find /tmp/foo_bar -type f -exec sed -i -e 's/VERSION/5.0.0/g' {} \;
 
-- `--pg-location` (defaults to localhost)
-- `--pg-port` (defaults to 5432)
-- `--pg-username` (defaults to postgres)
-- `--pg-password` (defaults to an empty string)
-- `--redis-location` (defaults to localhost)
-- `--redis-port` (defaults to 6379)
-- `--redis-password` (defaults to an empty string)
-
-For most people you will only need to supply the postgres password but still it's annoying to have to type those flags in every time you create a new app or nuke an app. It's really annoying if you develop inside of linux containers like myself which means the location is not localhost.
-
-This is where the `.oratsrc` file comes into play. By default it will look for one in your home directory but you can pass in a location directly with the `--rc` flag.
-
-This file can contain the above flags. You might have one created at `~/.oratsrc`
- and it could look like this:
-
+# Clean up the cloned directory.
+rm -rf /tmp/orats
 ```
---pg-location 192.168.144.101
---pg-username nick
---pg-password pleasedonthackme
---redis-location 192.168.144.101
-```
-
-You can supply as many or little flags as you want.
