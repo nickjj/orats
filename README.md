@@ -117,7 +117,8 @@ add it.
 
 #### How can I learn about the Docker specific aspects of the project?
 
-Check out the blog post "[Learn how this application was Dockerized](#)".
+Check out the blog post
+[Dockerize a Rails 5, Postgres, Redis, Sidekiq and Action Cable Application](http://nickjanetakis.com/blog/dockerize-a-rails-5-postgres-redis-sidekiq-action-cable-app-with-docker-compose).
 
 #### What do I do after I generate the application?
 
