@@ -19,6 +19,7 @@ module Orats
         check_exit_conditions
         create_template
         personalize_template
+        rename_env_file
         what_to_do_next
       end
 
@@ -81,6 +82,13 @@ module Orats
 
           File.open(file, 'w') { |f| f.puts text }
         end
+      end
+
+      def rename_env_file
+        env_file_source = File.join(@target_path, '.env.example')
+        env_file_destination = File.join(@target_path, '.env')
+
+        File.rename(env_file_source, env_file_destination)
       end
 
       def set_template_replacements
