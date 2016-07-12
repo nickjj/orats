@@ -24,8 +24,8 @@ RUN apt-get update && apt-get install -qq -y --no-install-recommends \
 # packages to ensure that we can compile assets (nodejs) and
 # communicate with PostgreSQL (libpq-dev).
 
-ENV INSTALL_PATH /my_dockerized_app
-# The name of the application is my_dockerized_app and while there
+ENV INSTALL_PATH /orats_base
+# The name of the application is orats_base and while there
 # is no standard on where your project should live inside of the Docker
 # image, I like to put it in the root of the image and name it
 # after the project.
@@ -42,8 +42,8 @@ RUN mkdir -p $INSTALL_PATH
 
 WORKDIR $INSTALL_PATH
 # We're going to be executing a number of commands below, and
-# having to CD into the /my_dockerized_app folder every time would be
-# lame, so instead we can set the WORKDIR to be /my_dockerized_app.
+# having to CD into the /orats_base folder every time would be
+# lame, so instead we can set the WORKDIR to be /orats_base.
 #
 # By doing this, Docker will be smart enough to execute all
 # future commands from within this directory.
@@ -51,9 +51,9 @@ WORKDIR $INSTALL_PATH
 COPY Gemfile Gemfile.lock ./
 # This is going to copy in the Gemfile and Gemfile.lock from our
 # work station at a path relative to the Dockerfile to the
-# my_dockerized_app/ path inside of the Docker image.
+# orats_base/ path inside of the Docker image.
 #
-# It copies it to /my_dockerized_app because of the WORKDIR being set.
+# It copies it to /orats_base because of the WORKDIR being set.
 #
 # We copy in our Gemfile before the main app because Docker is
 # smart enough to cache "layers" when you build a Docker image.
@@ -75,7 +75,7 @@ RUN bundle install --binstubs
 COPY . .
 # This might look a bit alien but it's copying in everything from
 # the current directory relative to the Dockerfile, over to the
-# /my_dockerized_app folder inside of the Docker image.
+# /orats_base folder inside of the Docker image.
 #
 # We can get away with using the . for the second argument because
 # this is how the unix command cp (copy) works. It stands for the
