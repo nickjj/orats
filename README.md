@@ -15,7 +15,7 @@ platform -- even without needing Ruby installed.
 
 ## What versions are you targeting?
 
-#### Ruby 2.3+
+#### Ruby 2.4+
 
 #### Rails 5+
 
