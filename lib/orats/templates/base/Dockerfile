@@ -1,4 +1,4 @@
-FROM ruby:2.3-slim
+FROM ruby:2.4.0-slim
 # Docker images can start off with nothing, but it's extremely
 # common to pull in from a base image. In our case we're pulling
 # in from the slim version of the official Ruby 2.3 image.
