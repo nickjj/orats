@@ -1,7 +1,7 @@
-FROM ruby:2.3-slim
+FROM ruby:2.4-slim
 # Docker images can start off with nothing, but it's extremely
 # common to pull in from a base image. In our case we're pulling
-# in from the slim version of the official Ruby 2.3 image.
+# in from the slim version of the official Ruby 2.4 image.
 #
 # Details about this image can be found here:
 # https://hub.docker.com/_/ruby/
@@ -9,7 +9,7 @@ FROM ruby:2.3-slim
 # Slim is pulling in from the official Debian Jessie image.
 #
 # You can tell it's using Debian Jessie by clicking the
-# Dockerfile link next to the 2.3-slim bullet on the Docker hub.
+# Dockerfile link next to the 2.4-slim bullet on the Docker hub.
 #
 # The Docker hub is the standard place for you to find official
 # Docker images. Think of it like GitHub but for Docker images.
