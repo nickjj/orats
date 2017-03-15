@@ -18,8 +18,13 @@ MAINTAINER Nick Janetakis <nick.janetakis@gmail.com>
 # It is good practice to set a maintainer for all of your Docker
 # images. It's not necessary but it's a good habit.
 
+# Add Debian Testing repository in order to get access to Nodejs LTS versions
+RUN echo "deb http://http.us.debian.org/debian testing main non-free contrib" >> /etc/apt/sources.list
+COPY docker/apt.preferences /etc/apt/preferences
+
 RUN apt-get update && apt-get install -qq -y --no-install-recommends \
-      build-essential nodejs libpq-dev
+      build-essential wget nodejs/testing nodejs-legacy/testing libpq-dev && rm -rf /var/lib/apt/lists/*
+
 # Ensure that our apt package list is updated and install a few
 # packages to ensure that we can compile assets (nodejs) and
 # communicate with PostgreSQL (libpq-dev).
