@@ -13,13 +13,17 @@ application on top of it.
 It also happens to use Docker so that your app can be ran on any major
 platform -- even without needing Ruby installed.
 
+If you want to learn about Docker specifically then I recommend checking out
+the [Dive Into Docker: The Complete Docker Course for Developers course](https://diveintodocker.com/courses/dive-into-docker). You can even watch the
+first 20 videos for free.
+
 ## What versions are you targeting?
 
-#### Ruby 2.3+
+#### Ruby 2.4+
 
-#### Rails 5+
+#### Rails 5.1+
 
-#### Docker 1.11+
+#### Docker 1.11+ / Docker Compose API v2+
 
 ## Contents
 - [Installation](#installation)
@@ -86,6 +90,8 @@ add it.
     - Use `redis` as the cache backend
     - Use `sidekiq` as a background worker through Active Job
     - Use a standalone Action Cable server
+    - jQuery is installed with `jquery-rails`
+    - Capybara is commented out in the `Gemfile`
 - **Features**:
     - Add a `pages` controller with `home` action
 - **Config**:
@@ -119,6 +125,8 @@ add it.
 
 Check out the blog post
 [Dockerize a Rails 5, Postgres, Redis, Sidekiq and Action Cable Application](http://nickjanetakis.com/blog/dockerize-a-rails-5-postgres-redis-sidekiq-action-cable-app-with-docker-compose).
+
+Another option is to take my [Dive Into Docker course](https://diveintodocker.com/courses/dive-into-docker).
 
 #### What do I do after I generate the application?
 
@@ -178,7 +186,7 @@ cp -r /tmp/orats/lib/orats/templates/base /tmp/foo_bar
 # Swap a few custom values into the base project.
 find /tmp/foo_bar -type f -exec sed -i -e 's/OratsBase/FooBar/g' {} \;
 find /tmp/foo_bar -type f -exec sed -i -e 's/orats_base/foo_bar/g' {} \;
-find /tmp/foo_bar -type f -exec sed -i -e 's/VERSION/5.0.3/g' {} \;
+find /tmp/foo_bar -type f -exec sed -i -e 's/VERSION/5.1.1/g' {} \;
 
 # Rename the example .env file since `.env` is git ignored.
 mv /tmp/orats/.env.example /tmp/orats/.env

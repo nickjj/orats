@@ -2,7 +2,7 @@ version: '2'
 
 services:
   postgres:
-    image: 'postgres:9.5'
+    image: 'postgres:9.6-alpine'
     environment:
       POSTGRES_USER: 'orats_base'
       POSTGRES_PASSWORD: 'yourpassword'
@@ -27,7 +27,7 @@ services:
     ports:
       - '3000:3000'
     volumes:
-      - '.:/orats_base'
+      - '.:/app'
     env_file:
       - '.env'
 
@@ -38,7 +38,7 @@ services:
     build: .
     command: sidekiq -C config/sidekiq.yml.erb
     volumes:
-      - '.:/orats_base'
+      - '.:/app'
     env_file:
       - '.env'
 
@@ -50,7 +50,7 @@ services:
     ports:
       - '28080:28080'
     volumes:
-      - '.:/orats_base'
+      - '.:/app'
     env_file:
       - '.env'
 

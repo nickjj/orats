@@ -1,3 +1,18 @@
+## orats 5.1.1 (June 17, 2017)
+
+- Update Ruby to `2.4`
+- Update rails to `5.1.1`
+- Update sidekiq to `5.0`
+- Update Puma to `3.9`
+- Update pg to `0.21`
+- Update redis-rails to `5.0`
+- Bring back jQuery with `jquery-rails`
+- Comment out Capybara in the `Gemfile` (Rails 5.1 has it enabled by default)
+- Switch from Debian to Alpine as a base image in the `Dockerfile`
+- Remove compiling assets inside of the `Dockerfile`
+- Hard code `/app` in the `Dockerfile` and `docker-compose.yml` volumes
+- Change the `MAINTAINER` instruction to use a `LABEL` in the `Dockerfile`
+
 ## orats 5.0.3 (December 21, 2016)
 
 - Update Rails to `5.0.1`
