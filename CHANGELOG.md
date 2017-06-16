@@ -1,4 +1,4 @@
-## orats 5.1.1 (June 17, 2017)
+## orats 5.1.1 (June 16, 2017)
 
 - Update Ruby to `2.4`
 - Update rails to `5.1.1`
