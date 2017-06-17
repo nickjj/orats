@@ -14,7 +14,7 @@ It also happens to use Docker so that your app can be ran on any major
 platform -- even without needing Ruby installed.
 
 If you want to learn about Docker specifically then I recommend checking out
-the [Dive Into Docker: The Complete Docker Course for Developers](https://diveintodocker.com/courses/dive-into-docker). You can even watch the
+[Dive Into Docker: The Complete Docker Course for Developers](https://diveintodocker.com/courses/dive-into-docker?utm_source=orats&utm_medium=github&utm_campaign=readmetop). You can even watch the
 first 20 videos for free.
 
 ## What versions are you targeting?
@@ -126,7 +126,7 @@ add it.
 Check out the blog post
 [Dockerize a Rails 5, Postgres, Redis, Sidekiq and Action Cable Application](http://nickjanetakis.com/blog/dockerize-a-rails-5-postgres-redis-sidekiq-action-cable-app-with-docker-compose).
 
-Another option is to take my [Dive Into Docker course](https://diveintodocker.com/courses/dive-into-docker).
+Another option is to take my [Dive Into Docker course](https://diveintodocker.com/courses/dive-into-docker?utm_source=orats&utm_medium=github&utm_campaign=readmebottom).
 
 #### What do I do after I generate the application?
 
