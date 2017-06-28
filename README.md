@@ -14,8 +14,7 @@ It also happens to use Docker so that your app can be ran on any major
 platform -- even without needing Ruby installed.
 
 If you want to learn about Docker specifically then I recommend checking out
-[Dive Into Docker: The Complete Docker Course for Developers](https://diveintodocker.com/courses/dive-into-docker?utm_source=orats&utm_medium=github&utm_campaign=readmetop). You can even watch the
-first 20 videos for free.
+[Dive Into Docker: The Complete Docker Course for Developers](https://diveintodocker.com/courses/dive-into-docker?utm_source=orats&utm_medium=github&utm_campaign=readmetop).
 
 ## What versions are you targeting?
 
