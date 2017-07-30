@@ -17,7 +17,7 @@ services:
     ports:
       - '6379:6379'
     volumes:
-      - 'redis:/var/lib/redis/data'
+      - 'redis:/data'
 
   website:
     depends_on:
