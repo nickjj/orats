@@ -188,7 +188,7 @@ find /tmp/foo_bar -type f -exec sed -i -e 's/orats_base/foo_bar/g' {} \;
 find /tmp/foo_bar -type f -exec sed -i -e 's/VERSION/5.1.1/g' {} \;
 
 # Rename the example .env file since `.env` is git ignored.
-mv /tmp/orats/.env.example /tmp/orats/.env
+mv /tmp/foo_bar/.env.example /tmp/foo_bar/.env
 
 # Clean up the cloned directory.
 rm -rf /tmp/orats

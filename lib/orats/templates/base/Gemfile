@@ -30,7 +30,7 @@ gem 'sidekiq', '~> 5.0'
 # gem 'clockwork', '~> 2.0'
 
 # Use Kaminari for pagination
-# gem 'kaminari', '~> 0.17'
+# gem 'kaminari', '~> 1.0'
 
 # Use SCSS for stylesheets
 gem 'sass-rails', '~> 5.0'
