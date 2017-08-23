@@ -1,3 +1,9 @@
+## orats 5.1.2 (August 23, 2017)
+
+- Fix missing `fileutil` require
+- Update Rails to `5.1.3`
+- Update Puma to `3.10`
+
 ## orats 5.1.1 (June 16, 2017)
 
 - Update Ruby to `2.4`
