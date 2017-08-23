@@ -6,10 +6,10 @@ git_source(:github) do |repo_name|
 end
 
 # Looking to use the Edge version? gem 'rails', github: 'rails/rails'
-gem 'rails', '~> 5.1.1'
+gem 'rails', '~> 5.1.3'
 
 # Use Puma as the app server
-gem 'puma', '~> 3.9'
+gem 'puma', '~> 3.10'
 
 # Use Rack Timeout. Read more: https://github.com/heroku/rack-timeout
 gem 'rack-timeout', '~> 0.4'
