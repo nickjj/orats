@@ -1,3 +1,4 @@
+require 'fileutils'
 require 'pathname'
 
 require 'orats/common'
