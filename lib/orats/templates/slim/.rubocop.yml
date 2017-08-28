@@ -1,0 +1,29 @@
+AllCops:
+  TargetRubyVersion: 2.0
+
+  Exclude:
+    - 'db/**/*'
+    - 'log/**/*'
+    - 'tmp/**/*'
+
+Documentation:
+  # Skips checking to make sure top level modules / classes have a comment.
+  Enabled: false
+
+Style/ClassAndModuleChildren:
+  # Skips checking the style of children definitions at classes and modules.
+  #
+  # Basically there are two different styles:
+  #
+  # `nested` - have each child on a separate line
+  #   class Foo
+  #     class Bar
+  #     end
+  #   end
+  #
+  # `compact` - combine definitions as much as possible
+  #   class Foo::Bar
+  #   end
+  #
+  # With it disabled, either or is valid.
+  Enabled: false

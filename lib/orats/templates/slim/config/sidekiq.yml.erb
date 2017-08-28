@@ -1,0 +1,5 @@
+---
+
+:queues:
+  - <%= ENV['ACTIVE_JOB_QUEUE_PREFIX'] %>_<%= ENV['RAILS_ENV'] %>_default
+  - <%= ENV['ACTIVE_JOB_QUEUE_PREFIX'] %>_<%= ENV['RAILS_ENV'] %>_mailers
