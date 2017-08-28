@@ -118,6 +118,10 @@ add it.
         - Add footer
         - Add Google Analytics
 
+### Slim
+
+Same as Base template, but with slim templates instead of erb, via [slim-rails](https://github.com/slim-template/slim-rails) gem.
+
 ## FAQ
 
 #### How can I learn about the Docker specific aspects of the project?
