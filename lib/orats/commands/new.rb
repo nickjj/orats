@@ -9,7 +9,8 @@ module Orats
   module Commands
     class New < Common
       AVAILABLE_TEMPLATES = {
-        base: 'dockerized production ready application'
+        base: 'dockerized production ready application',
+        slim: 'dockerized production ready application with slim templates'
       }.freeze
 
       def initialize(target_path = '', options = {})
