@@ -1,0 +1,6 @@
+- flash.each do |key, msg|
+  - unless key == :timedout
+    = content_tag :div, class: "alert alert-dismissable alert-#{key}" do
+      button.close[type="button" data-dismiss="alert" aria-hidden="true"]
+        |  × 
+      = msg

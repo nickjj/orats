@@ -1,0 +1,33 @@
+- title "Yay! You're on Rails!"
+-  meta_description 'Meta descriptions are useful for SEO purposes.'
+-  heading "Yay! You're on Rails!"
+.row
+  .col-sm-8
+    p.lead
+      |  You have successfully generated this project with 
+      = link_to 'orats', 'https://github.com/nickjj/orats'
+      |  vVERSION. 
+    p
+      = image_tag 'https://badge.fury.io/rb/orats.png', alt: 'Gem badge'
+      |  is the latest version. 
+    hr
+    h3
+      | Learn more about Docker
+    ul
+      li
+        = link_to 'Learn how to build web apps with Docker', 'https://diveintodocker.com/courses/dive-into-docker?utm_source=orats&utm_medium=github&utm_campaign=homepage'
+    hr
+    h3
+      | Want to get rid of this page?
+    p
+      | No problem, just follow these steps:
+    ul
+      li
+        |  Run 
+        code
+          | docker-compose exec website rails d controller Pages
+      li
+        |  Remove the root route from 
+        code
+          | config/routes.rb
+  .col-sm-4
