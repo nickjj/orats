@@ -7,7 +7,7 @@ services:
       POSTGRES_USER: 'orats_base'
       POSTGRES_PASSWORD: 'yourpassword'
     ports:
-      - '5432:5432'
+      - 5432
     volumes:
       - 'postgres:/var/lib/postgresql/data'
 
@@ -15,7 +15,7 @@ services:
     image: 'redis:3.2-alpine'
     command: redis-server --requirepass yourpassword
     ports:
-      - '6379:6379'
+      - 6379
     volumes:
       - 'redis:/data'
 
