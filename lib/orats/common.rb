@@ -17,7 +17,7 @@ module Orats
     end
 
     def base_path
-      File.join(File.expand_path(File.dirname(__FILE__)))
+      __dir__
     end
 
     def file_to_string(path)
