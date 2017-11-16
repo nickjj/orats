@@ -1,5 +1,5 @@
 AllCops:
-  TargetRubyVersion: 2.0
+  TargetRubyVersion: 2.3
 
 Documentation:
   # Skips checking to make sure top level modules / classes have a comment.
