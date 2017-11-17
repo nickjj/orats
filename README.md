@@ -33,6 +33,7 @@ If you want to learn about Docker specifically then I recommend checking out
         - [Try it](#try-the-templates-command)
 - [Available templates](#available-templates)
     - [Base](#base)
+    - [Slim](#slim)
 - [FAQ](#faq)
     - [How can I learn about the Docker specific aspects of the project?](#how-can-i-learn-about-the-docker-specific-aspects-of-the-project)
     - [What do I do after I generate the application?](#what-do-i-do-after-i-generate-the-application)
@@ -117,6 +118,10 @@ add it.
         - Add flash message
         - Add footer
         - Add Google Analytics
+
+### Slim
+
+Same as [Base](#base) template, but with slim templates instead of erb, via [slim-rails](https://github.com/slim-template/slim-rails) gem.
 
 ## FAQ
 
