@@ -27,3 +27,6 @@ Style/ClassAndModuleChildren:
   #
   # With it disabled, either or is valid.
   Enabled: false
+
+Style/MixinUsage:
+  Enabled: false
