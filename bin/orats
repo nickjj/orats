@@ -7,10 +7,10 @@
 # since git directories are not included in gem releases we can
 # determine if the gem is being actively developed by searching
 # for a git repo
-git_path = File.expand_path('../../.git', __FILE__)
+git_path = File.expand_path('../.git', __dir__)
 
 if File.exist?(git_path)
-  $LOAD_PATH.unshift(File.expand_path('../../lib', __FILE__))
+  $LOAD_PATH.unshift(File.expand_path('../lib', __dir__))
 end
 
 require 'orats/cli'
