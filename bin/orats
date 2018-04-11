@@ -9,9 +9,7 @@
 # for a git repo
 git_path = File.expand_path('../.git', __dir__)
 
-if File.exist?(git_path)
-  $LOAD_PATH.unshift(File.expand_path('../lib', __dir__))
-end
+$LOAD_PATH.unshift(File.expand_path('../lib', __dir__)) if File.exist?(git_path)
 
 require 'orats/cli'
 Orats::CLI.start
