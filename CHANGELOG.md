@@ -1,3 +1,20 @@
+## orats 5.2.0 (April 11, 2018)
+
+- Update PostgreSQL to `10.3`
+- Update Redis to `4.0`
+- Update Ruby to `2.5.x`
+- Update Rails to `5.2.0`
+- Update puma to `3.11`
+- Update pg to `1.0`
+- Update sidekiq to `5.1`
+- Update rack-mini-profiler to `1.0`
+- Unpublish PostgreSQL port in `docker-compose.yml`
+- Unpublish Redis port in `docker-compose.yml`
+- Move PostgreSQL environment variables to the `.env` file
+- Drastically reduce log spam in the test output
+- Bootsnap is disabled for now (it may be enabled in a later release)
+- Credentials are not being used for the time being
+
 ## orats 5.1.2 (August 23, 2017)
 
 - Fix missing `fileutil` require
