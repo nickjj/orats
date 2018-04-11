@@ -6,10 +6,10 @@ git_source(:github) do |repo_name|
 end
 
 # Looking to use the Edge version? gem 'rails', github: 'rails/rails'
-gem 'rails', '~> 5.1.4'
+gem 'rails', '~> 5.2.0'
 
 # Use Puma as the app server
-gem 'puma', '~> 3.10'
+gem 'puma', '~> 3.11'
 
 # Use Rack Timeout. Read more: https://github.com/heroku/rack-timeout
 gem 'rack-timeout', '~> 0.4'
@@ -18,13 +18,13 @@ gem 'rack-timeout', '~> 0.4'
 gem 'jbuilder', '~> 2.5'
 
 # Use PostgreSQL as the database for Active Record
-gem 'pg', '~> 0.21'
+gem 'pg', '~> 1.0'
 
 # Use Redis Rails to set up a Redis backed Cache and / or Session
 gem 'redis-rails', '~> 5.0'
 
 # Use Sidekiq as a background job processor through Active Job
-gem 'sidekiq', '~> 5.0'
+gem 'sidekiq', '~> 5.1'
 
 # Use Clockwork for recurring background tasks without needing cron
 # gem 'clockwork', '~> 2.0'
@@ -50,18 +50,25 @@ gem 'bootstrap-sass', '~> 3.3'
 # Use Font Awesome Rails for Font Awesome icons
 gem 'font-awesome-rails', '~> 4.7'
 
+# Use Bootsnap to improve startup times
+# gem 'bootsnap', '>= 1.1.0', require: false
+
 group :development, :test do
   # Call 'byebug' anywhere in your code to drop into a debugger console
   gem 'byebug', platform: :mri
+end
 
-  # End to end testing of your rails apps (Rails 5.1+ supports this)
-  # gem 'capybara', '~> 2.13'
+group :test do
+  # Adds support for Capybara system testing and selenium driver
+  # gem 'capybara', '>= 2.15', '< 4.0'
   # gem 'selenium-webdriver'
+  # Easy installation and use of chromedriver to run system tests with Chrome
+  # gem 'chromedriver-helper'
 end
 
 group :development do
   # Enable a debug toolbar to help profile your application
-  gem 'rack-mini-profiler', '~> 0.10'
+  gem 'rack-mini-profiler', '~> 1.0'
 
   # Access an IRB console on exception pages or by using <%= console %>
   gem 'web-console', '~> 3.3.0'

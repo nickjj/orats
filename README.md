@@ -18,9 +18,9 @@ If you want to learn about Docker specifically then I recommend checking out
 
 ## What versions are you targeting?
 
-#### Ruby 2.4+
+#### Ruby 2.5+
 
-#### Rails 5.1+
+#### Rails 5.2+
 
 #### Docker 1.11+ / Docker Compose API v2+
 
@@ -91,6 +91,7 @@ add it.
     - Use a standalone Action Cable server
     - jQuery is installed with `jquery-rails`
     - Capybara is commented out in the `Gemfile`
+    - Bootsnap and Credentials are disabled
 - **Features**:
     - Add a `pages` controller with `home` action
 - **Config**:
@@ -185,7 +186,7 @@ cp -r /tmp/orats/lib/orats/templates/base /tmp/foo_bar
 # Swap a few custom values into the base project.
 find /tmp/foo_bar -type f -exec sed -i -e 's/OratsBase/FooBar/g' {} \;
 find /tmp/foo_bar -type f -exec sed -i -e 's/orats_base/foo_bar/g' {} \;
-find /tmp/foo_bar -type f -exec sed -i -e 's/VERSION/5.1.1/g' {} \;
+find /tmp/foo_bar -type f -exec sed -i -e 's/VERSION/5.2.0/g' {} \;
 
 # Rename the example .env file since `.env` is git ignored.
 mv /tmp/foo_bar/.env.example /tmp/foo_bar/.env
