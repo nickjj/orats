@@ -1,3 +1,7 @@
+## orats 5.2.1 (April 12, 2018)
+
+- Fix hardcoded `POSTGRES_USER` value
+
 ## orats 5.2.0 (April 11, 2018)
 
 - Update PostgreSQL to `10.3`
