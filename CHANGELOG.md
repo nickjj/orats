@@ -1,3 +1,7 @@
+## orats 5.2.2 (April 19, 2018)
+
+- Fix undefined `_r` variable / method error in `content_security_policy.rb`
+
 ## orats 5.2.1 (April 12, 2018)
 
 - Fix hardcoded `POSTGRES_USER` value
