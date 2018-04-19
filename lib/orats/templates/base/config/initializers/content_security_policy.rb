@@ -17,9 +17,9 @@
 # end
 
 # If you are using UJS then enable automatic nonce generation
-Rails.application.config.content_security_policy_nonce_generator = lambda(_r) {
+Rails.application.config.content_security_policy_nonce_generator = lambda do |_|
   SecureRandom.base64(16)
-}
+end
 
 # Report CSP violations to a specified URI
 # For further information see the following documentation:
