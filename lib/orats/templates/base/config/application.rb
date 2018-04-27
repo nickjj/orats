@@ -48,7 +48,7 @@ module OratsBase
     # Set Redis as the back-end for the cache.
     config.cache_store = :redis_cache_store, {
       url: ENV['REDIS_CACHE_URL'],
-      namespace: ENV['REDIS_NAMESPACE']
+      namespace: ENV['REDIS_CACHE_NAMESPACE']
     }
 
     # Set Sidekiq as the back-end for Active Job.
