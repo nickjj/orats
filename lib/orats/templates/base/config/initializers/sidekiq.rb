@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 sidekiq_config = { url: ENV['ACTIVE_JOB_URL'] }
 
 Sidekiq.configure_server do |config|

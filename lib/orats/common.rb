@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 require 'orats/ui'
 
 module Orats
