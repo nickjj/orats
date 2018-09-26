@@ -1,8 +1,11 @@
 AllCops:
-  TargetRubyVersion: 2.1
+  TargetRubyVersion: 2.5
 
 Documentation:
   # Skips checking to make sure top level modules / classes have a comment.
+  Enabled: false
+
+Style/FrozenStringLiteralComment:
   Enabled: false
 
 Style/PercentLiteralDelimiters:
