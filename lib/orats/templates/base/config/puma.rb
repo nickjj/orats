@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Bind on a specific TCP address. We won't bother using unix sockets because
 # nginx will be running in a different Docker container.
 bind "tcp://#{ENV['BIND_ON']}"

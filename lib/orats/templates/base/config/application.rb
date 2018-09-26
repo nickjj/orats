@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_relative 'boot'
 
 require 'rails/all'
@@ -68,7 +70,7 @@ end
 
 # Show in-line form errors.
 ActionView::Base.field_error_proc = proc do |html_tag, instance|
-  if html_tag =~ /\<label/
+  if /\<label/.match?(html_tag)
     html_tag
   else
     errors = Array(instance.error_message).join(',')

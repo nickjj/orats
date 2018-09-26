@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'thor'
 require 'orats/commands/new'
 require 'orats/version'

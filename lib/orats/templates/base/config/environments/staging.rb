@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_relative 'production.rb'
 
 Rails.application.configure do

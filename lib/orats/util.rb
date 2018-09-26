@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Util
   def self.underscore(term)
     # taken from ActiveSupport

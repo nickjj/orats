@@ -1,4 +1,5 @@
 #!/usr/bin/env ruby
+# frozen_string_literal: true
 
 # inject ../../lib into the $LOAD_PATH, this is useful because
 # when developing locally on a gem the, require paths will be

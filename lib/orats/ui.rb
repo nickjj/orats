@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Orats
   # print out various messages to the terminal
   module UI
