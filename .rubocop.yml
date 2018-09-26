@@ -5,6 +5,9 @@ Documentation:
   # Skips checking to make sure top level modules / classes have a comment.
   Enabled: false
 
+Style/FrozenStringLiteralComment:
+  Enabled: false
+
 Style/PercentLiteralDelimiters:
   PreferredDelimiters:
     default: ()
