@@ -1,3 +1,7 @@
+## orats 5.2.3 (September 29, 2018)
+
+- Fix Rack timeout error by introducing `RACK_TIMEOUT_SERVICE_TIMEOUT` in `.env`
+
 ## orats 5.2.2 (April 19, 2018)
 
 - Fix undefined `_r` variable / method error in `content_security_policy.rb`
