@@ -8,7 +8,10 @@ Documentation:
 Style/FrozenStringLiteralComment:
   Enabled: false
 
-Style/PercentLiteralDelimiters:
+Style/AlignHash:
+  Enabled: false
+
+ Style/PercentLiteralDelimiters:
   PreferredDelimiters:
     default: ()
     '%r': '{}'
