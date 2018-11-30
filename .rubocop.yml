@@ -11,7 +11,7 @@ Style/FrozenStringLiteralComment:
 Style/AlignHash:
   Enabled: false
 
- Style/PercentLiteralDelimiters:
+Style/PercentLiteralDelimiters:
   PreferredDelimiters:
     default: ()
     '%r': '{}'
