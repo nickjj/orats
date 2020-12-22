@@ -1,3 +1,30 @@
+## This project has been deprecated in favor of [docker-rails-example](http://github.com/nickjj/docker-rails-example)
+
+Orats was a fun project that started as an elaborate [Rails application
+template](https://github.com/nickjj/orats/blob/def543bf50fc7d081919fc4f8096a9fde2b161ac/lib/orats/templates/base.rb#L517-L546)
+that eventually shifted into being a pre-configured app where Orats itself was
+a CLI tool to help personalize things like your app's name.
+
+The initial release came out all the way back in [February
+2014](https://github.com/nickjj/orats/releases/tag/v0.1.0).
+
+It feels like it's time for a fresh start because moving forward I like the
+idea of having a pre-configured application that has a few opinions baked in,
+such as using Docker and more. That kind of means that orats as a name doesn't
+make sense since it's technically no longer a Rails application template.
+
+With that said, I've started a new repo at
+[docker-rails-example](http://github.com/nickjj/docker-rails-example) that
+picks up where orats left off while keeping everything current. As Rails
+continues to get updated this new repo will get updated too.
+
+Thank you for using orats (and now this new repo)! Also, huge shout out to
+anyone who contributed to orats. Your efforts will not be forgotten. This repo
+is now archived which means it will remain available in read-only mode but not
+deleted.
+
+---
+
 [![Gem Version](https://badge.fury.io/rb/orats.svg)](http://badge.fury.io/rb/orats) [![Build Status](https://secure.travis-ci.org/nickjj/orats.svg)](http://travis-ci.org/nickjj/orats)
 
 ## What is orats?
