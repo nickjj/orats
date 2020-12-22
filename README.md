@@ -25,7 +25,7 @@ deleted.
 
 ---
 
-[![Gem Version](https://badge.fury.io/rb/orats.svg)](http://badge.fury.io/rb/orats) [![Build Status](https://secure.travis-ci.org/nickjj/orats.svg)](http://travis-ci.org/nickjj/orats)
+[![Gem Version](https://badge.fury.io/rb/orats.svg)](http://badge.fury.io/rb/orats)
 
 ## What is orats?
 
